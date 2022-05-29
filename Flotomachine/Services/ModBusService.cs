@@ -13,6 +13,8 @@ public static class ModBusService
     private static SerialPort _serialPort;
     private static ModbusSerialMaster _modbusSerialMaster;
 
+    public static readonly int[] BaudRateList = { 4800, 9600, 19200, 38400, 57600, 115200, 230400 };
+
     public static Exception Initialize(string portName, int baudRate = 115200)
     {
         _serialPort = new SerialPort(portName, baudRate, Parity.None, 8, StopBits.One);

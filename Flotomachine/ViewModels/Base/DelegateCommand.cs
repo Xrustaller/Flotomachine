@@ -6,6 +6,7 @@ namespace Flotomachine.ViewModels
     public class DelegateCommand : ICommand
     {
         private readonly Action<object> _action;
+
         public DelegateCommand(Action<object> action)
         {
             _action = action;

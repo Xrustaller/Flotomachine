@@ -26,7 +26,6 @@ public class MainWindowViewModel : ViewModelBase
     #region PublicGetSet
 
     public event Action<User> UserChangedEvent;
-    public event Action TappedTabEvent;
 
     // SingIn
     public bool HomeTabItemIsVisible
@@ -69,8 +68,6 @@ public class MainWindowViewModel : ViewModelBase
         }
     }
 
-    public ICommand TappedTab { get; }
-
     #endregion
 
     #endregion
@@ -103,11 +100,6 @@ public class MainWindowViewModel : ViewModelBase
         };
 
         UserChangedEvent += RefreshTabs;
-
-        TappedTab = new DelegateCommand(p =>
-        {
-            TappedTabEvent.Invoke();
-        });
 
 #if DEBUG
         AdminTabItemIsVisible = true;

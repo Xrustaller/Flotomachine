@@ -22,10 +22,5 @@ namespace Flotomachine.View
             ModBusService.Exit();
             base.OnClosed(e);
         }
-
-        private void SelectingItemsControl_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            
-        }
     }
 }

@@ -122,8 +122,10 @@
 						<ComboBox Grid.Row="1" Grid.Column="1" Margin="5" Height="32" Width="160" HorizontalAlignment="Center" Items="{Binding SerialList}" SelectedItem="{Binding SerialSelectedItem}">
                             
                         </ComboBox>
-						<TextBlock Grid.Row="2" Grid.Column="0" Margin="5" HorizontalAlignment="Right" VerticalAlignment="Center">Сменить пароль</TextBlock>
-						<TextBox Grid.Row="2" Grid.Column="1" Margin="5" Height="32" Width="160" Watermark="Новый Пароль" Text="{Binding PassOne, Mode=TwoWay}"/>
+						<TextBlock Grid.Row="2" Grid.Column="0" Margin="5" HorizontalAlignment="Right" VerticalAlignment="Center">BaudRate</TextBlock>
+						<ComboBox Grid.Row="2" Grid.Column="1" Margin="5" Height="32" Width="160" HorizontalAlignment="Center" Items="{Binding SerialBaudRateList, Mode=TwoWay}" SelectedItem="{Binding SerialBaudRateSelectedItem}">
+
+                        </ComboBox>
 						<TextBlock Grid.Row="3" Grid.Column="0" Margin="5" HorizontalAlignment="Right" VerticalAlignment="Center">Сменить пароль</TextBlock>
                         <TextBox Grid.Row="3" Grid.Column="1" Margin="5" Height="32" Width="160" Watermark="Повторить пароль" Text="{Binding PassTwo, Mode=TwoWay}"/>
 

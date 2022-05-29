@@ -17,12 +17,8 @@
 		<viewModels:MainWindowViewModel/>
 	</Window.DataContext>
     <Grid>
-        <TabControl VerticalAlignment="Stretch" HorizontalAlignment="Stretch" SelectionChanged="SelectingItemsControl_OnSelectionChanged">
-			<i:Interaction.Behaviors>
-                <ia:EventTriggerBehavior EventName="SelectionChanged">
-                    <ia:InvokeCommandAction Command="{Binding TappedTab}" CommandParameter=""/>
-                </ia:EventTriggerBehavior>
-            </i:Interaction.Behaviors>
+        <TabControl VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+
             <TabItem VerticalContentAlignment="Center">
                 
                 <TabItem.Header>
