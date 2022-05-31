@@ -15,9 +15,9 @@ public static class ModBusService
 
     public static readonly int[] BaudRateList = { 4800, 9600, 19200, 38400, 57600, 115200, 230400 };
 
-    public static Exception Initialize(string portName, int baudRate = 115200)
+    public static Exception Initialize()
     {
-        _serialPort = new SerialPort(portName, baudRate, Parity.None, 8, StopBits.One);
+        _serialPort = new SerialPort(App.Settings.Configuration.Serial.Port, App.Settings.Configuration.Serial.BaudRate, Parity.None, 8, StopBits.One);
         try
         {
             _thread = new Thread(ThisThread);
@@ -40,7 +40,7 @@ public static class ModBusService
         // Стандартный режим подразумевает считывание датчиков и вывод их на главный экран. 
         while (!_exit)
         {
-
+            Thread.Sleep(2000);
         }
     }
 

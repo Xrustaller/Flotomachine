@@ -23,13 +23,6 @@ public class CardIdService : IDisposable
         _pinReset = 22;
     }
 
-    public CardIdService(int busId, int lineId, int pinReset = -1)
-    {
-        _busId = busId;
-        _lineId = lineId;
-        _pinReset = pinReset;
-    }
-
     public string CreateConnection(int clockFrequency = 1_000_000) //было 5000000, надо уменьшить скорость
     {
         _spiConnection = new(_busId, _lineId)

@@ -5,12 +5,17 @@ using Flotomachine.Services;
 using Flotomachine.View;
 using Flotomachine.ViewModels;
 using System;
+using System.IO;
+using Flotomachine.Utility;
 
 namespace Flotomachine;
 
 public partial class App : Application
 {
     public static readonly MainWindow MainWindow = new() { DataContext = new MainWindowViewModel() };
+
+    public static readonly JsonConfigurationProvider<Settings> Settings = new(Path.Join(Directory.GetCurrentDirectory(), "Flotomachine.config"));
+
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
@@ -18,19 +23,21 @@ public partial class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
-        if (DataBaseService.Initialize() != null)
-        {
-            Console.WriteLine("Database service initialization error");
-
-        }
-
-        if (ModBusService.Initialize("COM1") != null)
-        {
-            Console.WriteLine("ModBusSerial service initialization error");
-        }
-
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
+            Settings.InitConfigurationProvider();
+
+            if (DataBaseService.Initialize() != null)
+            {
+                Console.WriteLine("Database service initialization error");
+
+            }
+
+            if (ModBusService.Initialize() != null)
+            {
+                Console.WriteLine("ModBusSerial service initialization error");
+            }
+
             desktop.MainWindow = MainWindow;
         }
 

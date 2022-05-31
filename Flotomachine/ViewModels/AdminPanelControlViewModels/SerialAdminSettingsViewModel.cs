@@ -21,6 +21,7 @@ public class SerialAdminSettingsViewModel : ViewModelBase
         get => _serialSelectedItem;
         set => this.RaiseAndSetIfChanged(ref _serialSelectedItem, value);
     }
+
     public int SerialBaudRateSelectedItem
     {
         get => _serialBaudRateSelectedItem;
@@ -40,6 +41,11 @@ public class SerialAdminSettingsViewModel : ViewModelBase
 
         SaveClick = new DelegateCommand(SaveSettings);
 
+        Refresh();
+    }
+
+    public void Refresh()
+    {
         foreach (string item in SerialPort.GetPortNames())
         {
             SerialList.Add(item);
