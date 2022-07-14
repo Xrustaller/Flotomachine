@@ -33,7 +33,7 @@ public class Settings : IJsonConfiguration<Settings>
             Serial = new SerialSettings
             {
                 Port = "COM0",
-                BaudRate = 115200
+                BaudRate = 19200,
             }
         };
     }

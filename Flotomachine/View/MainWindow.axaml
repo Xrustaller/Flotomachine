@@ -16,51 +16,84 @@
 	<Window.DataContext>
 		<viewModels:MainWindowViewModel/>
 	</Window.DataContext>
-    <Grid>
-        <TabControl VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-
-            <TabItem VerticalContentAlignment="Center">
-                
-                <TabItem.Header>
-                    <Image Source="/Assets/Key.png" Width="32" Height="32"/>
-				</TabItem.Header>
-                <ContentControl Content="{Binding LoginUserControl, Mode=TwoWay}">
-
-                </ContentControl>
-            </TabItem>
-			<TabItem IsVisible="{Binding Path=HomeTabItemIsVisible, Mode=TwoWay}">
-				<TabItem.Header>
+    <Grid RowDefinitions="48, *, 24" >
+		<Grid Grid.Row="0" ColumnDefinitions="Auto, Auto, Auto, Auto, *, Auto, Auto, Auto, Auto" Background="#1A1A1A">
+			<Button Grid.Row="0" Grid.Column="0" Width="48" Height="48" Background="#00000000" IsVisible="{Binding HomeButtonIsVisible}" IsEnabled="{Binding HomeButtonEnable}">
+                <Panel>
                     <Image Source="/Assets/Home.png" Width="32" Height="32"/>
-                </TabItem.Header>
-                <ContentControl Content="{Binding HomeUserControl, Mode=TwoWay}">
-
-                </ContentControl>
-            </TabItem>
-            <TabItem IsVisible="{Binding Path=LabsTabItemIsVisible, Mode=TwoWay}">
-                <TabItem.Header>
+                </Panel>
+                <i:Interaction.Behaviors>
+                    <ia:EventTriggerBehavior EventName="Click">
+                        <ia:InvokeCommandAction Command="{Binding HomeButtonClick}"/>
+                    </ia:EventTriggerBehavior>
+                </i:Interaction.Behaviors>
+            </Button>
+            <Button Grid.Row="0" Grid.Column="1" Width="48" Height="48" Background="#00000000" IsVisible="{Binding LabsButtonIsVisible}" IsEnabled="{Binding LabsButtonEnable}">
+                <Panel>
                     <Image Source="/Assets/Edit.png" Width="32" Height="32"/>
-                </TabItem.Header>
-                <ContentControl Content="{Binding LabsUserControl, Mode=TwoWay}">
-
-                </ContentControl>
-            </TabItem>
-            <TabItem IsVisible="{Binding Path=SettingsTabItemIsVisible, Mode=TwoWay}">
-                <TabItem.Header>
+                </Panel>
+                <i:Interaction.Behaviors>
+                    <ia:EventTriggerBehavior EventName="Click">
+                        <ia:InvokeCommandAction Command="{Binding LabsButtonClick}"/>
+                    </ia:EventTriggerBehavior>
+                </i:Interaction.Behaviors>
+            </Button>
+            <Button Grid.Row="0" Grid.Column="2" Width="48" Height="48" Background="#00000000" IsVisible="{Binding SettingsButtonIsVisible}" IsEnabled="{Binding SettingsButtonEnable}">
+                <Panel>
                     <Image Source="/Assets/Gear.png" Width="32" Height="32"/>
-                    
-                </TabItem.Header>
-                <ContentControl Content="{Binding SettingsUserControl, Mode=TwoWay}">
-
-                </ContentControl>
-            </TabItem>
-            <TabItem IsVisible="{Binding Path=AdminTabItemIsVisible, Mode=TwoWay}">
-                <TabItem.Header>
+                </Panel>
+                <i:Interaction.Behaviors>
+                    <ia:EventTriggerBehavior EventName="Click">
+                        <ia:InvokeCommandAction Command="{Binding SettingsButtonClick}"/>
+                    </ia:EventTriggerBehavior>
+                </i:Interaction.Behaviors>
+            </Button>
+            <Button Grid.Row="0" Grid.Column="3" Width="48" Height="48" Background="#00000000" IsVisible="{Binding AdminButtonIsVisible}" IsEnabled="{Binding AdminButtonEnable}">
+                <Panel>
                     <Image Source="/Assets/Gear_admin.png" Width="32" Height="32"/>
-                </TabItem.Header>
-				<ContentControl Content="{Binding AdminSettingsUserControl, Mode=TwoWay}">
+                </Panel>
+                <i:Interaction.Behaviors>
+                    <ia:EventTriggerBehavior EventName="Click">
+                        <ia:InvokeCommandAction Command="{Binding AdminButtonClick}"/>
+                    </ia:EventTriggerBehavior>
+                </i:Interaction.Behaviors>
+            </Button>
+            <Button Grid.Row="0" Grid.Column="5" Width="48" Height="48" Background="#00000000" IsVisible="{Binding !LoginBool}">
+                <Panel>
+                    <Image Source="/Assets/Card.png" Width="32" Height="32"/>
+                </Panel>
+                <i:Interaction.Behaviors>
+                    <ia:EventTriggerBehavior EventName="Click">
+                        <ia:InvokeCommandAction Command="{Binding CardLoginButtonClick}"/>
+                    </ia:EventTriggerBehavior>
+                </i:Interaction.Behaviors>
+            </Button>
+            <TextBox Grid.Row="0" Grid.Column="6" Height="32" Width="160" Margin="5" Watermark="Логин" Text="{Binding LoginTextBox, Mode=TwoWay}" IsVisible="{Binding !LoginBool}"></TextBox>
+            <TextBox Grid.Row="0" Grid.Column="7" Height="32" Width="160" Margin="5" Watermark="Пароль" Text="{Binding PasswordTextBox, Mode=TwoWay}" IsVisible="{Binding !LoginBool}" PasswordChar="*"></TextBox>
+            <Button Grid.Row="0" Grid.Column="8" Width="48" Height="48" Background="#00000000">
+                <Panel>
+					<Image Source="/Assets/Key.png" Width="32" Height="32" IsVisible="{Binding !LoginBool}"/>
+					<Image Source="/Assets/Out.png" Width="32" Height="32" IsVisible="{Binding LoginBool}"/>
+                </Panel>
+                <i:Interaction.Behaviors>
+                    <ia:EventTriggerBehavior EventName="Click">
+                        <ia:InvokeCommandAction Command="{Binding LoginButtonClick}"/>
+                    </ia:EventTriggerBehavior>
+                </i:Interaction.Behaviors>
+            </Button>
+        </Grid>
 
-                </ContentControl>
-            </TabItem>
-        </TabControl>
+		<Image Grid.Row="1" Height="260" Source="/Assets/Logo.png"/>
+
+        <ScrollViewer Grid.Row="1" Grid.Column="0" AllowAutoHide="False">
+            <ContentControl Margin="0, 0, 16, 0" Content="{Binding MainContentControl, Mode=TwoWay}">
+
+            </ContentControl>
+		</ScrollViewer>
+
+        <Grid Grid.Row="2" Grid.ColumnDefinitions="*, Auto" Background="#1A1A1A">
+            <TextBlock Grid.Column="1" Margin="5, 0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding UserInfo}" Foreground="{Binding UserColorInfo}"/>
+        </Grid>
+        
     </Grid>
 </Window>

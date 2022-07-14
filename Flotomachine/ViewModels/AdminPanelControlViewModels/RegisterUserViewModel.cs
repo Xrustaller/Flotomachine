@@ -39,6 +39,7 @@ public class RegisterUserViewModel : ViewModelBase
         get => _passTwo;
         set => this.RaiseAndSetIfChanged(ref _passTwo, value);
     }
+
     public string Info
     {
         get => _info;
@@ -99,7 +100,8 @@ public class RegisterUserViewModel : ViewModelBase
         PassTwo = "";
         Info = "Успешно";
         ColorInfo = Brush.Parse("#10FF10");
-        _adminPanelControlViewModel.RefreshUserList(null);
+
+        _adminPanelControlViewModel.RefreshUserList();
     }
 
 }

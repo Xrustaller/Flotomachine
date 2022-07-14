@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using Splat;
 
 namespace Flotomachine.Utility;
 
@@ -19,6 +18,7 @@ public class JsonConfigurationProvider<T> where T : IJsonConfiguration<T>, new()
         _name = name;
         if (File.Exists(_name))
         {
+            InitConfigurationProvider();
             return;
         }
         SaveConfig();
@@ -30,9 +30,9 @@ public class JsonConfigurationProvider<T> where T : IJsonConfiguration<T>, new()
         Configuration = configuration;
         if (File.Exists(_name))
         {
+            InitConfigurationProvider();
             return;
         }
-
         SaveConfig();
     }
 

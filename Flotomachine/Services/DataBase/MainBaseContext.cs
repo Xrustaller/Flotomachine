@@ -8,11 +8,13 @@ public class MainBaseContext : DbContext
     public DbSet<CardId> CardIds { get; set; }
 
     public DbSet<ModuleType> ModuleTypes { get; set; }
+    public DbSet<ModuleData> ModuleData { get; set; }
 
     public MainBaseContext()
     {
 
     }
+
     public MainBaseContext(DbContextOptions<MainBaseContext> options) : base(options)
     {
           

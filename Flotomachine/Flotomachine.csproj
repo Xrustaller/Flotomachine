@@ -7,10 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Assets\Card.png" />
     <None Remove="Assets\Gear_admin.png" />
     <None Remove="Assets\Home.png" />
     <None Remove="Assets\Key.png" />
     <None Remove="Assets\Logo.png" />
+    <None Remove="Assets\Out.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -22,6 +24,7 @@
     <PackageReference Include="Avalonia.Xaml.Interactions" Version="0.10.13.3" />
     <PackageReference Include="Avalonia.Xaml.Interactivity" Version="0.10.13.3" />
     <PackageReference Include="Iot.Device.Bindings" Version="2.1.0" />
+    <PackageReference Include="LiveChartsCore.SkiaSharpView.Avalonia" Version="2.0.0-beta.300" />
     <PackageReference Include="MessageBox.Avalonia" Version="2.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.4" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
@@ -48,6 +51,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <AvaloniaResource Include="Assets\Card.png" />
     <AvaloniaResource Include="Assets\Gear.png" />
     <AvaloniaResource Include="Assets\Edit.png" />
     <AvaloniaResource Include="Assets\Gear_admin.png" />
@@ -55,6 +59,7 @@
     <AvaloniaResource Include="Assets\Key.png" />
     <AvaloniaResource Include="Assets\Logo.png" />
     <AvaloniaResource Include="Assets\New.png" />
+    <AvaloniaResource Include="Assets\Out.png" />
   </ItemGroup>
 
   <ItemGroup>

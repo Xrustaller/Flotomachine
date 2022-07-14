@@ -2,6 +2,7 @@
 using System;
 using System.IO.Ports;
 using System.Threading;
+using Modbus.Utility;
 
 namespace Flotomachine.Services;
 
@@ -10,20 +11,16 @@ public static class ModBusService
     private static Thread _thread;
     private static bool _exit;
 
-    private static SerialPort _serialPort;
-    private static ModbusSerialMaster _modbusSerialMaster;
 
     public static readonly int[] BaudRateList = { 4800, 9600, 19200, 38400, 57600, 115200, 230400 };
+    public static readonly int[] PinRaspberryList = { 4, 5, 6, 12, 13, 17, 18, 22, 23, 24, 25, 26, 27 };
 
     public static Exception Initialize()
     {
-        _serialPort = new SerialPort(App.Settings.Configuration.Serial.Port, App.Settings.Configuration.Serial.BaudRate, Parity.None, 8, StopBits.One);
         try
         {
             _thread = new Thread(ThisThread);
             _thread.Start();
-            _serialPort.Open();
-            _modbusSerialMaster = ModbusSerialMaster.CreateRtu(_serialPort);
         }
         catch (Exception e)
         {
@@ -35,29 +32,116 @@ public static class ModBusService
 
     private static void ThisThread()
     {
+        SerialPort serialPort = new(App.Settings.Configuration.Serial.Port);
+        serialPort.BaudRate = App.Settings.Configuration.Serial.BaudRate;
+        serialPort.DataBits = 8;
+        serialPort.Parity = Parity.None;
+        serialPort.StopBits = StopBits.One;
+        //serialPort.Open();
+
+        IModbusSerialMaster modbusSerialMaster = ModbusSerialMaster.CreateRtu(serialPort);
+
+
         // Должен пробегаться по всем устройствам
         // Если на главном таймере нажалась кнопка активации эксперимента, то запускает запись данных в базу 
         // Стандартный режим подразумевает считывание датчиков и вывод их на главный экран. 
         while (!_exit)
         {
+            //byte slaveID = 1;
+            //ushort startAddress = 0;
+            //ushort numOfPoints = 1;
+            //ushort[] holding_register = modbusSerialMaster.ReadHoldingRegisters(slaveID, startAddress, numOfPoints);
             Thread.Sleep(2000);
         }
+
+        void Read(int slaveId)
+        {
+
+        }
+
+        void Write(int slaveId)
+        {
+
+        }
     }
+
+
 
     public static void Exit()
     {
         _exit = true;
     }
 
-    private static void пример()
+    public static void ModbusSerialRtuMasterWriteRegisters()
     {
-        ModbusSerialMaster master = ModbusSerialMaster.CreateRtu(_serialPort);
+        using SerialPort port = new SerialPort("COM1");
+        // configure serial port
+        port.BaudRate = 9600;
+        port.DataBits = 8;
+        port.Parity = Parity.None;
+        port.StopBits = StopBits.One;
+        port.Open();
 
-        byte slaveID = 1;
-        ushort startAddress = 0;
-        ushort numOfPoints = 1;
-        ushort[] holding_register = master.ReadHoldingRegisters(slaveID, startAddress, numOfPoints);
-        Console.WriteLine(holding_register);
-        Console.ReadKey();
+        // create modbus master
+        IModbusSerialMaster master = ModbusSerialMaster.CreateRtu(port);
+
+        byte slaveId = 1;
+        ushort startAddress = 100;
+        ushort[] registers = new ushort[] { 1, 2, 65535 };
+
+        // write three registers
+        master.WriteMultipleRegisters(slaveId, startAddress, registers);
+    }
+
+    public static void ModbusSerialRtuMasterReadRegisters()
+    {
+        using SerialPort port = new SerialPort("COM1");
+        // configure serial port
+        port.BaudRate = 9600;
+        port.DataBits = 8;
+        port.Parity = Parity.None;
+        port.StopBits = StopBits.One;
+        port.Open();
+
+        // create modbus master
+        IModbusSerialMaster master = ModbusSerialMaster.CreateRtu(port);
+
+        byte slaveId = 1;
+        ushort startAddress = 100;
+
+        // read three registers
+        ushort[] registers = master.ReadHoldingRegisters(slaveId, startAddress, 2);
+        //uint value = ModbusUtility.GetUInt32(registers[0], registers[1]);
+    }
+
+    /// <summary>
+    ///     Write a 32 bit value.
+    /// </summary>
+    public static void ReadWrite32BitValue()
+    {
+        using SerialPort port = new SerialPort("COM1");
+        // configure serial port
+        port.BaudRate = 9600;
+        port.DataBits = 8;
+        port.Parity = Parity.None;
+        port.StopBits = StopBits.One;
+        port.Open();
+
+        // create modbus master
+        ModbusSerialMaster master = ModbusSerialMaster.CreateRtu(port);
+
+        byte slaveId = 1;
+        ushort startAddress = 1008;
+        uint largeValue = ushort.MaxValue + 5;
+
+        ushort lowOrderValue = BitConverter.ToUInt16(BitConverter.GetBytes(largeValue), 0);
+        ushort highOrderValue = BitConverter.ToUInt16(BitConverter.GetBytes(largeValue), 2);
+
+        // write large value in two 16 bit chunks
+        master.WriteMultipleRegisters(slaveId, startAddress, new ushort[] { lowOrderValue, highOrderValue });
+
+        // read large value in two 16 bit chunks and perform conversion
+        ushort[] registers = master.ReadHoldingRegisters(slaveId, startAddress, 2);
+        uint value = ModbusUtility.GetUInt32(registers[1], registers[0]);
     }
 }

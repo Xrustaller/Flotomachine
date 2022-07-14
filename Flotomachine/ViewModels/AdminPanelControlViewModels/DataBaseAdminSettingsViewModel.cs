@@ -7,18 +7,20 @@ using Avalonia.Media;
 
 namespace Flotomachine.ViewModels;
 
-public class SerialAdminSettingsViewModel : ViewModelBase
+public class DataBaseAdminSettingsViewModel : ViewModelBase
 {
     private readonly MainWindowViewModel _mainWindowViewModel;
 
     private string _serialSelectedItem;
     private int _serialBaudRateSelectedItem;
+    private int _rs485PinReDeSelectedItem;
 
     private string _info;
     private IBrush _colorInfo;
 
     public ObservableCollection<string> SerialList { get; set; } = new();
     public ObservableCollection<int> SerialBaudRateList { get; set; } = new();
+    public ObservableCollection<int> Rs485PinReDeList { get; set; } = new();
 
     public string SerialSelectedItem
     {
@@ -30,6 +32,12 @@ public class SerialAdminSettingsViewModel : ViewModelBase
     {
         get => _serialBaudRateSelectedItem;
         set => this.RaiseAndSetIfChanged(ref _serialBaudRateSelectedItem, value);
+    }
+
+    public int Rs485PinReDeSelectedItem
+    {
+        get => _rs485PinReDeSelectedItem;
+        set => this.RaiseAndSetIfChanged(ref _rs485PinReDeSelectedItem, value);
     }
 
     public string Info
@@ -46,24 +54,25 @@ public class SerialAdminSettingsViewModel : ViewModelBase
 
     public ICommand SaveClick { get; }
 
-    public SerialAdminSettingsViewModel()
+    public DataBaseAdminSettingsViewModel()
     {
 
     }
 
-    public SerialAdminSettingsViewModel(MainWindowViewModel mainWindowViewModel)
+    public DataBaseAdminSettingsViewModel(MainWindowViewModel mainWindowViewModel)
     {
         _mainWindowViewModel = mainWindowViewModel;
 
         SaveClick = new DelegateCommand(SaveSettings);
 
-        Refresh();
+        _mainWindowViewModel.UserChangedEvent += Refresh;
     }
 
-    public void Refresh()
+    public void Refresh(User user)
     {
         SerialList.Clear();
         SerialBaudRateList.Clear();
+        Rs485PinReDeList.Clear();
 
         foreach (string item in SerialPort.GetPortNames())
         {
@@ -74,7 +83,12 @@ public class SerialAdminSettingsViewModel : ViewModelBase
         {
             SerialBaudRateList.Add(item);
         }
-        
+
+        foreach (int item in ModBusService.PinRaspberryList)
+        {
+            Rs485PinReDeList.Add(item);
+        }
+
 
         if (SerialList.Contains(App.Settings.Configuration.Serial.Port))
         {
@@ -101,7 +115,6 @@ public class SerialAdminSettingsViewModel : ViewModelBase
     {
         App.Settings.Configuration.Serial.BaudRate = SerialBaudRateSelectedItem;
         App.Settings.Configuration.Serial.Port = SerialSelectedItem;
-
         App.Settings.SaveConfig();
 
         Info = "Успешно";

@@ -12,9 +12,14 @@ namespace Flotomachine;
 
 public partial class App : Application
 {
+#if DEBUG
+    public static readonly JsonConfigurationProvider<Settings> Settings = new(Path.Join(@"D:\Programs\GitHub\Flotomachine", "Flotomachine.config"));
+#else
+    public static readonly JsonConfigurationProvider<Settings> Settings = new(Path.Join(Directory.GetCurrentDirectory(), "Flotomachine.config"));
+#endif
+
     public static readonly MainWindow MainWindow = new() { DataContext = new MainWindowViewModel() };
 
-    public static readonly JsonConfigurationProvider<Settings> Settings = new(Path.Join(Directory.GetCurrentDirectory(), "Flotomachine.config"));
 
     public override void Initialize()
     {
@@ -25,8 +30,6 @@ public partial class App : Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            Settings.InitConfigurationProvider();
-
             if (DataBaseService.Initialize() != null)
             {
                 Console.WriteLine("Database service initialization error");

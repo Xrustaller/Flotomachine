@@ -60,10 +60,15 @@ public class AdminPanelControlViewModel : ViewModelBase
         RfidAdminSettingsViewModel = new RfidAdminSettingsViewModel(_mainWindowViewModel);
         SerialAdminSettingsViewModel = new SerialAdminSettingsViewModel(_mainWindowViewModel);
 
-        _mainWindowViewModel.UserChangedEvent += RefreshUserList;
+        _mainWindowViewModel.UserChangedEvent += Refresh;
     }
 
-    public void RefreshUserList(User user)
+    public void Refresh(User user)
+    {
+        RefreshUserList();
+    }
+
+    public void RefreshUserList()
     {
         UserList.Clear();
         foreach (User item in DataBaseService.GetUsers())
@@ -71,5 +76,4 @@ public class AdminPanelControlViewModel : ViewModelBase
             UserList.Add(item.Username);
         }
     }
-
 }
