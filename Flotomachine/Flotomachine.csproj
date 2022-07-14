@@ -42,9 +42,6 @@
     <Compile Update="View\Pages\AdminPanelControl.axaml.cs">
       <DependentUpon>AdminPanelControl.axaml</DependentUpon>
     </Compile>
-    <Compile Update="View\Pages\LoginPanelControl.axaml.cs">
-      <DependentUpon>LoginPanelControl.axaml</DependentUpon>
-    </Compile>
     <Compile Update="View\ReadCardWindow.axaml.cs">
       <DependentUpon>ReadCardWindow.axaml</DependentUpon>
     </Compile>
