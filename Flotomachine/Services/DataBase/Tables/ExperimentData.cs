@@ -12,26 +12,21 @@ public class ExperimentData
     [Column("user")]
     public int UserId { get; set; }
 
-    [Column("date")]
-    public DateTime Date { get; set; }
+    [Column("module_field")]
+    public int ModuleField { get; set; }
+
+    [Column("module_data")]
+    public int ModuleData { get; set; }
 
     public ExperimentData()
     {
 
     }
 
-    public ExperimentData(int id, int user, int data)
+    public ExperimentData(int user, int field, int data)
     {
-        Id = id;
         UserId = user;
-        Date = DateTime.Now;
+        ModuleField = field;
+        ModuleData = data;
     }
-
-    public ExperimentData(int id, User user, int data)
-    {
-        Id = id;
-        UserId = user.Id;
-        Date = DateTime.Now;
-    }
-    
 }

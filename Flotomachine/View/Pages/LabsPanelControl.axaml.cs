@@ -1,7 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 
-namespace Flotomachine.View.Pages
+namespace Flotomachine.View
 {
     public partial class LabsPanelControl : UserControl
     {
@@ -14,5 +14,6 @@ namespace Flotomachine.View.Pages
         {
             AvaloniaXamlLoader.Load(this);
         }
+        
     }
 }

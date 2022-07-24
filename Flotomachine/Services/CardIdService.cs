@@ -10,6 +10,7 @@ public class CardIdService : IDisposable
 {
     private readonly int _busId;
     private readonly int _lineId;
+    private readonly int _clockFrequency;
     private readonly int _pinReset;
 
     private SpiConnectionSettings _spiConnection;
@@ -18,18 +19,19 @@ public class CardIdService : IDisposable
 
     public CardIdService()
     {
-        _busId = 0;
-        _lineId = 0;
+        _busId = App.Settings.Configuration.RfId.BusId;
+        _lineId = App.Settings.Configuration.RfId.LineId;
+        _clockFrequency = App.Settings.Configuration.RfId.ClockFrequencySpi;
         _pinReset = 22;
     }
 
-    public string CreateConnection(int clockFrequency = 1_000_000) //было 5000000, надо уменьшить скорость
+    public string CreateConnection() //было 5000000, надо уменьшить скорость
     {
         _spiConnection = new(_busId, _lineId)
         {
             // Here you can use as well MfRc522.MaximumSpiClockFrequency which is 10_000_000
             // Anything lower will work as well
-            ClockFrequency = clockFrequency
+            ClockFrequency = _clockFrequency
         };
         _spiDevice = SpiDevice.Create(_spiConnection);
         _mfrc522 = new MfRc522(_spiDevice, _pinReset);

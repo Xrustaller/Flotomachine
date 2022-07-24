@@ -1,6 +1,9 @@
 ﻿using Flotomachine.Services;
 using ReactiveUI;
 using System.Collections.ObjectModel;
+using System.Windows.Input;
+using Avalonia.Media;
+using Markdown.Avalonia.Utils;
 
 namespace Flotomachine.ViewModels;
 
@@ -10,22 +13,24 @@ public class AdminPanelControlViewModel : ViewModelBase
 
     #region Private
 
-    private ChangePasswordViewModel _changePasswordViewModel;
-    private RegisterUserViewModel _registerUserViewModel;
+    private LoginPassViewModel _changePasswordViewModel;
+    private LoginPassViewModel _registerUserViewModel;
     private RfidAdminSettingsViewModel _rfidAdminSettingsViewModel;
     private SerialAdminSettingsViewModel _serialAdminSettingsViewModel;
+    private User _selectUser;
+    private InfoViewModel _userListInfo;
 
     #endregion
 
     #region PublicGetSet
 
-    public ChangePasswordViewModel ChangePasswordViewModel
+    public LoginPassViewModel ChangePasswordViewModel
     {
         get => _changePasswordViewModel;
         set => this.RaiseAndSetIfChanged(ref _changePasswordViewModel, value);
     }
 
-    public RegisterUserViewModel RegisterUserViewModel
+    public LoginPassViewModel RegisterUserViewModel
     {
         get => _registerUserViewModel;
         set => this.RaiseAndSetIfChanged(ref _registerUserViewModel, value);
@@ -43,9 +48,36 @@ public class AdminPanelControlViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _serialAdminSettingsViewModel, value);
     }
 
-    #endregion
+    public ObservableCollection<User> UserList { get; set; } = new();
 
-    public ObservableCollection<string> UserList { get; set; } = new();
+    public User SelectUser
+    {
+        get => _selectUser;
+        set
+        {
+            _selectUser = value;
+            if (value == null)
+            {
+                ChangePasswordViewModel.Login = "";
+                RegisterUserViewModel.Login = "";
+            }
+            else
+            {
+                ChangePasswordViewModel.Login = value.Username;
+                RegisterUserViewModel.Login = value.Username;
+            }
+        }
+    }
+
+    public InfoViewModel UserListInfo
+    {
+        get => _userListInfo;
+        set => this.RaiseAndSetIfChanged(ref _userListInfo, value);
+    }
+
+    public ICommand DeleteUserClick { get; }
+
+    #endregion
 
     public AdminPanelControlViewModel()
     {
@@ -55,25 +87,112 @@ public class AdminPanelControlViewModel : ViewModelBase
     public AdminPanelControlViewModel(MainWindowViewModel mainWindowViewModel)
     {
         _mainWindowViewModel = mainWindowViewModel;
-        ChangePasswordViewModel = new ChangePasswordViewModel(_mainWindowViewModel);
-        RegisterUserViewModel = new RegisterUserViewModel(_mainWindowViewModel, this);
+
+        ChangePasswordViewModel = new LoginPassViewModel
+        {
+            ButtonClick = new DelegateCommand(ChangePass)
+        };
+
+        RegisterUserViewModel = new LoginPassViewModel()
+        {
+            ButtonClick = new DelegateCommand(RegisterUser)
+        };
+
+        DeleteUserClick = new DelegateCommand(DeleteUser);
+
         RfidAdminSettingsViewModel = new RfidAdminSettingsViewModel(_mainWindowViewModel);
         SerialAdminSettingsViewModel = new SerialAdminSettingsViewModel(_mainWindowViewModel);
-
-        _mainWindowViewModel.UserChangedEvent += Refresh;
+        
+        foreach (User item in DataBaseService.GetUsers())
+        {
+            UserList.Add(item);
+        }
     }
 
-    public void Refresh(User user)
+    private void RegisterUser(object parameter)
     {
-        RefreshUserList();
-    }
+        if (string.IsNullOrWhiteSpace(RegisterUserViewModel.Login) || string.IsNullOrWhiteSpace(RegisterUserViewModel.PassOne) || string.IsNullOrWhiteSpace(RegisterUserViewModel.PassTwo))
+        {
+            RegisterUserViewModel.Info = new InfoViewModel("Заполните все поля", "#FF1010");
+            return;
+        }
 
-    public void RefreshUserList()
-    {
+        User user = DataBaseService.GetUser(RegisterUserViewModel.Login);
+        if (user != null)
+        {
+            RegisterUserViewModel.Info = new InfoViewModel("Логин существует", "#FF1010");
+            return;
+        }
+
+        if (RegisterUserViewModel.PassOne.Length < 4)
+        {
+            RegisterUserViewModel.Info = new InfoViewModel("Пароль < 4 символов", "#FF1010");
+            return;
+        }
+
+        if (RegisterUserViewModel.PassOne != RegisterUserViewModel.PassTwo)
+        {
+            RegisterUserViewModel.Info = new InfoViewModel("Разные пароли", "#FF1010");
+            return;
+        }
+
+        User newUser = new(RegisterUserViewModel.Login, RegisterUserViewModel.PassOne);
+        DataBaseService.CreateUser(newUser);
+
+        RegisterUserViewModel.Login = "";
+        RegisterUserViewModel.PassOne = "";
+        RegisterUserViewModel.PassTwo = "";
+        RegisterUserViewModel.Info = new InfoViewModel("Успешно", "#10FF10");
+
         UserList.Clear();
         foreach (User item in DataBaseService.GetUsers())
         {
-            UserList.Add(item.Username);
+            UserList.Add(item);
+        }
+    }
+
+    private void ChangePass(object parameter)
+    {
+        if (string.IsNullOrWhiteSpace(ChangePasswordViewModel.Login) || string.IsNullOrWhiteSpace(ChangePasswordViewModel.PassOne) || string.IsNullOrWhiteSpace(ChangePasswordViewModel.PassTwo))
+        {
+            ChangePasswordViewModel.Info = new InfoViewModel("Заполните все поля", "#FF1010");
+            return;
+        }
+
+        if (ChangePasswordViewModel.PassOne.Length < 4)
+        {
+            ChangePasswordViewModel.Info = new InfoViewModel("Пароль < 4 символов", "#FF1010");
+            return;
+        }
+        
+        if (ChangePasswordViewModel.PassOne != ChangePasswordViewModel.PassTwo)
+        {
+            ChangePasswordViewModel.Info = new InfoViewModel("Разные пароли", "#FF1010");
+            return;
+        }
+
+        User user = DataBaseService.GetUser(ChangePasswordViewModel.Login);
+        if (user == null)
+        {
+            ChangePasswordViewModel.Info = new InfoViewModel("Неверный логин", "#FF1010");
+            return;
+        }
+
+        user.PassHash = User.GenerateHash(user.Username, ChangePasswordViewModel.PassOne);
+        DataBaseService.ChangePassword(user);
+
+        ChangePasswordViewModel.Login = "";
+        ChangePasswordViewModel.PassOne = "";
+        ChangePasswordViewModel.PassTwo = "";
+        ChangePasswordViewModel.Info = new InfoViewModel("Успешно", "#10FF10");
+    }
+
+    private void DeleteUser(object parameter)
+    {
+        if (!_mainWindowViewModel.CurrentUser.IsUnableToDelete())
+        {
+            UserListInfo = new InfoViewModel("Успешно", "#10FF10");
+            return;
         }
     }
 }

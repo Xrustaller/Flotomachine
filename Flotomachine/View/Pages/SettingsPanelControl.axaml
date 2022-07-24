@@ -6,67 +6,65 @@
              xmlns:ia="clr-namespace:Avalonia.Xaml.Interactions.Core;assembly=Avalonia.Xaml.Interactions"
              xmlns:iac="clr-namespace:Avalonia.Xaml.Interactions.Custom;assembly=Avalonia.Xaml.Interactions"
              xmlns:viewModels="clr-namespace:Flotomachine.ViewModels"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Flotomachine.View.SettingsPanelControl">
+             mc:Ignorable="d" d:DesignWidth="764"
+             x:Class="Flotomachine.View.SettingsPanelControl"
+             Background="#DD000000">
     <UserControl.DataContext>
         <viewModels:SettingsPanelControlViewModel/>
     </UserControl.DataContext>
 	<Grid>
-	  <ScrollViewer AllowAutoHide="False" >
-		  <StackPanel Margin="0,0,24,0">
-			  <Grid ColumnDefinitions="1*, 1*" RowDefinitions="*, *">
-				  <Border Grid.Row="0" Grid.Column="0" BorderBrush="#808080" BorderThickness="2" CornerRadius="3" Padding="4" Margin="5" Height="130">
-					  <Grid RowDefinitions="30,30,30" ColumnDefinitions="*,*" HorizontalAlignment="Stretch" DataContext="{Binding ChangePasswordViewModel}">
-						  <TextBlock Grid.Row="0" Grid.Column="0" Margin="5" HorizontalAlignment="Left" VerticalAlignment="Center">Сменить пароль</TextBlock>
-						  <TextBlock Grid.Row="0" Grid.Column="1" Margin="5" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{Binding ColorInfo}" Text="{Binding Info}"/>
-						  <TextBox Grid.Row="1" Grid.Column="0" Margin="5" Height="32" Width="160" PasswordChar="*" Watermark="Новый Пароль" Text="{Binding PassOne, Mode=TwoWay}"/>
-						  <TextBox Grid.Row="2" Grid.Column="0" Margin="5" Height="32" Width="160" PasswordChar="*" Watermark="Повторить пароль" Text="{Binding PassTwo, Mode=TwoWay}"/>
-						  <Button Grid.Row="2" Grid.Column="1" Content="Сменить" VerticalAlignment="Center" HorizontalAlignment="Center" Width="160">
-							  <i:Interaction.Behaviors>
-								  <ia:EventTriggerBehavior EventName="Click">
-									  <ia:InvokeCommandAction Command="{Binding ChangePassClick}"/>
-								  </ia:EventTriggerBehavior>
-							  </i:Interaction.Behaviors>
-						  </Button>
-					  </Grid>
-				  </Border>
-				  <Border Grid.Row="1" Grid.Column="0" BorderBrush="#808080" BorderThickness="2" CornerRadius="3" Padding="4" Margin="5" Height="130">
-					  <Grid RowDefinitions="30,*,*,*,*" ColumnDefinitions="*,*" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" DataContext="{Binding }">
-                          
-
-					  </Grid>
-				  </Border>
-				  <Border Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" BorderBrush="#808080" BorderThickness="2" CornerRadius="3" Padding="4" Margin="5" Height="270">
-					  <Grid RowDefinitions="30, 185, 30" ColumnDefinitions="*, *" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" DataContext="{Binding AddDelUserCardViewModel}">
-						  <TextBlock Grid.Row="0" Grid.Column="0" Margin="5" HorizontalAlignment="Left" VerticalAlignment="Center">Управление картами</TextBlock>
-						  <TextBlock Grid.Row="0" Grid.Column="1" Margin="5" HorizontalAlignment="Left" VerticalAlignment="Center" Text="{Binding Info}" Foreground="{Binding ColorInfo}"></TextBlock>
-						  <ScrollViewer Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="12, 5, 12, 10"  AllowAutoHide="False" >
-                              <ListBox IsEnabled="False" Items="{Binding CardsList}">
-                                  <ListBox.ItemTemplate>
-                                      <DataTemplate>
-                                          <TextBlock Text="{Binding CardId}"></TextBlock>
-                                      </DataTemplate>
-                                  </ListBox.ItemTemplate>
-                              </ListBox>
-						  </ScrollViewer>
-                          <Button Grid.Row="2" Grid.Column="0" Content="Добавить" VerticalAlignment="Center" HorizontalAlignment="Center" Width="160">
-                              <i:Interaction.Behaviors>
-                                  <ia:EventTriggerBehavior EventName="Click">
-                                      <ia:InvokeCommandAction Command="{Binding AddUserCard}"/>
-                                  </ia:EventTriggerBehavior>
-                              </i:Interaction.Behaviors>
-                          </Button>
-                          <Button Grid.Row="2" Grid.Column="1" Content="Удалить" VerticalAlignment="Center" HorizontalAlignment="Center" Width="160">
-                              <i:Interaction.Behaviors>
-                                  <ia:EventTriggerBehavior EventName="Click">
-                                      <ia:InvokeCommandAction Command="{Binding DelUserCard}"/>
-                                  </ia:EventTriggerBehavior>
-                              </i:Interaction.Behaviors>
-                          </Button>
-                      </Grid>
-				  </Border>
-			  </Grid>
-		  </StackPanel>
-	  </ScrollViewer>
+        <StackPanel>
+		  <Grid ColumnDefinitions="1*, 1*" RowDefinitions="*, *">
+			  <Border Grid.Row="0" Grid.Column="0" BorderBrush="#808080" BorderThickness="1" CornerRadius="3" Padding="4" Margin="5" Height="130">
+				  <Grid RowDefinitions="30,30,30" ColumnDefinitions="*,*" HorizontalAlignment="Stretch" DataContext="{Binding ChangePasswordViewModel}">
+					  <TextBlock Grid.Row="0" Grid.Column="0" Margin="5" HorizontalAlignment="Left" VerticalAlignment="Center">Сменить пароль</TextBlock>
+					  <TextBlock Grid.Row="0" Grid.Column="1" Margin="5" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{Binding Info.Color}" Text="{Binding Info.Text}"/>
+					  <TextBox Grid.Row="1" Grid.Column="0" Margin="5" Height="32" Width="160" PasswordChar="*" Watermark="Новый Пароль" Text="{Binding PassOne, Mode=TwoWay}"/>
+					  <TextBox Grid.Row="2" Grid.Column="0" Margin="5" Height="32" Width="160" PasswordChar="*" Watermark="Повторить пароль" Text="{Binding PassTwo, Mode=TwoWay}"/>
+					  <Button Grid.Row="2" Grid.Column="1" Content="Сменить" VerticalAlignment="Center" HorizontalAlignment="Center" Width="160">
+						  <i:Interaction.Behaviors>
+							  <ia:EventTriggerBehavior EventName="Click">
+								  <ia:InvokeCommandAction Command="{Binding ButtonClick}"/>
+							  </ia:EventTriggerBehavior>
+						  </i:Interaction.Behaviors>
+					  </Button>
+				  </Grid>
+			  </Border>
+			  <Border Grid.Row="1" Grid.Column="0" BorderBrush="#808080" BorderThickness="1" CornerRadius="3" Padding="4" Margin="5" Height="130">
+				  <Grid RowDefinitions="30,*,*,*,*" ColumnDefinitions="*,*" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" DataContext="{Binding }">
+                         
+				  </Grid>
+			  </Border>
+			  <Border Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" BorderBrush="#808080" BorderThickness="1" CornerRadius="3" Padding="4" Margin="5" Height="270">
+				  <Grid RowDefinitions="30, 185, 30" ColumnDefinitions="*, *" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" DataContext="{Binding AddDelUserCardViewModel}">
+					  <TextBlock Grid.Row="0" Grid.Column="0" Margin="5" HorizontalAlignment="Left" VerticalAlignment="Center">Управление картами</TextBlock>
+					  <TextBlock Grid.Row="0" Grid.Column="1" Margin="5" HorizontalAlignment="Left" VerticalAlignment="Center" Text="{Binding Info.Text}" Foreground="{Binding Info.Color}"></TextBlock>
+					  <ScrollViewer Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="12, 5, 12, 10"  AllowAutoHide="False" >
+                          <ListBox IsEnabled="False" Items="{Binding CardsList}">
+                              <ListBox.ItemTemplate>
+                                  <DataTemplate>
+                                      <TextBlock Text="{Binding CardId}"></TextBlock>
+                                  </DataTemplate>
+                              </ListBox.ItemTemplate>
+                          </ListBox>
+					  </ScrollViewer>
+                      <Button Grid.Row="2" Grid.Column="0" Content="Добавить" VerticalAlignment="Center" HorizontalAlignment="Center" Width="160">
+                          <i:Interaction.Behaviors>
+                              <ia:EventTriggerBehavior EventName="Click">
+                                  <ia:InvokeCommandAction Command="{Binding AddUserCard}"/>
+                              </ia:EventTriggerBehavior>
+                          </i:Interaction.Behaviors>
+                      </Button>
+                      <Button Grid.Row="2" Grid.Column="1" Content="Удалить" VerticalAlignment="Center" HorizontalAlignment="Center" Width="160">
+                          <i:Interaction.Behaviors>
+                              <ia:EventTriggerBehavior EventName="Click">
+                                  <ia:InvokeCommandAction Command="{Binding DelUserCard}"/>
+                              </ia:EventTriggerBehavior>
+                          </i:Interaction.Behaviors>
+                      </Button>
+                  </Grid>
+              </Border>
+          </Grid>
+        </StackPanel>
   </Grid>
 </UserControl>

@@ -21,6 +21,9 @@ public class User
     [Column("root")]
     public int Root { get; set; }
 
+    [Column("delete")]
+    public int Delete { get; set; }
+
     public User()
     {
 
@@ -45,10 +48,9 @@ public class User
         return BitConverter.ToString(hashedBytes).Replace("-", "").ToLower();
     }
 
-    public override string ToString()
-    {
-        return $"Id: {Id}, Login: {Username}, Hash: {PassHash}, Root: {Root == 1}";
-    }
+    public override string ToString() => $"Id: {Id}, Login: {Username}, Hash: {PassHash}, Root: {Root == 1}";
 
     public bool IsRoot() => Root == 1;
+    public bool IsDelete() => Delete == 1;
+    public bool IsUnableToDelete() => Delete == -1;
 }

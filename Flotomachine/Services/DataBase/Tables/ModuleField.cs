@@ -3,6 +3,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Flotomachine.Services;
 
+/// <summary>
+/// Поля считывания датчиков
+/// </summary>
 [Table("module_field")]
 public class ModuleField
 {
@@ -11,4 +14,10 @@ public class ModuleField
 
     [Column("module_type")]
     public int ModuleType { get; set; }
+
+    [Column("data_name")]
+    public string DataName { get; set; }
+
+    [Column("start_address")]
+    public int StartAddress { get; set; }
 }

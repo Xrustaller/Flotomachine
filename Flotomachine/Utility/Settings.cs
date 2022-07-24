@@ -8,12 +8,14 @@ public class Settings : IJsonConfiguration<Settings>
     public MainSettings Main { get; set; }
     public RfIdSettings RfId { get; set; }
     public SerialSettings Serial { get; set; }
+    public DatabaseSettings DataBase { get; set; }
 
     public Settings()
     {
         Main = new MainSettings();
         RfId = new RfIdSettings();
         Serial = new SerialSettings();
+        DataBase = new DatabaseSettings();
     }
 
     public Settings DefaultConfig()
@@ -34,6 +36,10 @@ public class Settings : IJsonConfiguration<Settings>
             {
                 Port = "COM0",
                 BaudRate = 19200,
+            },
+            DataBase = new DatabaseSettings
+            {
+
             }
         };
     }
@@ -69,6 +75,17 @@ public class SerialSettings
     public int BaudRate { get; set; }
 
     public SerialSettings()
+    {
+
+    }
+}
+
+[Serializable]
+public class DatabaseSettings
+{
+    public string FileName { get; set; }
+
+    public DatabaseSettings()
     {
 
     }

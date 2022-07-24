@@ -14,8 +14,7 @@ public class SerialAdminSettingsViewModel : ViewModelBase
     private string _serialSelectedItem;
     private int _serialBaudRateSelectedItem;
 
-    private string _info;
-    private IBrush _colorInfo;
+    private InfoViewModel _info;
 
     public ObservableCollection<string> SerialList { get; set; } = new();
     public ObservableCollection<int> SerialBaudRateList { get; set; } = new();
@@ -32,16 +31,10 @@ public class SerialAdminSettingsViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _serialBaudRateSelectedItem, value);
     }
 
-    public string Info
+    public InfoViewModel Info
     {
         get => _info;
         set => this.RaiseAndSetIfChanged(ref _info, value);
-    }
-
-    public IBrush ColorInfo
-    {
-        get => _colorInfo;
-        set => this.RaiseAndSetIfChanged(ref _colorInfo, value);
     }
 
     public ICommand SaveClick { get; }
@@ -104,7 +97,6 @@ public class SerialAdminSettingsViewModel : ViewModelBase
 
         App.Settings.SaveConfig();
 
-        Info = "Успешно";
-        ColorInfo = Brush.Parse("#10FF10");
+        Info = new InfoViewModel("Успешно", "#10FF10");
     }
 }

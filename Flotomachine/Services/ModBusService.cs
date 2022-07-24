@@ -15,11 +15,19 @@ public static class ModBusService
     public static readonly int[] BaudRateList = { 4800, 9600, 19200, 38400, 57600, 115200, 230400 };
     public static readonly int[] PinRaspberryList = { 4, 5, 6, 12, 13, 17, 18, 22, 23, 24, 25, 26, 27 };
 
+    private static string _serialPort;
+    private static int _baudRate;
+
+    public static ushort[] Data { get; private set; }
+
     public static Exception Initialize()
     {
         try
         {
+            _serialPort = App.Settings.Configuration.Serial.Port;
+            _baudRate = App.Settings.Configuration.Serial.BaudRate;
             _thread = new Thread(ThisThread);
+            _thread.Name = "ModBusServise";
             _thread.Start();
         }
         catch (Exception e)
@@ -32,14 +40,16 @@ public static class ModBusService
 
     private static void ThisThread()
     {
-        SerialPort serialPort = new(App.Settings.Configuration.Serial.Port);
-        serialPort.BaudRate = App.Settings.Configuration.Serial.BaudRate;
+        SerialPort serialPort = new(_serialPort);
+        serialPort.BaudRate = _baudRate;
         serialPort.DataBits = 8;
-        serialPort.Parity = Parity.None;
         serialPort.StopBits = StopBits.One;
-        //serialPort.Open();
+        serialPort.Parity = Parity.None;
+        serialPort.Open();
 
-        IModbusSerialMaster modbusSerialMaster = ModbusSerialMaster.CreateRtu(serialPort);
+        ModbusSerialMaster modbus = ModbusSerialMaster.CreateRtu(serialPort);
+        modbus.Transport.ReadTimeout = 1000;
+        modbus.Transport.WriteTimeout = 1000;
 
 
         // Должен пробегаться по всем устройствам
@@ -47,16 +57,37 @@ public static class ModBusService
         // Стандартный режим подразумевает считывание датчиков и вывод их на главный экран. 
         while (!_exit)
         {
-            //byte slaveID = 1;
-            //ushort startAddress = 0;
-            //ushort numOfPoints = 1;
-            //ushort[] holding_register = modbusSerialMaster.ReadHoldingRegisters(slaveID, startAddress, numOfPoints);
+            if (_serialPort != App.Settings.Configuration.Serial.Port || _baudRate != App.Settings.Configuration.Serial.BaudRate)
+            {
+                serialPort.Close();
+                _serialPort = App.Settings.Configuration.Serial.Port;
+                _baudRate = App.Settings.Configuration.Serial.BaudRate;
+
+                serialPort = new(_serialPort);
+                serialPort.BaudRate = _baudRate;
+                serialPort.DataBits = 8;
+                serialPort.StopBits = StopBits.One;
+                serialPort.Parity = Parity.None;
+                serialPort.Open();
+                modbus = ModbusSerialMaster.CreateRtu(serialPort);
+                modbus.Transport.ReadTimeout = 1000;
+                modbus.Transport.WriteTimeout = 1000;
+            }
+
+            Read(1, 0, 8);
             Thread.Sleep(2000);
         }
 
-        void Read(int slaveId)
+        void Read(byte slaveId, ushort startAdd, ushort numOfPoints)
         {
-
+            try
+            {
+                Data = modbus.ReadHoldingRegisters(slaveId, startAdd, numOfPoints);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
         }
 
         void Write(int slaveId)
@@ -107,10 +138,10 @@ public static class ModBusService
         IModbusSerialMaster master = ModbusSerialMaster.CreateRtu(port);
 
         byte slaveId = 1;
-        ushort startAddress = 100;
+        ushort startAddress = 1;
 
         // read three registers
-        ushort[] registers = master.ReadHoldingRegisters(slaveId, startAddress, 2);
+        ushort[] registers = master.ReadHoldingRegisters(slaveId, startAddress, 8);
         //uint value = ModbusUtility.GetUInt32(registers[0], registers[1]);
     }
 

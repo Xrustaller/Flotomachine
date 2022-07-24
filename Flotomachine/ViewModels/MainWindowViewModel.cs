@@ -6,6 +6,7 @@ using System;
 using System.Windows.Input;
 using Avalonia.Controls;
 using Avalonia.Media;
+using LabsPanelControl = Flotomachine.View.LabsPanelControl;
 using SettingsPanelControl = Flotomachine.View.SettingsPanelControl;
 
 namespace Flotomachine.ViewModels;
@@ -29,8 +30,7 @@ public class MainWindowViewModel : ViewModelBase
     private string _login;
     private string _password;
 
-    private string _userUserInfo;
-    private IBrush _userUserColorInfo;
+    private InfoViewModel _userUserInfo;
 
     private User _currentUser = null;
     private UserControl _mainContentControl;
@@ -102,16 +102,10 @@ public class MainWindowViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _loginBool, value);
     }
 
-    public string UserInfo
+    public InfoViewModel UserInfo
     {
         get => _userUserInfo;
         set => this.RaiseAndSetIfChanged(ref _userUserInfo, value);
-    }
-
-    public IBrush UserColorInfo
-    {
-        get => _userUserColorInfo;
-        set => this.RaiseAndSetIfChanged(ref _userUserColorInfo, value);
     }
 
     public UserControl MainContentControl
@@ -127,7 +121,6 @@ public class MainWindowViewModel : ViewModelBase
 
     public ICommand LoginButtonClick { get; }
     public ICommand CardLoginButtonClick { get; }
-
 
     public User CurrentUser
     {
@@ -224,7 +217,7 @@ public class MainWindowViewModel : ViewModelBase
     {
         if (CurrentUser != null)
         {
-            UserInfo = "";
+            UserInfo = new InfoViewModel();
             LoginBool = false;
             CurrentUser = null;
             return;
@@ -233,20 +226,17 @@ public class MainWindowViewModel : ViewModelBase
         User user = DataBaseService.GetUser(LoginTextBox);
         if (user == null)
         {
-            UserColorInfo = Brush.Parse("#FF1010");
-            UserInfo = "Неверный логин";
+            UserInfo = new InfoViewModel("Неверный логин", "#FF1010");
             return;
         }
 
         if (!user.CheckPass(LoginTextBox, PasswordTextBox))
         {
-            UserColorInfo = Brush.Parse("#FF1010");
-            UserInfo = "Неверный пароль";
+            UserInfo = new InfoViewModel("Неверный пароль", "#FF1010");
             return;
         }
 
-        UserColorInfo = Brush.Parse("#10FF10");
-        UserInfo = "Выполнен вход: " + user.Username;
+        UserInfo = new InfoViewModel("Выполнен вход: " + user.Username, "#10FF10");
         LoginTextBox = "";
         PasswordTextBox = "";
         LoginBool = true;
@@ -260,21 +250,18 @@ public class MainWindowViewModel : ViewModelBase
 
         if (result == null)
         {
-            UserColorInfo = Brush.Parse("#FF1010");
-            UserInfo = "Считывание отменено";
+            UserInfo = new InfoViewModel("Считывание отменено", "#FF1010");
             return;
         }
 
         User user = DataBaseService.GetUser(result);
         if (user == null)
         {
-            UserColorInfo = Brush.Parse("#FF1010");
-            UserInfo = "Карта не зарегистрирована";
+            UserInfo = new InfoViewModel("Карта не зарегистрирована", "#FF1010");
             return;
         }
 
-        UserColorInfo = Brush.Parse("#10FF10");
-        UserInfo = "Выполнен вход: " + user.Username;
+        UserInfo = new InfoViewModel("Выполнен вход: " + user.Username, "#10FF10");
         LoginTextBox = "";
         PasswordTextBox = "";
         LoginBool = true;
@@ -297,12 +284,14 @@ public class MainWindowViewModel : ViewModelBase
             HomeButtonIsVisible = false;
             LabsButtonIsVisible = false;
             SettingsButtonIsVisible = false;
+            HomeButton(null);
             return;
         }
 
-        if (user.Root == 1)
+        if (user.IsRoot())
         {
             AdminButtonIsVisible = true;
+            AdminButton(null);
             return;
         }
 

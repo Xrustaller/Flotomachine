@@ -7,29 +7,33 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Assets\brand-discord.svg" />
     <None Remove="Assets\Card.png" />
+    <None Remove="Assets\Close.png" />
     <None Remove="Assets\Gear_admin.png" />
     <None Remove="Assets\Home.png" />
     <None Remove="Assets\Key.png" />
+    <None Remove="Assets\Labs.png" />
     <None Remove="Assets\Logo.png" />
     <None Remove="Assets\Out.png" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="0.10.13" />
-    <PackageReference Include="Avalonia.Desktop" Version="0.10.13" />
-    <PackageReference Include="Avalonia.Diagnostics" Version="0.10.13" />
-    <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.13" />
-    <PackageReference Include="Avalonia.Xaml.Behaviors" Version="0.10.13.3" />
-    <PackageReference Include="Avalonia.Xaml.Interactions" Version="0.10.13.3" />
-    <PackageReference Include="Avalonia.Xaml.Interactivity" Version="0.10.13.3" />
+    <PackageReference Include="Avalonia" Version="0.10.17" />
+    <PackageReference Include="Avalonia.Controls.DataGrid" Version="0.10.17" />
+    <PackageReference Include="Avalonia.Desktop" Version="0.10.17" />
+    <PackageReference Include="Avalonia.Diagnostics" Version="0.10.17" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.17" />
+    <PackageReference Include="Avalonia.Xaml.Behaviors" Version="0.10.17" />
+    <PackageReference Include="Avalonia.Xaml.Interactions" Version="0.10.17" />
+    <PackageReference Include="Avalonia.Xaml.Interactivity" Version="0.10.17" />
     <PackageReference Include="Iot.Device.Bindings" Version="2.1.0" />
     <PackageReference Include="LiveChartsCore.SkiaSharpView.Avalonia" Version="2.0.0-beta.300" />
-    <PackageReference Include="MessageBox.Avalonia" Version="2.0.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.4" />
+    <PackageReference Include="MessageBox.Avalonia" Version="2.0.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.7" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="NModbus4" Version="2.1.0" />
-    <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="2.0.7" />
+    <PackageReference Include="NModbus4.NetCore" Version="2.0.1" />
+    <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="2.1.0" />
     <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3.linux" Version="1.1.14" />
     <PackageReference Include="System.Device.Gpio" Version="2.1.0" />
     <PackageReference Include="XamlNameReferenceGenerator" Version="1.3.4" />
@@ -48,12 +52,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <AvaloniaResource Include="Assets\brand-discord.svg" />
     <AvaloniaResource Include="Assets\Card.png" />
+    <AvaloniaResource Include="Assets\Close.png" />
     <AvaloniaResource Include="Assets\Gear.png" />
     <AvaloniaResource Include="Assets\Edit.png" />
     <AvaloniaResource Include="Assets\Gear_admin.png" />
     <AvaloniaResource Include="Assets\Home.png" />
     <AvaloniaResource Include="Assets\Key.png" />
+    <AvaloniaResource Include="Assets\Labs.png" />
     <AvaloniaResource Include="Assets\Logo.png" />
     <AvaloniaResource Include="Assets\New.png" />
     <AvaloniaResource Include="Assets\Out.png" />

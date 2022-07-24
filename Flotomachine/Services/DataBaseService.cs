@@ -20,6 +20,9 @@ namespace Flotomachine.Services
                 DataBase.Users.LoadAsync();
                 DataBase.CardIds.LoadAsync();
                 DataBase.ModuleTypes.LoadAsync();
+                DataBase.ModuleFields.LoadAsync();
+                DataBase.Experiments.LoadAsync();
+                DataBase.ExperimentDatas.LoadAsync();
             }
             catch (Exception e)
             {
@@ -30,10 +33,7 @@ namespace Flotomachine.Services
         }
 
         [CanBeNull]
-        public static User GetUser(string username)
-        {
-            return DataBase.Users.FirstOrDefault(p => p.Username == username);
-        }
+        public static User GetUser(string username) => DataBase.Users.FirstOrDefault(p => p.Username == username); //.Where(p => !p.IsDelete())
 
         public static User CreateUser(string username, string passhash) => CreateUser(new User(username, passhash));
         public static User CreateUser(User user)
@@ -61,16 +61,10 @@ namespace Flotomachine.Services
             DataBase.SaveChanges();
         }
 
-        public static List<User> GetUsers()
-        {
-            return DataBase.Users.ToList();
-        }
+        public static List<User> GetUsers() => DataBase.Users.ToList(); //.Where(p => !p.IsDelete())
 
         [CanBeNull]
-        public static User GetUser(int id)
-        {
-            return DataBase.Users.FirstOrDefault(p => p.Id == id);
-        }
+        public static User GetUser(int id) => DataBase.Users.FirstOrDefault(p => p.Id == id); //.Where(p => !p.IsDelete())
 
         [CanBeNull]
         public static User GetUser(byte[] cardId)
@@ -80,18 +74,13 @@ namespace Flotomachine.Services
         }
 
         public static List<CardId> GetCardIds() => DataBase.CardIds.ToList();
-        public static List<CardId> GetCardIds(User user) => DataBase.CardIds.Where(p => p.UserId == user.Id).ToList();
+        public static List<CardId> GetCardIds(User user) => user == null ? new List<CardId>() : DataBase.CardIds.Where(p => p.UserId == user.Id).ToList();
+
         public static List<CardId> GetCardIds(int id) => DataBase.CardIds.Where(p => p.UserId == id).ToList();
 
-        public static CardId GetCard(int id)
-        {
-            return DataBase.CardIds.FirstOrDefault(p => p.Id == id);
-        }
+        public static CardId GetCard(int id) => DataBase.CardIds.FirstOrDefault(p => p.Id == id);
 
-        public static CardId GetCard(byte[] cardBytes)
-        {
-            return DataBase.CardIds.FirstOrDefault(p => p.CardBytes == cardBytes);
-        }
+        public static CardId GetCard(byte[] cardBytes) => DataBase.CardIds.FirstOrDefault(p => p.CardBytes == cardBytes);
 
         public static void CreateCard(User user, byte[] cardId)
         {

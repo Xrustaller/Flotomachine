@@ -8,7 +8,9 @@ public class MainBaseContext : DbContext
     public DbSet<CardId> CardIds { get; set; }
 
     public DbSet<ModuleType> ModuleTypes { get; set; }
-    public DbSet<ModuleData> ModuleData { get; set; }
+    public DbSet<ModuleField> ModuleFields { get; set; }
+    public DbSet<Experiment> Experiments { get; set; }
+    public DbSet<ExperimentData> ExperimentDatas { get; set; }
 
     public MainBaseContext()
     {

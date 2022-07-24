@@ -2,6 +2,7 @@ using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Flotomachine.Services;
 using System;
+using Avalonia.Interactivity;
 
 namespace Flotomachine.View
 {
@@ -22,5 +23,15 @@ namespace Flotomachine.View
             ModBusService.Exit();
             base.OnClosed(e);
         }
+
+
+        bool full = false;
+
+        public void Full(object sender, RoutedEventArgs e)
+        {
+            WindowState = full ? WindowState.Maximized : WindowState.FullScreen;
+            full = !full;
+        }
+        
     }
 }

@@ -4,6 +4,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Flotomachine.Services;
 
+/// <summary>
+/// Модуль
+/// </summary>
 [Table("module_type")]
 public class ModuleType
 {
