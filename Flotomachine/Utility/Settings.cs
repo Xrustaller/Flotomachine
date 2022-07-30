@@ -24,7 +24,7 @@ public class Settings : IJsonConfiguration<Settings>
         {
             Main = new MainSettings
             {
-
+                MainTimerModuleId = 1,
             },
             RfId = new RfIdSettings
             {
@@ -39,7 +39,7 @@ public class Settings : IJsonConfiguration<Settings>
             },
             DataBase = new DatabaseSettings
             {
-
+                FileName = "Flotomachine.db"
             }
         };
     }
@@ -48,6 +48,7 @@ public class Settings : IJsonConfiguration<Settings>
 [Serializable]
 public class MainSettings
 {
+    public byte MainTimerModuleId { get; set; }
 
     public MainSettings()
     {

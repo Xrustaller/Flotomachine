@@ -36,6 +36,7 @@
                     </ia:EventTriggerBehavior>
                 </i:Interaction.Behaviors>
             </Button>
+			<!--
             <Button Grid.Row="0" Grid.Column="3" Width="40" Height="40" Margin="5, 0" Background="#00000000" IsVisible="{Binding LabsButtonIsVisible}" IsEnabled="{Binding LabsButtonEnable}">
                 <Panel>
                     <Image Source="/Assets/Labs.png" Width="32" Height="32"/>
@@ -46,6 +47,7 @@
                     </ia:EventTriggerBehavior>
                 </i:Interaction.Behaviors>
             </Button>
+			-->
             <Button Grid.Row="0" Grid.Column="4" Width="40" Height="40" Margin="5, 0" Background="#00000000" IsVisible="{Binding SettingsButtonIsVisible}" IsEnabled="{Binding SettingsButtonEnable}">
                 <Panel>
                     <Image Source="/Assets/Gear.png" Width="32" Height="32"/>

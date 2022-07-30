@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Assets\a_lcdnova.ttf" />
     <None Remove="Assets\brand-discord.svg" />
     <None Remove="Assets\Card.png" />
     <None Remove="Assets\Close.png" />
@@ -52,7 +53,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <AvaloniaResource Include="Assets\brand-discord.svg" />
+    <AvaloniaResource Include="Assets\a_lcdnova.ttf" />
     <AvaloniaResource Include="Assets\Card.png" />
     <AvaloniaResource Include="Assets\Close.png" />
     <AvaloniaResource Include="Assets\Gear.png" />

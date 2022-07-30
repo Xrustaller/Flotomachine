@@ -30,7 +30,7 @@
 					  </Button>
 				  </Grid>
 			  </Border>
-			  <Border Grid.Row="1" Grid.Column="0" BorderBrush="#808080" BorderThickness="1" CornerRadius="3" Padding="4" Margin="5" Height="130">
+			  <Border Grid.Row="1" Grid.Column="0" IsVisible="False" BorderBrush="#808080" BorderThickness="1" CornerRadius="3" Padding="4" Margin="5" Height="130">
 				  <Grid RowDefinitions="30,*,*,*,*" ColumnDefinitions="*,*" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" DataContext="{Binding }">
                          
 				  </Grid>

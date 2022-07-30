@@ -6,19 +6,36 @@ using Modbus.Utility;
 
 namespace Flotomachine.Services;
 
+public enum ModBusState
+{
+    Close,
+    Error,
+    Wait,
+    Experiment
+}
+
 public static class ModBusService
 {
+    private static string _serialPort;
+    private static int _baudRate;
+
+    private static SerialPort _port;
+    private static ModbusSerialMaster _bus;
+
+    private static ModBusState _state = ModBusState.Close;
+
+    public static ModBusState State
+    {
+        get => _state;
+        private set => _state = value;
+    }
+
     private static Thread _thread;
     private static bool _exit;
-
 
     public static readonly int[] BaudRateList = { 4800, 9600, 19200, 38400, 57600, 115200, 230400 };
     public static readonly int[] PinRaspberryList = { 4, 5, 6, 12, 13, 17, 18, 22, 23, 24, 25, 26, 27 };
 
-    private static string _serialPort;
-    private static int _baudRate;
-
-    public static ushort[] Data { get; private set; }
 
     public static Exception Initialize()
     {
@@ -26,8 +43,7 @@ public static class ModBusService
         {
             _serialPort = App.Settings.Configuration.Serial.Port;
             _baudRate = App.Settings.Configuration.Serial.BaudRate;
-            _thread = new Thread(ThisThread);
-            _thread.Name = "ModBusServise";
+            _thread = new Thread(ThisThread) { Name = "ModBusServise" };
             _thread.Start();
         }
         catch (Exception e)
@@ -38,19 +54,56 @@ public static class ModBusService
         return null;
     }
 
+    private static void CreatePort()
+    {
+        while (State is ModBusState.Error or ModBusState.Close && !_exit)
+        {
+            if (Create())
+            {
+                State = ModBusState.Wait;
+                _bus = ModbusSerialMaster.CreateRtu(_port);
+                _bus.Transport.ReadTimeout = 1000;
+                _bus.Transport.WriteTimeout = 1000;
+                break;
+            }
+
+            State = ModBusState.Error;
+            Thread.Sleep(500);
+        }
+
+        bool Create()
+        {
+            if (_port is { IsOpen: true })
+            {
+                _port.Close();
+                State = ModBusState.Close;
+            }
+
+            _serialPort = App.Settings.Configuration.Serial.Port;
+            _baudRate = App.Settings.Configuration.Serial.BaudRate;
+
+            _port = new SerialPort(_serialPort);
+            _port.BaudRate = _baudRate;
+            _port.DataBits = 8;
+            _port.StopBits = StopBits.One;
+            _port.Parity = Parity.None;
+            try
+            {
+                _port.Open();
+                return true;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+        }
+    }
+
     private static void ThisThread()
     {
-        SerialPort serialPort = new(_serialPort);
-        serialPort.BaudRate = _baudRate;
-        serialPort.DataBits = 8;
-        serialPort.StopBits = StopBits.One;
-        serialPort.Parity = Parity.None;
-        serialPort.Open();
+        int timerTick = 3;
 
-        ModbusSerialMaster modbus = ModbusSerialMaster.CreateRtu(serialPort);
-        modbus.Transport.ReadTimeout = 1000;
-        modbus.Transport.WriteTimeout = 1000;
-
+        CreatePort();
 
         // Должен пробегаться по всем устройствам
         // Если на главном таймере нажалась кнопка активации эксперимента, то запускает запись данных в базу 
@@ -59,44 +112,56 @@ public static class ModBusService
         {
             if (_serialPort != App.Settings.Configuration.Serial.Port || _baudRate != App.Settings.Configuration.Serial.BaudRate)
             {
-                serialPort.Close();
-                _serialPort = App.Settings.Configuration.Serial.Port;
-                _baudRate = App.Settings.Configuration.Serial.BaudRate;
-
-                serialPort = new(_serialPort);
-                serialPort.BaudRate = _baudRate;
-                serialPort.DataBits = 8;
-                serialPort.StopBits = StopBits.One;
-                serialPort.Parity = Parity.None;
-                serialPort.Open();
-                modbus = ModbusSerialMaster.CreateRtu(serialPort);
-                modbus.Transport.ReadTimeout = 1000;
-                modbus.Transport.WriteTimeout = 1000;
+                CreatePort();
+            }
+            
+            switch (State)
+            {
+                case ModBusState.Wait:
+                    timerTick = ReadInputRegisters(App.Settings.Configuration.Main.MainTimerModuleId, 1, 1)[0];
+                    if (ReadInputs(App.Settings.Configuration.Main.MainTimerModuleId, 7, 1)[0])
+                    {
+                        State = ModBusState.Experiment;
+                    }
+                    
+                    break;
+                case ModBusState.Experiment:
+                    if (ReadInputs(App.Settings.Configuration.Main.MainTimerModuleId, 7, 1)[0])
+                    {
+                        State = ModBusState.Wait;
+                    }
+                    
+                    break;
             }
 
-            Read(1, 0, 8);
-            Thread.Sleep(2000);
+            ReadInputRegisters(1, 0, 8);
+            Thread.Sleep(250);
         }
 
-        void Read(byte slaveId, ushort startAdd, ushort numOfPoints)
+        ushort[] ReadInputRegisters(byte slaveId, ushort startAdd, ushort numOfPoints)
         {
             try
             {
-                Data = modbus.ReadHoldingRegisters(slaveId, startAdd, numOfPoints);
+                return _bus.ReadInputRegisters(slaveId, startAdd, numOfPoints);
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                return null;
             }
         }
 
-        void Write(int slaveId)
+        bool[] ReadInputs(byte slaveId, ushort startAdd, ushort numOfPoints)
         {
-
+            try
+            {
+                return _bus.ReadInputs(slaveId, startAdd, numOfPoints);
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
         }
     }
-
-
 
     public static void Exit()
     {
