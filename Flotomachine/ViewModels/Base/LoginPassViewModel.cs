@@ -1,7 +1,5 @@
-﻿using System.Windows.Input;
-using Avalonia.Media;
-using Iot.Device.Bno055;
-using ReactiveUI;
+﻿using ReactiveUI;
+using System.Windows.Input;
 
 namespace Flotomachine.ViewModels;
 

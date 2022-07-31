@@ -19,7 +19,7 @@ namespace Flotomachine.Services
                 DataBase = new MainBaseContext(MainBaseContext.BuildDbContextOptionsSqlite("Data Source=" + Path.Join(path, "Flotomachine.db")));
                 DataBase.Users.LoadAsync();
                 DataBase.CardIds.LoadAsync();
-                DataBase.ModuleTypes.LoadAsync();
+                DataBase.Modules.LoadAsync();
                 DataBase.ModuleFields.LoadAsync();
                 DataBase.Experiments.LoadAsync();
                 DataBase.ExperimentDatas.LoadAsync();
@@ -99,5 +99,10 @@ namespace Flotomachine.Services
             DataBase.CardIds.Remove(card);
             DataBase.SaveChanges();
         }
+
+        public static List<Module> GetModules() => DataBase.Modules.Where(p => p.Active).ToList();
+        public static List<ModuleField> GetModulesFields() => DataBase.ModuleFields.Where(p => p.Active).ToList();
+        public static List<ModuleField> GetModulesFields(int moduleId) => DataBase.ModuleFields.Where(p => p.ModuleId == moduleId && p.Active).ToList();
+        public static List<ModuleField> GetModulesFields(Module module) => DataBase.ModuleFields.Where(p => p.ModuleId == module.Id && p.Active).ToList();
     }
 }

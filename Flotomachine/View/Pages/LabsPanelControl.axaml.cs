@@ -14,6 +14,6 @@ namespace Flotomachine.View
         {
             AvaloniaXamlLoader.Load(this);
         }
-        
+
     }
 }

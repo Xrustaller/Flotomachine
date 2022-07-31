@@ -1,11 +1,11 @@
-﻿using Flotomachine.Services;
+﻿using Avalonia.Controls;
+using Flotomachine.Services;
+using Flotomachine.Utility;
 using Flotomachine.View;
 using Flotomachine.View.Pages;
 using ReactiveUI;
 using System;
 using System.Windows.Input;
-using Avalonia.Controls;
-using Avalonia.Media;
 using LabsPanelControl = Flotomachine.View.LabsPanelControl;
 using SettingsPanelControl = Flotomachine.View.SettingsPanelControl;
 
@@ -17,13 +17,17 @@ public class MainWindowViewModel : ViewModelBase
 
     #region Private
 
+    private bool _cameraButtonIsVisible;
     private bool _homeButtonIsVisible;
     private bool _labsButtonIsVisible;
+    private bool _graphButtonIsVisible;
     private bool _settingsButtonIsVisible;
     private bool _adminButtonIsVisible;
 
+    private bool _cameraButtonEnable;
     private bool _homeButtonEnable;
     private bool _labsButtonEnable;
+    private bool _graphButtonEnable;
     private bool _settingsButtonEnable;
     private bool _adminButtonEnable;
 
@@ -42,7 +46,14 @@ public class MainWindowViewModel : ViewModelBase
 
     public event Action<User> UserChangedEvent;
 
+    public ModBusService ModBusService;
+
     // SingIn
+    public bool CameraButtonIsVisible
+    {
+        get => _cameraButtonIsVisible;
+        set => this.RaiseAndSetIfChanged(ref _cameraButtonIsVisible, value);
+    }
     public bool HomeButtonIsVisible
     {
         get => _homeButtonIsVisible;
@@ -52,6 +63,11 @@ public class MainWindowViewModel : ViewModelBase
     {
         get => _labsButtonIsVisible;
         set => this.RaiseAndSetIfChanged(ref _labsButtonIsVisible, value);
+    }
+    public bool GraphButtonIsVisible
+    {
+        get => _graphButtonIsVisible;
+        set => this.RaiseAndSetIfChanged(ref _graphButtonIsVisible, value);
     }
     public bool SettingsButtonIsVisible
     {
@@ -64,6 +80,11 @@ public class MainWindowViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _adminButtonIsVisible, value);
     }
 
+    public bool CameraButtonEnable
+    {
+        get => _cameraButtonEnable;
+        set => this.RaiseAndSetIfChanged(ref _cameraButtonEnable, value);
+    }
     public bool HomeButtonEnable
     {
         get => _homeButtonEnable;
@@ -73,6 +94,11 @@ public class MainWindowViewModel : ViewModelBase
     {
         get => _labsButtonEnable;
         set => this.RaiseAndSetIfChanged(ref _labsButtonEnable, value);
+    }
+    public bool GraphButtonEnable
+    {
+        get => _graphButtonEnable;
+        set => this.RaiseAndSetIfChanged(ref _graphButtonEnable, value);
     }
     public bool SettingsButtonEnable
     {
@@ -114,13 +140,17 @@ public class MainWindowViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _mainContentControl, value);
     }
 
+    public ICommand CameraButtonClick { get; }
     public ICommand HomeButtonClick { get; }
     public ICommand LabsButtonClick { get; }
+    public ICommand GraphButtonClick { get; }
     public ICommand SettingsButtonClick { get; }
     public ICommand AdminButtonClick { get; }
 
     public ICommand LoginButtonClick { get; }
     public ICommand CardLoginButtonClick { get; }
+
+    public ICommand OnClosed { get; }
 
     public User CurrentUser
     {
@@ -138,27 +168,75 @@ public class MainWindowViewModel : ViewModelBase
 
     public MainWindowViewModel()
     {
+#if DEBUG
+        //CameraButtonIsVisible = true;
+        HomeButtonIsVisible = true;
+        LabsButtonIsVisible = true;
+        //GraphButtonIsVisible = true;
+        SettingsButtonIsVisible = true;
+        AdminButtonIsVisible = true;
+
+        CameraButtonEnable = true;
+        HomeButtonEnable = true;
+        LabsButtonEnable = true;
+        GraphButtonEnable = true;
+        SettingsButtonEnable = true;
+        AdminButtonEnable = true;
+#endif
+    }
+
+    public MainWindowViewModel(Settings settings)
+    {
+        ModBusService = new ModBusService();
+
         UserChangedEvent += RefreshButtons;
 
+        CameraButtonClick = new DelegateCommand(CameraButton);
         HomeButtonClick = new DelegateCommand(HomeButton);
         LabsButtonClick = new DelegateCommand(LabsButton);
+        GraphButtonClick = new DelegateCommand(GraphButton);
         SettingsButtonClick = new DelegateCommand(SettingsButton);
         AdminButtonClick = new DelegateCommand(AdminButton);
 
         LoginButtonClick = new DelegateCommand(LoginButton);
         CardLoginButtonClick = new DelegateCommand(CardLoginButton);
 
-#if DEBUG
-        AdminButtonIsVisible = true;
+        OnClosed = new DelegateCommand(Closed);
+        
         HomeButtonIsVisible = true;
-        LabsButtonIsVisible = true;
-        SettingsButtonIsVisible = true;
 
+//#if DEBUG
+//        //CameraButtonIsVisible = true;
+//        HomeButtonIsVisible = true;
+//        LabsButtonIsVisible = true;
+//        //GraphButtonIsVisible = true;
+//        SettingsButtonIsVisible = true;
+//        AdminButtonIsVisible = true;
+
+//        CameraButtonEnable = true;
+//        HomeButtonEnable = true;
+//        LabsButtonEnable = true;
+//        GraphButtonEnable = true;
+//        SettingsButtonEnable = true;
+//        AdminButtonEnable = true;
+//#endif
+
+        HomeButton(null);
+    }
+
+    private void CameraButton(object parameter)
+    {
+        MainContentControl = new CameraPanelControl()
+        {
+            DataContext = new CameraPanelControlViewModel(this)
+        };
+
+        CameraButtonEnable = false;
         HomeButtonEnable = true;
         LabsButtonEnable = true;
+        GraphButtonEnable = true;
         SettingsButtonEnable = true;
         AdminButtonEnable = true;
-#endif
     }
 
     private void HomeButton(object parameter)
@@ -168,8 +246,10 @@ public class MainWindowViewModel : ViewModelBase
             DataContext = new HomePanelControlViewModel(this)
         };
 
+        CameraButtonEnable = true;
         HomeButtonEnable = false;
         LabsButtonEnable = true;
+        GraphButtonEnable = true;
         SettingsButtonEnable = true;
         AdminButtonEnable = true;
     }
@@ -181,8 +261,25 @@ public class MainWindowViewModel : ViewModelBase
             DataContext = new LabsPanelControlViewModel(this)
         };
 
+        CameraButtonEnable = true;
         HomeButtonEnable = true;
         LabsButtonEnable = false;
+        GraphButtonEnable = true;
+        SettingsButtonEnable = true;
+        AdminButtonEnable = true;
+    }
+
+    private void GraphButton(object parameter)
+    {
+        MainContentControl = new GraphPanelControl()
+        {
+            DataContext = new GraphPanelControlViewModel(this)
+        };
+
+        CameraButtonEnable = true;
+        HomeButtonEnable = true;
+        LabsButtonEnable = true;
+        GraphButtonEnable = false;
         SettingsButtonEnable = true;
         AdminButtonEnable = true;
     }
@@ -194,8 +291,10 @@ public class MainWindowViewModel : ViewModelBase
             DataContext = new SettingsPanelControlViewModel(this)
         };
 
+        CameraButtonEnable = true;
         HomeButtonEnable = true;
         LabsButtonEnable = true;
+        GraphButtonEnable = true;
         SettingsButtonEnable = false;
         AdminButtonEnable = true;
     }
@@ -207,8 +306,10 @@ public class MainWindowViewModel : ViewModelBase
             DataContext = new AdminPanelControlViewModel(this)
         };
 
+        CameraButtonEnable = true;
         HomeButtonEnable = true;
         LabsButtonEnable = true;
+        GraphButtonEnable = true;
         SettingsButtonEnable = true;
         AdminButtonEnable = false;
     }
@@ -272,31 +373,41 @@ public class MainWindowViewModel : ViewModelBase
     private void RefreshButtons(User user)
     {
         MainContentControl = null;
-
-        HomeButtonEnable = true;
-        LabsButtonEnable = true;
-        SettingsButtonEnable = true;
-        AdminButtonEnable = true;
-
-        if (user == null)
+        
+        if (user == null) // Если пользователь не выбран
         {
-            AdminButtonIsVisible = false;
-            HomeButtonIsVisible = false;
+            //CameraButtonIsVisible = true;
+            HomeButtonIsVisible = true;
             LabsButtonIsVisible = false;
+            //GraphButtonIsVisible = false;
             SettingsButtonIsVisible = false;
+            AdminButtonIsVisible = false;
             HomeButton(null);
             return;
         }
 
-        if (user.IsRoot())
+        if (user.Root == true) // Если админ
         {
+            //CameraButtonIsVisible = false;
+            HomeButtonIsVisible = true;
+            LabsButtonIsVisible = false;
+            //GraphButtonIsVisible = false;
+            SettingsButtonIsVisible = true;
             AdminButtonIsVisible = true;
             AdminButton(null);
             return;
         }
 
+        //CameraButtonIsVisible = true;
         HomeButtonIsVisible = true;
         LabsButtonIsVisible = true;
+        //GraphButtonIsVisible = true;
         SettingsButtonIsVisible = true;
+        AdminButtonIsVisible = false;
+    }
+
+    private void Closed(object parameter)
+    {
+        ModBusService.Exit();
     }
 }

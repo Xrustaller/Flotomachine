@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Flotomachine.Services;
@@ -6,11 +6,11 @@ namespace Flotomachine.Services;
 [Table("experiment_data")]
 public class ExperimentData
 {
-    [Column("_id")]
+    [Key, Column("_id")]
     public int Id { get; set; }
 
-    [Column("user")]
-    public int UserId { get; set; }
+    [Column("experiment")]
+    public int Experiment { get; set; }
 
     [Column("module_field")]
     public int ModuleField { get; set; }
@@ -23,9 +23,15 @@ public class ExperimentData
 
     }
 
-    public ExperimentData(int user, int field, int data)
+    public ExperimentData(int experiment, int field, int data)
     {
-        UserId = user;
+        Experiment = experiment;
+        ModuleField = field;
+        ModuleData = data;
+    }
+    public ExperimentData(Experiment experiment, int field, int data)
+    {
+        Experiment = experiment.Id;
         ModuleField = field;
         ModuleData = data;
     }

@@ -1,8 +1,7 @@
 using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
-using Flotomachine.Services;
-using System;
 using Avalonia.Interactivity;
+using Avalonia.Markup.Xaml;
+using System;
 
 namespace Flotomachine.View
 {
@@ -20,18 +19,20 @@ namespace Flotomachine.View
 
         protected override void OnClosed(EventArgs e)
         {
-            ModBusService.Exit();
             base.OnClosed(e);
         }
 
+        bool _full = false;
 
-        bool full = false;
-
-        public void Full(object sender, RoutedEventArgs e)
+        public void Full_OnClick(object sender, RoutedEventArgs e)
         {
-            WindowState = full ? WindowState.Maximized : WindowState.FullScreen;
-            full = !full;
+            WindowState = _full ? WindowState.Maximized : WindowState.FullScreen;
+            _full = !_full;
         }
-        
+
+        private void Close_OnClick(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
     }
 }

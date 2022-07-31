@@ -3,9 +3,9 @@ using Avalonia.Markup.Xaml;
 
 namespace Flotomachine.View
 {
-    public partial class AdminPanelControl : UserControl
+    public partial class CameraPanelControl : UserControl
     {
-        public AdminPanelControl()
+        public CameraPanelControl()
         {
             InitializeComponent();
         }
@@ -14,6 +14,5 @@ namespace Flotomachine.View
         {
             AvaloniaXamlLoader.Load(this);
         }
-
     }
 }

@@ -7,7 +7,7 @@ public class MainBaseContext : DbContext
     public DbSet<User> Users { get; set; }
     public DbSet<CardId> CardIds { get; set; }
 
-    public DbSet<ModuleType> ModuleTypes { get; set; }
+    public DbSet<Module> Modules { get; set; }
     public DbSet<ModuleField> ModuleFields { get; set; }
     public DbSet<Experiment> Experiments { get; set; }
     public DbSet<ExperimentData> ExperimentDatas { get; set; }
@@ -19,7 +19,7 @@ public class MainBaseContext : DbContext
 
     public MainBaseContext(DbContextOptions<MainBaseContext> options) : base(options)
     {
-          
+
     }
 
     public static DbContextOptions<MainBaseContext> BuildDbContextOptionsSqlite(string serverOptions)

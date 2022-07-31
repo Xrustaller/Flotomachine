@@ -10,6 +10,11 @@
         WindowState="Normal" WindowStartupLocation="CenterScreen"
         x:Class="Flotomachine.View.MainWindow"
         Title="Флотомашина">
+    <i:Interaction.Behaviors>
+        <ia:EventTriggerBehavior EventName="Closing">
+            <ia:InvokeCommandAction Command="{Binding OnClosed}"/>
+        </ia:EventTriggerBehavior>
+    </i:Interaction.Behaviors>
     <Window.Resources>
         
     </Window.Resources>
@@ -17,27 +22,39 @@
 		<viewModels:MainWindowViewModel/>
 	</Window.DataContext>
     <Grid RowDefinitions="40, *, 24">
-		<Grid Grid.Row="0" ColumnDefinitions="40, *, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, *, 40" Background="#1A1A1A">
-            <Button Grid.Row="0" Grid.Column="0" Width="40" Height="40" Margin="5, 0" Background="#00000000" Click="Full">
+		<Grid Grid.Row="0" ColumnDefinitions="40, 40, *, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, *, 40, 40" Background="#1A1A1A">
+            <Button Grid.Row="0" Grid.Column="0" Width="40" Height="40" Background="#00000000" Click="Close_OnClick">
                 <Panel>
-					<!--
-					<Image Source="{SvgImage /Assets/brand-discord.svg}" Width="32" Height="32"/>
-					-->
                     <Image Source="/Assets/Close.png" Width="32" Height="32"/>
                 </Panel>
             </Button>
-			<Button Grid.Row="0" Grid.Column="2" Width="40" Height="40" Margin="5, 0" Background="#00000000" IsVisible="{Binding HomeButtonIsVisible}" IsEnabled="{Binding HomeButtonEnable}">
+            <Button Grid.Row="0" Grid.Column="1" Width="40" Height="40" Background="#00000000" Click="Full_OnClick">
                 <Panel>
-                    <Image Source="/Assets/Home.png" Width="32" Height="32"/>
+                    <Image Source="/Assets/Turn.png" Width="32" Height="32"/>
                 </Panel>
-                <i:Interaction.Behaviors>
-                    <ia:EventTriggerBehavior EventName="Click">
-                        <ia:InvokeCommandAction Command="{Binding HomeButtonClick}"/>
-                    </ia:EventTriggerBehavior>
-                </i:Interaction.Behaviors>
             </Button>
-			<!--
-            <Button Grid.Row="0" Grid.Column="3" Width="40" Height="40" Margin="5, 0" Background="#00000000" IsVisible="{Binding LabsButtonIsVisible}" IsEnabled="{Binding LabsButtonEnable}">
+
+			<Button Grid.Row="0" Grid.Column="3" Width="40" Height="40" Margin="5, 0" Background="#00000000" IsVisible="{Binding CameraButtonIsVisible}" IsEnabled="{Binding CameraButtonEnable}">
+				<Panel>
+					<Image Source="/Assets/Camera.png" Width="32" Height="32"/>
+				</Panel>
+				<i:Interaction.Behaviors>
+					<ia:EventTriggerBehavior EventName="Click">
+						<ia:InvokeCommandAction Command="{Binding CameraButtonClick}"/>
+					</ia:EventTriggerBehavior>
+				</i:Interaction.Behaviors>
+			</Button>
+			<Button Grid.Row="0" Grid.Column="4" Width="40" Height="40" Margin="5, 0" Background="#00000000" IsVisible="{Binding HomeButtonIsVisible}" IsEnabled="{Binding HomeButtonEnable}">
+				<Panel>
+					<Image Source="/Assets/Home.png" Width="32" Height="32"/>
+				</Panel>
+				<i:Interaction.Behaviors>
+					<ia:EventTriggerBehavior EventName="Click">
+						<ia:InvokeCommandAction Command="{Binding HomeButtonClick}"/>
+					</ia:EventTriggerBehavior>
+				</i:Interaction.Behaviors>
+			</Button>
+            <Button Grid.Row="0" Grid.Column="5" Width="40" Height="40" Margin="5, 0" Background="#00000000" IsVisible="{Binding LabsButtonIsVisible}" IsEnabled="{Binding LabsButtonEnable}">
                 <Panel>
                     <Image Source="/Assets/Labs.png" Width="32" Height="32"/>
                 </Panel>
@@ -47,8 +64,17 @@
                     </ia:EventTriggerBehavior>
                 </i:Interaction.Behaviors>
             </Button>
-			-->
-            <Button Grid.Row="0" Grid.Column="4" Width="40" Height="40" Margin="5, 0" Background="#00000000" IsVisible="{Binding SettingsButtonIsVisible}" IsEnabled="{Binding SettingsButtonEnable}">
+            <Button Grid.Row="0" Grid.Column="6" Width="40" Height="40" Margin="5, 0" Background="#00000000" IsVisible="{Binding GraphButtonIsVisible}" IsEnabled="{Binding GraphButtonEnable}">
+                <Panel>
+                    <Image Source="/Assets/Graph.png" Width="32" Height="32"/>
+                </Panel>
+                <i:Interaction.Behaviors>
+                    <ia:EventTriggerBehavior EventName="Click">
+                        <ia:InvokeCommandAction Command="{Binding GraphButtonClick}"/>
+                    </ia:EventTriggerBehavior>
+                </i:Interaction.Behaviors>
+            </Button>
+            <Button Grid.Row="0" Grid.Column="7" Width="40" Height="40" Margin="5, 0" Background="#00000000" IsVisible="{Binding SettingsButtonIsVisible}" IsEnabled="{Binding SettingsButtonEnable}">
                 <Panel>
                     <Image Source="/Assets/Gear.png" Width="32" Height="32"/>
                 </Panel>
@@ -58,7 +84,7 @@
                     </ia:EventTriggerBehavior>
                 </i:Interaction.Behaviors>
             </Button>
-            <Button Grid.Row="0" Grid.Column="5" Width="40" Height="40" Margin="5, 0" Background="#00000000" IsVisible="{Binding AdminButtonIsVisible}" IsEnabled="{Binding AdminButtonEnable}">
+            <Button Grid.Row="0" Grid.Column="8" Width="40" Height="40" Margin="5, 0" Background="#00000000" IsVisible="{Binding AdminButtonIsVisible}" IsEnabled="{Binding AdminButtonEnable}">
                 <Panel>
                     <Image Source="/Assets/Gear_admin.png" Width="32" Height="32"/>
                 </Panel>
@@ -68,7 +94,7 @@
                     </ia:EventTriggerBehavior>
                 </i:Interaction.Behaviors>
             </Button>
-            <Button Grid.Row="0" Grid.Column="6" Width="40" Height="40" Margin="5, 0" Background="#00000000" IsVisible="{Binding !LoginBool}">
+            <Button Grid.Row="0" Grid.Column="9" Width="40" Height="40" Margin="5, 0" Background="#00000000" IsVisible="{Binding !LoginBool}">
                 <Panel>
                     <Image Source="/Assets/Card.png" Width="32" Height="32"/>
                 </Panel>
@@ -78,11 +104,11 @@
                     </ia:EventTriggerBehavior>
                 </i:Interaction.Behaviors>
             </Button>
-            <TextBox Grid.Row="0" Grid.Column="7" Height="32" Width="160" Margin="5" Watermark="Логин" Text="{Binding LoginTextBox, Mode=TwoWay}" IsVisible="{Binding !LoginBool}"></TextBox>
-            <TextBox Grid.Row="0" Grid.Column="8" Height="32" Width="160" Margin="5" Watermark="Пароль" Text="{Binding PasswordTextBox, Mode=TwoWay}" IsVisible="{Binding !LoginBool}" PasswordChar="*"></TextBox>
-            <Button Grid.Row="0" Grid.Column="9" Width="40" Height="40" Margin="5, 0" Background="#00000000" IsVisible="{Binding !LoginBool}">
+            <TextBox Grid.Row="0" Grid.Column="10" Height="32" Width="160" Margin="5" Watermark="Логин" Text="{Binding LoginTextBox, Mode=TwoWay}" IsVisible="{Binding !LoginBool}"></TextBox>
+            <TextBox Grid.Row="0" Grid.Column="11" Height="32" Width="160" Margin="5" Watermark="Пароль" Text="{Binding PasswordTextBox, Mode=TwoWay}" IsVisible="{Binding !LoginBool}" PasswordChar="*"></TextBox>
+            <Button Grid.Row="0" Grid.Column="12" Width="40" Height="40" Margin="5, 0" Background="#00000000" IsVisible="{Binding !LoginBool}">
                 <Panel>
-					<Image Source="/Assets/Key.png" Width="32" Height="32" />
+					<Image Source="/Assets/Key.png" Width="32" Height="32"/>
                 </Panel>
                 <i:Interaction.Behaviors>
                     <ia:EventTriggerBehavior EventName="Click">
@@ -90,7 +116,7 @@
                     </ia:EventTriggerBehavior>
                 </i:Interaction.Behaviors>
             </Button>
-            <Button Grid.Row="0" Grid.Column="11" Width="40" Height="40" Margin="5, 0" Background="#00000000" IsVisible="{Binding LoginBool}">
+            <Button Grid.Row="0" Grid.Column="15" Width="40" Height="40" Margin="5, 0" Background="#00000000" IsVisible="{Binding LoginBool}">
                 <Panel>
                     <Image Source="/Assets/Out.png" Width="32" Height="32"/>
                 </Panel>
@@ -110,8 +136,10 @@
             </ContentControl>
 		</ScrollViewer>
 
-        <Grid Grid.Row="2" ColumnDefinitions="*, Auto" Background="#1A1A1A">
-            <TextBlock Grid.Column="1" Margin="5, 0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding UserInfo.Text}" Foreground="{Binding UserInfo.Color}"/>
+        <Grid Grid.Row="2" ColumnDefinitions="Auto, Auto, *, Auto" Background="#1A1A1A">
+			<Image Grid.Column="0" Margin="5, 0" IsVisible="False" Source="/Assets/Transport.png" Width="16" Height="16"/>
+			<Image Grid.Column="1" Margin="5, 0" IsVisible="False" Source="/Assets/Transport.png" Width="16" Height="16"/>
+            <TextBlock Grid.Column="3" Margin="5, 0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding UserInfo.Text}" Foreground="{Binding UserInfo.Color}"/>
         </Grid>
         
     </Grid>

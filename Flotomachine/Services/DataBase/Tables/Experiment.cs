@@ -9,7 +9,7 @@ public class Experiment
     [Column("_id")]
     public int Id { get; set; }
 
-    [Column("user")]
+    [Column("user_id")]
     public int UserId { get; set; }
 
     [Column("timer_tick")]

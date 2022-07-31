@@ -3,24 +3,20 @@ using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.IO.Ports;
 using System.Windows.Input;
-using Avalonia.Media;
 
 namespace Flotomachine.ViewModels;
 
-public class DataBaseAdminSettingsViewModel : ViewModelBase
+public class SerialAdminSettingsViewModel : ViewModelBase
 {
     private readonly MainWindowViewModel _mainWindowViewModel;
 
     private string _serialSelectedItem;
     private int _serialBaudRateSelectedItem;
-    private int _rs485PinReDeSelectedItem;
 
-    private string _info;
-    private IBrush _colorInfo;
+    private InfoViewModel _info;
 
     public ObservableCollection<string> SerialList { get; set; } = new();
     public ObservableCollection<int> SerialBaudRateList { get; set; } = new();
-    public ObservableCollection<int> Rs485PinReDeList { get; set; } = new();
 
     public string SerialSelectedItem
     {
@@ -34,45 +30,32 @@ public class DataBaseAdminSettingsViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _serialBaudRateSelectedItem, value);
     }
 
-    public int Rs485PinReDeSelectedItem
-    {
-        get => _rs485PinReDeSelectedItem;
-        set => this.RaiseAndSetIfChanged(ref _rs485PinReDeSelectedItem, value);
-    }
-
-    public string Info
+    public InfoViewModel Info
     {
         get => _info;
         set => this.RaiseAndSetIfChanged(ref _info, value);
     }
 
-    public IBrush ColorInfo
-    {
-        get => _colorInfo;
-        set => this.RaiseAndSetIfChanged(ref _colorInfo, value);
-    }
-
     public ICommand SaveClick { get; }
 
-    public DataBaseAdminSettingsViewModel()
+    public SerialAdminSettingsViewModel()
     {
 
     }
 
-    public DataBaseAdminSettingsViewModel(MainWindowViewModel mainWindowViewModel)
+    public SerialAdminSettingsViewModel(MainWindowViewModel mainWindowViewModel)
     {
         _mainWindowViewModel = mainWindowViewModel;
 
         SaveClick = new DelegateCommand(SaveSettings);
 
-        _mainWindowViewModel.UserChangedEvent += Refresh;
+        Refresh();
     }
 
-    public void Refresh(User user)
+    public void Refresh()
     {
         SerialList.Clear();
         SerialBaudRateList.Clear();
-        Rs485PinReDeList.Clear();
 
         foreach (string item in SerialPort.GetPortNames())
         {
@@ -82,11 +65,6 @@ public class DataBaseAdminSettingsViewModel : ViewModelBase
         foreach (int item in ModBusService.BaudRateList)
         {
             SerialBaudRateList.Add(item);
-        }
-
-        foreach (int item in ModBusService.PinRaspberryList)
-        {
-            Rs485PinReDeList.Add(item);
         }
 
 
@@ -115,9 +93,9 @@ public class DataBaseAdminSettingsViewModel : ViewModelBase
     {
         App.Settings.Configuration.Serial.BaudRate = SerialBaudRateSelectedItem;
         App.Settings.Configuration.Serial.Port = SerialSelectedItem;
+
         App.Settings.SaveConfig();
 
-        Info = "Успешно";
-        ColorInfo = Brush.Parse("#10FF10");
+        Info = new InfoViewModel("Успешно", "#10FF10");
     }
 }

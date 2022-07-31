@@ -1,6 +1,6 @@
-﻿using System.Windows.Input;
-using Avalonia.Media;
+﻿using Avalonia.Media;
 using ReactiveUI;
+using System.Windows.Input;
 
 namespace Flotomachine.ViewModels;
 

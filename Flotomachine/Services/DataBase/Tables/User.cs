@@ -18,21 +18,27 @@ public class User
     [Column("pass_hash")]
     public string PassHash { get; set; }
 
+    [Column("name")]
+    public string Name { get; set; }
+
     [Column("root")]
-    public int Root { get; set; }
+    public bool? Root { get; set; }
 
     [Column("delete")]
-    public int Delete { get; set; }
+    public bool Delete { get; set; }
 
     public User()
     {
 
     }
 
-    public User(string username, string password, int root = 0)
+    public User(string username, string password, bool root = false)
     {
         Username = username;
         PassHash = GenerateHash(username, password);
+        Name = null;
+        Root = root;
+        Delete = false;
     }
 
     public bool CheckPass(string username, string password)
@@ -48,9 +54,6 @@ public class User
         return BitConverter.ToString(hashedBytes).Replace("-", "").ToLower();
     }
 
-    public override string ToString() => $"Id: {Id}, Login: {Username}, Hash: {PassHash}, Root: {Root == 1}";
+    public override string ToString() => $"Id: {Id}, Login: {Username}, Hash: {PassHash}, Root: {Root}";
 
-    public bool IsRoot() => Root == 1;
-    public bool IsDelete() => Delete == 1;
-    public bool IsUnableToDelete() => Delete == -1;
 }

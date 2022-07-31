@@ -2,11 +2,11 @@ using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Flotomachine.Services;
+using Flotomachine.Utility;
 using Flotomachine.View;
 using Flotomachine.ViewModels;
 using System;
 using System.IO;
-using Flotomachine.Utility;
 
 namespace Flotomachine;
 
@@ -17,9 +17,7 @@ public partial class App : Application
 #else
     public static readonly JsonConfigurationProvider<Settings> Settings = new(Path.Join(Directory.GetCurrentDirectory(), "Flotomachine.config"));
 #endif
-
-    public static readonly MainWindow MainWindow = new() { DataContext = new MainWindowViewModel() };
-
+    public static MainWindow MainWindow { get; private set; }
 
     public override void Initialize()
     {
@@ -36,11 +34,7 @@ public partial class App : Application
 
             }
 
-            if (ModBusService.Initialize() != null)
-            {
-                Console.WriteLine("ModBusSerial service initialization error");
-            }
-
+            MainWindow = new MainWindow { DataContext = new MainWindowViewModel(Settings.Configuration) };
             desktop.MainWindow = MainWindow;
         }
 

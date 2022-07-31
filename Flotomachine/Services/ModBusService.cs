@@ -1,8 +1,9 @@
 ﻿using Modbus.Device;
+using Modbus.Utility;
 using System;
+using System.Collections.Generic;
 using System.IO.Ports;
 using System.Threading;
-using Modbus.Utility;
 
 namespace Flotomachine.Services;
 
@@ -14,107 +15,88 @@ public enum ModBusState
     Experiment
 }
 
-public static class ModBusService
+public class ModBusService
 {
-    private static string _serialPort;
-    private static int _baudRate;
+    private string _serialPort;
+    private int _baudRate;
+    private ModBusState _state = ModBusState.Close;
 
-    private static SerialPort _port;
-    private static ModbusSerialMaster _bus;
+    public SerialPort SerialPort { get; private set; }
+    private ModbusSerialMaster _bus;
+    private bool _exit;
 
-    private static ModBusState _state = ModBusState.Close;
-
-    public static ModBusState State
+    public ModBusState State
     {
         get => _state;
-        private set => _state = value;
+        private set
+        {
+            _state = value;
+            StatusChanged?.Invoke(value);
+        }
     }
 
-    private static Thread _thread;
-    private static bool _exit;
+    public static readonly int[] BaudRateList = { 1200, 4800, 9600, 19200, 38400, 57600, 115200 };
+    //public readonly int[] PinRaspberryList = { 4, 5, 6, 12, 13, 17, 18, 22, 23, 24, 25, 26, 27 };
 
-    public static readonly int[] BaudRateList = { 4800, 9600, 19200, 38400, 57600, 115200, 230400 };
-    public static readonly int[] PinRaspberryList = { 4, 5, 6, 12, 13, 17, 18, 22, 23, 24, 25, 26, 27 };
+    public event Action<ModBusState> StatusChanged;
+    public event Action<> DataCollected;
 
+    public readonly Thread Thread;
 
-    public static Exception Initialize()
+    public ModBusService()
     {
-        try
-        {
-            _serialPort = App.Settings.Configuration.Serial.Port;
-            _baudRate = App.Settings.Configuration.Serial.BaudRate;
-            _thread = new Thread(ThisThread) { Name = "ModBusServise" };
-            _thread.Start();
-        }
-        catch (Exception e)
-        {
-            return e;
-        }
-
-        return null;
+        Thread = new Thread(ThisThread) { Name = "ModBusServise" };
+        Thread.Start();
     }
 
-    private static void CreatePort()
+    private void CreatePort()
     {
         while (State is ModBusState.Error or ModBusState.Close && !_exit)
         {
-            if (Create())
+            if (SerialPort is { IsOpen: true })
             {
-                State = ModBusState.Wait;
-                _bus = ModbusSerialMaster.CreateRtu(_port);
-                _bus.Transport.ReadTimeout = 1000;
-                _bus.Transport.WriteTimeout = 1000;
-                break;
-            }
-
-            State = ModBusState.Error;
-            Thread.Sleep(500);
-        }
-
-        bool Create()
-        {
-            if (_port is { IsOpen: true })
-            {
-                _port.Close();
+                SerialPort.Close();
                 State = ModBusState.Close;
             }
 
             _serialPort = App.Settings.Configuration.Serial.Port;
             _baudRate = App.Settings.Configuration.Serial.BaudRate;
 
-            _port = new SerialPort(_serialPort);
-            _port.BaudRate = _baudRate;
-            _port.DataBits = 8;
-            _port.StopBits = StopBits.One;
-            _port.Parity = Parity.None;
+            SerialPort = new SerialPort(_serialPort);
+            SerialPort.BaudRate = _baudRate;
+            SerialPort.DataBits = 8;
+            SerialPort.StopBits = StopBits.One;
+            SerialPort.Parity = Parity.None;
             try
             {
-                _port.Open();
-                return true;
+                SerialPort.Open();
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                return false;
+                State = ModBusState.Error;
+                Thread.Sleep(500);
+                continue;
             }
+            _bus = ModbusSerialMaster.CreateRtu(SerialPort);
+            _bus.Transport.ReadTimeout = 1000;
+            _bus.Transport.WriteTimeout = 1000;
+            State = ModBusState.Wait;
         }
     }
 
-    private static void ThisThread()
+    private void ThisThread()
     {
         int timerTick = 3;
 
         CreatePort();
 
-        // Должен пробегаться по всем устройствам
-        // Если на главном таймере нажалась кнопка активации эксперимента, то запускает запись данных в базу 
-        // Стандартный режим подразумевает считывание датчиков и вывод их на главный экран. 
         while (!_exit)
         {
             if (_serialPort != App.Settings.Configuration.Serial.Port || _baudRate != App.Settings.Configuration.Serial.BaudRate)
             {
                 CreatePort();
             }
-            
+
             switch (State)
             {
                 case ModBusState.Wait:
@@ -123,52 +105,62 @@ public static class ModBusService
                     {
                         State = ModBusState.Experiment;
                     }
-                    
+
                     break;
                 case ModBusState.Experiment:
                     if (ReadInputs(App.Settings.Configuration.Main.MainTimerModuleId, 7, 1)[0])
                     {
                         State = ModBusState.Wait;
                     }
-                    
+
                     break;
             }
 
-            ReadInputRegisters(1, 0, 8);
+            List<Module> modules = DataBaseService.GetModules();
+            List<ModuleField> fields = new List<ModuleField>();
+            foreach (Module item in modules)
+            {
+                fields.AddRange(DataBaseService.GetModulesFields(item));
+            }
+
+
+
+
+            DataCollected.Invoke(null);
             Thread.Sleep(250);
-        }
-
-        ushort[] ReadInputRegisters(byte slaveId, ushort startAdd, ushort numOfPoints)
-        {
-            try
-            {
-                return _bus.ReadInputRegisters(slaveId, startAdd, numOfPoints);
-            }
-            catch (Exception e)
-            {
-                return null;
-            }
-        }
-
-        bool[] ReadInputs(byte slaveId, ushort startAdd, ushort numOfPoints)
-        {
-            try
-            {
-                return _bus.ReadInputs(slaveId, startAdd, numOfPoints);
-            }
-            catch (Exception e)
-            {
-                return null;
-            }
         }
     }
 
-    public static void Exit()
+    public void Exit()
     {
         _exit = true;
     }
 
-    public static void ModbusSerialRtuMasterWriteRegisters()
+    private ushort[] ReadInputRegisters(byte slaveId, ushort startAdd, ushort numOfPoints)
+    {
+        try
+        {
+            return _bus.ReadInputRegisters(slaveId, startAdd, numOfPoints);
+        }
+        catch (Exception)
+        {
+            return null;
+        }
+    }
+
+    private bool[] ReadInputs(byte slaveId, ushort startAdd, ushort numOfPoints)
+    {
+        try
+        {
+            return _bus.ReadInputs(slaveId, startAdd, numOfPoints);
+        }
+        catch (Exception)
+        {
+            return null;
+        }
+    }
+
+    public void ModbusSerialRtuMasterWriteRegisters()
     {
         using SerialPort port = new SerialPort("COM1");
         // configure serial port
@@ -189,7 +181,7 @@ public static class ModBusService
         master.WriteMultipleRegisters(slaveId, startAddress, registers);
     }
 
-    public static void ModbusSerialRtuMasterReadRegisters()
+    public void ModbusSerialRtuMasterReadRegisters()
     {
         using SerialPort port = new SerialPort("COM1");
         // configure serial port
@@ -213,7 +205,7 @@ public static class ModBusService
     /// <summary>
     ///     Write a 32 bit value.
     /// </summary>
-    public static void ReadWrite32BitValue()
+    public void ReadWrite32BitValue()
     {
         using SerialPort port = new SerialPort("COM1");
         // configure serial port

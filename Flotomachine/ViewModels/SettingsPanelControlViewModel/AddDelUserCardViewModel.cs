@@ -1,6 +1,4 @@
-﻿using Avalonia.Media;
-using Flotomachine.Services;
-using Flotomachine.View;
+﻿using Flotomachine.Services;
 using ReactiveUI;
 using System;
 using System.Collections.ObjectModel;

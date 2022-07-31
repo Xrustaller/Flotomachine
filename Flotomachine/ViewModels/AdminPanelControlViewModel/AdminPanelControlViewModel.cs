@@ -2,8 +2,6 @@
 using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
-using Avalonia.Media;
-using Markdown.Avalonia.Utils;
 
 namespace Flotomachine.ViewModels;
 
@@ -102,7 +100,7 @@ public class AdminPanelControlViewModel : ViewModelBase
 
         RfidAdminSettingsViewModel = new RfidAdminSettingsViewModel(_mainWindowViewModel);
         SerialAdminSettingsViewModel = new SerialAdminSettingsViewModel(_mainWindowViewModel);
-        
+
         foreach (User item in DataBaseService.GetUsers())
         {
             UserList.Add(item);
@@ -164,7 +162,7 @@ public class AdminPanelControlViewModel : ViewModelBase
             ChangePasswordViewModel.Info = new InfoViewModel("Пароль < 4 символов", "#FF1010");
             return;
         }
-        
+
         if (ChangePasswordViewModel.PassOne != ChangePasswordViewModel.PassTwo)
         {
             ChangePasswordViewModel.Info = new InfoViewModel("Разные пароли", "#FF1010");
@@ -189,7 +187,7 @@ public class AdminPanelControlViewModel : ViewModelBase
 
     private void DeleteUser(object parameter)
     {
-        if (!_mainWindowViewModel.CurrentUser.IsUnableToDelete())
+        if (_mainWindowViewModel.CurrentUser.Root != null)
         {
             UserListInfo = new InfoViewModel("Успешно", "#10FF10");
             return;

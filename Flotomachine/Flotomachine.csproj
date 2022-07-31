@@ -9,14 +9,18 @@
   <ItemGroup>
     <None Remove="Assets\a_lcdnova.ttf" />
     <None Remove="Assets\brand-discord.svg" />
+    <None Remove="Assets\camera.png" />
     <None Remove="Assets\Card.png" />
     <None Remove="Assets\Close.png" />
     <None Remove="Assets\Gear_admin.png" />
+    <None Remove="Assets\graph.png" />
     <None Remove="Assets\Home.png" />
     <None Remove="Assets\Key.png" />
     <None Remove="Assets\Labs.png" />
     <None Remove="Assets\Logo.png" />
     <None Remove="Assets\Out.png" />
+    <None Remove="Assets\Transport.png" />
+    <None Remove="Assets\Turn.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -47,6 +51,9 @@
     <Compile Update="View\Pages\AdminPanelControl.axaml.cs">
       <DependentUpon>AdminPanelControl.axaml</DependentUpon>
     </Compile>
+    <Compile Update="View\Pages\CameraPanelControl.axaml.cs">
+      <DependentUpon>CameraPanelControl.axaml</DependentUpon>
+    </Compile>
     <Compile Update="View\ReadCardWindow.axaml.cs">
       <DependentUpon>ReadCardWindow.axaml</DependentUpon>
     </Compile>
@@ -54,17 +61,21 @@
 
   <ItemGroup>
     <AvaloniaResource Include="Assets\a_lcdnova.ttf" />
+    <AvaloniaResource Include="Assets\Camera.png" />
     <AvaloniaResource Include="Assets\Card.png" />
     <AvaloniaResource Include="Assets\Close.png" />
     <AvaloniaResource Include="Assets\Gear.png" />
     <AvaloniaResource Include="Assets\Edit.png" />
     <AvaloniaResource Include="Assets\Gear_admin.png" />
+    <AvaloniaResource Include="Assets\Graph.png" />
     <AvaloniaResource Include="Assets\Home.png" />
     <AvaloniaResource Include="Assets\Key.png" />
     <AvaloniaResource Include="Assets\Labs.png" />
     <AvaloniaResource Include="Assets\Logo.png" />
     <AvaloniaResource Include="Assets\New.png" />
     <AvaloniaResource Include="Assets\Out.png" />
+    <AvaloniaResource Include="Assets\Transport.png" />
+    <AvaloniaResource Include="Assets\Turn.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -75,7 +86,7 @@
 
   <ItemGroup>
     <Folder Include="Services\ModBusService\" />
-    <Folder Include="Utility\" />
+    <Folder Include="Utility\Temp\" />
   </ItemGroup>
 
 </Project>

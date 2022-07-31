@@ -12,12 +12,18 @@ public class ModuleField
     [Key, Column("_id")]
     public int Id { get; set; }
 
-    [Column("module_type")]
-    public int ModuleType { get; set; }
+    [Column("module_id")]
+    public int ModuleId { get; set; }
 
-    [Column("data_name")]
-    public string DataName { get; set; }
+    [Column("field_name")]
+    public string FieldName { get; set; }
 
     [Column("start_address")]
     public int StartAddress { get; set; }
+
+    [Column("value_name")]
+    public string ValueName { get; set; }
+
+    [Column("active")]
+    public bool Active { get; set; }
 }

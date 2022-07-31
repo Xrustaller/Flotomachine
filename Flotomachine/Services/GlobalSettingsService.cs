@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Flotomachine.Utility;
+using System;
 using System.IO;
-using Flotomachine.Utility;
 
 namespace Flotomachine.Services;
 

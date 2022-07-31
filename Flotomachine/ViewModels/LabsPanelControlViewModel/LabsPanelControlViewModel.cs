@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Flotomachine.Services;
+using System;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
-using Flotomachine.Services;
 
 namespace Flotomachine.ViewModels;
 
@@ -25,7 +25,7 @@ public class LabsPanelControlViewModel : ViewModelBase
 
     public LabsPanelControlViewModel()
     {
-        
+
     }
 
     public LabsPanelControlViewModel(MainWindowViewModel mainWindowViewModel)
@@ -48,7 +48,7 @@ public class LabsPanelControlViewModel : ViewModelBase
 
     public void ExportExcelExperiment(object obj)
     {
-        
+
     }
 
     public void PrintExperiment(object obj)

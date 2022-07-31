@@ -1,5 +1,4 @@
-﻿using Avalonia.Media;
-using Flotomachine.Services;
+﻿using Flotomachine.Services;
 using Flotomachine.View;
 using ReactiveUI;
 
@@ -55,7 +54,7 @@ public class SettingsPanelControlViewModel : ViewModelBase
             ChangePasswordViewModel.Info = new InfoViewModel("Заполните все поля", "#FF1010");
             return;
         }
-        
+
         if (ChangePasswordViewModel.PassOne != ChangePasswordViewModel.PassTwo)
         {
             ChangePasswordViewModel.Info = new InfoViewModel("Разные пароли", "#FF1010");
@@ -88,7 +87,7 @@ public class SettingsPanelControlViewModel : ViewModelBase
             return;
         }
 
-        var card = DataBaseService.GetCard(result);
+        CardId card = DataBaseService.GetCard(result);
 
         if (card != null)
         {
@@ -137,8 +136,8 @@ public class SettingsPanelControlViewModel : ViewModelBase
             return;
         }
 
-        DataBaseService.DeleteCard(card); 
-        
+        DataBaseService.DeleteCard(card);
+
         AddDelUserCardViewModel.CardsList.Clear();
         foreach (CardId item in DataBaseService.GetCardIds(_mainWindowViewModel.CurrentUser))
         {
