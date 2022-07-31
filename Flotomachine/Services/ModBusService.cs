@@ -39,7 +39,7 @@ public class ModBusService
     //public readonly int[] PinRaspberryList = { 4, 5, 6, 12, 13, 17, 18, 22, 23, 24, 25, 26, 27 };
 
     public event Action<ModBusState> StatusChanged;
-    public event Action<> DataCollected;
+    public event Action DataCollected;
 
     public readonly Thread Thread;
 
@@ -126,7 +126,7 @@ public class ModBusService
 
 
 
-            DataCollected.Invoke(null);
+            DataCollected?.Invoke();
             Thread.Sleep(250);
         }
     }
