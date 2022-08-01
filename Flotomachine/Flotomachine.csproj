@@ -4,6 +4,9 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
     <StartupObject></StartupObject>
+    <ApplicationIcon>Assets\Icon.ico</ApplicationIcon>
+    <AssemblyVersion>1.1.0.1</AssemblyVersion>
+    <FileVersion>1.1.0.1</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,6 +18,7 @@
     <None Remove="Assets\Gear_admin.png" />
     <None Remove="Assets\graph.png" />
     <None Remove="Assets\Home.png" />
+    <None Remove="Assets\IconWindow.ico" />
     <None Remove="Assets\Key.png" />
     <None Remove="Assets\Labs.png" />
     <None Remove="Assets\Logo.png" />
@@ -69,6 +73,7 @@
     <AvaloniaResource Include="Assets\Gear_admin.png" />
     <AvaloniaResource Include="Assets\Graph.png" />
     <AvaloniaResource Include="Assets\Home.png" />
+    <AvaloniaResource Include="Assets\IconWindow.ico" />
     <AvaloniaResource Include="Assets\Key.png" />
     <AvaloniaResource Include="Assets\Labs.png" />
     <AvaloniaResource Include="Assets\Logo.png" />
@@ -76,6 +81,10 @@
     <AvaloniaResource Include="Assets\Out.png" />
     <AvaloniaResource Include="Assets\Transport.png" />
     <AvaloniaResource Include="Assets\Turn.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Assets\Icon.ico" />
   </ItemGroup>
 
   <ItemGroup>
