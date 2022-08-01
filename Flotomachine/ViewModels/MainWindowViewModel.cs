@@ -205,22 +205,6 @@ public class MainWindowViewModel : ViewModelBase
         
         HomeButtonIsVisible = true;
 
-//#if DEBUG
-//        //CameraButtonIsVisible = true;
-//        HomeButtonIsVisible = true;
-//        LabsButtonIsVisible = true;
-//        //GraphButtonIsVisible = true;
-//        SettingsButtonIsVisible = true;
-//        AdminButtonIsVisible = true;
-
-//        CameraButtonEnable = true;
-//        HomeButtonEnable = true;
-//        LabsButtonEnable = true;
-//        GraphButtonEnable = true;
-//        SettingsButtonEnable = true;
-//        AdminButtonEnable = true;
-//#endif
-
         HomeButton(null);
     }
 
@@ -394,6 +378,14 @@ public class MainWindowViewModel : ViewModelBase
             //GraphButtonIsVisible = false;
             SettingsButtonIsVisible = true;
             AdminButtonIsVisible = true;
+#if DEBUG
+            //CameraButtonIsVisible = true;
+            HomeButtonIsVisible = true;
+            LabsButtonIsVisible = true;
+            //GraphButtonIsVisible = true;
+            SettingsButtonIsVisible = true;
+            AdminButtonIsVisible = true;
+#endif
             AdminButton(null);
             return;
         }

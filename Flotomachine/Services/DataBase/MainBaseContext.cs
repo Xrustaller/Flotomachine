@@ -11,6 +11,7 @@ public class MainBaseContext : DbContext
     public DbSet<ModuleField> ModuleFields { get; set; }
     public DbSet<Experiment> Experiments { get; set; }
     public DbSet<ExperimentData> ExperimentDatas { get; set; }
+    public DbSet<ExperimentDataValue> ExperimentDataValues { get; set; }
 
     public MainBaseContext()
     {

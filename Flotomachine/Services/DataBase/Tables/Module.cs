@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Flotomachine.Services;
@@ -10,11 +11,13 @@ namespace Flotomachine.Services;
 public class Module
 {
     [Key, Column("_id")]
-    public int Id { get; set; }
+    public byte Id { get; set; }
 
     [Column("name")]
     public string Name { get; set; }
     [Column("active")]
     public bool Active { get; set; }
+
+    public virtual List<ModuleField> Fields { get; set; }
 }
 

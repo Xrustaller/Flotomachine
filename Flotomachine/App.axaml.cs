@@ -18,6 +18,7 @@ public partial class App : Application
     public static readonly JsonConfigurationProvider<Settings> Settings = new(Path.Join(Directory.GetCurrentDirectory(), "Flotomachine.config"));
 #endif
     public static MainWindow MainWindow { get; private set; }
+    public static MainWindowViewModel MainWindowViewModel { get; private set; }
 
     public override void Initialize()
     {
@@ -34,7 +35,8 @@ public partial class App : Application
 
             }
 
-            MainWindow = new MainWindow { DataContext = new MainWindowViewModel(Settings.Configuration) };
+            MainWindowViewModel = new MainWindowViewModel(Settings.Configuration);
+            MainWindow = new MainWindow { DataContext = MainWindowViewModel };
             desktop.MainWindow = MainWindow;
         }
 

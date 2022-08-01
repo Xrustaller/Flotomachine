@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Flotomachine.Services;
@@ -10,29 +12,21 @@ public class ExperimentData
     public int Id { get; set; }
 
     [Column("experiment")]
-    public int Experiment { get; set; }
+    public int ExperimentId { get; set; }
+    public virtual Experiment Experiment { get; set; }
 
-    [Column("module_field")]
-    public int ModuleField { get; set; }
+    [Column("date")]
+    public DateTime Date { get; set; }
 
-    [Column("module_data")]
-    public int ModuleData { get; set; }
+    public virtual List<ExperimentDataValue> ExperimentDataValues { get; set; }
 
     public ExperimentData()
     {
 
     }
-
-    public ExperimentData(int experiment, int field, int data)
+    public ExperimentData(Experiment experiment)
     {
-        Experiment = experiment;
-        ModuleField = field;
-        ModuleData = data;
-    }
-    public ExperimentData(Experiment experiment, int field, int data)
-    {
-        Experiment = experiment.Id;
-        ModuleField = field;
-        ModuleData = data;
+        ExperimentId = experiment.Id;
+        Date = DateTime.Now;
     }
 }

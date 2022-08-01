@@ -2,6 +2,9 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using Flotomachine.Services;
 
 namespace Flotomachine.View
 {

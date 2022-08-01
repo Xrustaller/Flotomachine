@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.IO.Ports;
 using System.Threading;
+using System.Timers;
+using Timer = System.Timers.Timer;
 
 namespace Flotomachine.Services;
 
@@ -39,9 +41,16 @@ public class ModBusService
     //public readonly int[] PinRaspberryList = { 4, 5, 6, 12, 13, 17, 18, 22, 23, 24, 25, 26, 27 };
 
     public event Action<ModBusState> StatusChanged;
-    public event Action DataCollected;
+    public event Action<List<ExperimentDataValue>> DataCollected;
 
     public readonly Thread Thread;
+
+
+    private List<ModuleField> _fields;
+    private readonly List<ExperimentDataValue> _datas = new List<ExperimentDataValue>();
+
+    private Experiment _experiment;
+    private Timer _experimentTimer;
 
     public ModBusService()
     {
@@ -51,6 +60,8 @@ public class ModBusService
 
     private void CreatePort()
     {
+        _fields = DataBaseService.GetAllModulesFields();
+
         while (State is ModBusState.Error or ModBusState.Close && !_exit)
         {
             if (SerialPort is { IsOpen: true })
@@ -78,16 +89,31 @@ public class ModBusService
                 continue;
             }
             _bus = ModbusSerialMaster.CreateRtu(SerialPort);
-            _bus.Transport.ReadTimeout = 1000;
-            _bus.Transport.WriteTimeout = 1000;
+            _bus.Transport.ReadTimeout = 200;
+            _bus.Transport.WriteTimeout = 200;
             State = ModBusState.Wait;
+        }
+    }
+
+    private void ReadAllModules()
+    {
+        lock (_datas)
+        {
+            _datas.Clear();
+            foreach (ModuleField field in _fields)
+            {
+                ushort? data = ReadInputRegisters((byte)field.ModuleId, (byte)field.StartAddress);
+                if (data != null)
+                {
+                    _datas.Add(new ExperimentDataValue(field, data.Value));
+                }
+            }
+            DataCollected?.Invoke(_datas);
         }
     }
 
     private void ThisThread()
     {
-        int timerTick = 3;
-
         CreatePort();
 
         while (!_exit)
@@ -97,37 +123,62 @@ public class ModBusService
                 CreatePort();
             }
 
+            
+
+            bool? expInput = ReadInputs(App.Settings.Configuration.Main.MainTimerModuleId, 7);
+
+            if (expInput == null)
+            {
+                State = ModBusState.Error;
+                continue;
+            }
+
+            ReadAllModules();
+
             switch (State)
             {
                 case ModBusState.Wait:
-                    timerTick = ReadInputRegisters(App.Settings.Configuration.Main.MainTimerModuleId, 1, 1)[0];
-                    if (ReadInputs(App.Settings.Configuration.Main.MainTimerModuleId, 7, 1)[0])
                     {
-                        State = ModBusState.Experiment;
+                        if (expInput == true)
+                        {
+                            State = ModBusState.Experiment;
+                            
+                            ushort timer = ReadInputRegisters(App.Settings.Configuration.Main.MainTimerModuleId, 1) ?? 3;
+                            _experiment = DataBaseService.CreateExperiment(App.MainWindowViewModel.CurrentUser, timer);
+
+                            _experimentTimer = new Timer(timer * 1000);
+                            _experimentTimer.AutoReset = true;
+                            _experimentTimer.Elapsed += TimerElapsed;
+                            _experimentTimer.Start();
+                        }
+                        break;
                     }
 
-                    break;
                 case ModBusState.Experiment:
-                    if (ReadInputs(App.Settings.Configuration.Main.MainTimerModuleId, 7, 1)[0])
                     {
-                        State = ModBusState.Wait;
+                        if (expInput == false)
+                        {
+                            State = ModBusState.Wait;
+                            _experimentTimer.Stop();
+                            _experiment?.End();
+                            DataBaseService.UpdateExperiment(_experiment);
+                            _experiment = null;
+                        }
+                        break;
                     }
 
-                    break;
             }
 
-            List<Module> modules = DataBaseService.GetModules();
-            List<ModuleField> fields = new List<ModuleField>();
-            foreach (Module item in modules)
-            {
-                fields.AddRange(DataBaseService.GetModulesFields(item));
-            }
+            Thread.Sleep(200);
+        }
+    }
 
-
-
-
-            DataCollected?.Invoke();
-            Thread.Sleep(250);
+    private void TimerElapsed(object source, ElapsedEventArgs e)
+    {
+        lock (_datas)
+        {
+            var data = DataBaseService.AddExperimentData(_experiment);
+            DataBaseService.AddExperimentDataValues(data, _datas);
         }
     }
 
@@ -136,11 +187,11 @@ public class ModBusService
         _exit = true;
     }
 
-    private ushort[] ReadInputRegisters(byte slaveId, ushort startAdd, ushort numOfPoints)
+    private ushort? ReadInputRegisters(byte slaveId, ushort startAdd)
     {
         try
         {
-            return _bus.ReadInputRegisters(slaveId, startAdd, numOfPoints);
+            return _bus.ReadInputRegisters(slaveId, startAdd, 1)[0];
         }
         catch (Exception)
         {
@@ -148,11 +199,11 @@ public class ModBusService
         }
     }
 
-    private bool[] ReadInputs(byte slaveId, ushort startAdd, ushort numOfPoints)
+    private bool? ReadInputs(byte slaveId, ushort startAdd)
     {
         try
         {
-            return _bus.ReadInputs(slaveId, startAdd, numOfPoints);
+            return _bus.ReadInputs(slaveId, startAdd, 1)[0];
         }
         catch (Exception)
         {

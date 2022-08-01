@@ -13,7 +13,8 @@ public class ModuleField
     public int Id { get; set; }
 
     [Column("module_id")]
-    public int ModuleId { get; set; }
+    public byte ModuleId { get; set; }
+    public virtual Module Module { get; set; }
 
     [Column("field_name")]
     public string FieldName { get; set; }

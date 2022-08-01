@@ -1,4 +1,8 @@
-﻿using ReactiveUI;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Avalonia.Threading;
+using Flotomachine.Services;
+using ReactiveUI;
 
 namespace Flotomachine.ViewModels
 {
@@ -19,6 +23,33 @@ namespace Flotomachine.ViewModels
         public HomePanelControlViewModel(MainWindowViewModel mainWindowViewModel)
         {
             _mainWindowViewModel = mainWindowViewModel;
+            _mainWindowViewModel.ModBusService.DataCollected += ModBusServiceOnDataCollected;
+        }
+
+        private async void ModBusServiceOnDataCollected(List<ExperimentDataValue> data)
+        {
+            await Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                ExperimentDataValue temp;
+
+                temp = data.FirstOrDefault(p => p.ModuleFieldId == 1);
+                T1Value = temp == null ? "NULL" : temp.ModuleData.ToString();
+
+                temp = data.FirstOrDefault(p => p.ModuleFieldId == 2);
+                T2Value = temp == null ? "NULL" : temp.ModuleData.ToString();
+
+                temp = data.FirstOrDefault(p => p.ModuleFieldId == 3);
+                GradValue = temp == null ? "NULL" : temp.ModuleData.ToString();
+
+                temp = data.FirstOrDefault(p => p.ModuleFieldId == 4);
+                DavValue = temp == null ? "NULL" : temp.ModuleData.ToString();
+
+                temp = data.FirstOrDefault(p => p.ModuleFieldId == 7);
+                VesValue = temp == null ? "NULL" : temp.ModuleData.ToString();
+
+                temp = data.FirstOrDefault(p => p.ModuleFieldId == 8);
+                OborValue = temp == null ? "NULL" : temp.ModuleData.ToString();
+            });
         }
 
         public string T1Value
