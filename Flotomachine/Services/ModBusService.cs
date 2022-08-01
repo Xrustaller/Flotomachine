@@ -139,7 +139,7 @@ public class ModBusService
             {
                 case ModBusState.Wait:
                     {
-                        if (expInput == true)
+                        if (expInput == true && App.MainWindowViewModel.CurrentUser != null && App.MainWindowViewModel.CurrentUser.Root != false)
                         {
                             State = ModBusState.Experiment;
                             
