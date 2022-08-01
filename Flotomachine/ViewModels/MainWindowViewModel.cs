@@ -328,6 +328,7 @@ public class MainWindowViewModel : ViewModelBase
 
         CurrentUser = user;
     }
+
     private async void CardLoginButton(object parameter)
     {
         ReadCardWindow readCard = new ReadCardWindow();
@@ -396,6 +397,7 @@ public class MainWindowViewModel : ViewModelBase
         //GraphButtonIsVisible = true;
         SettingsButtonIsVisible = true;
         AdminButtonIsVisible = false;
+        HomeButton(null);
     }
 
     private void Closed(object parameter)
