@@ -3,10 +3,25 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
-    <StartupObject></StartupObject>
+    <StartupObject>Flotomachine.Program</StartupObject>
     <ApplicationIcon>Assets\Icon.ico</ApplicationIcon>
-    <AssemblyVersion>1.1.0.1</AssemblyVersion>
+	<Version>0.1.0-beta</Version>
     <FileVersion>1.1.0.1</FileVersion>
+    <AssemblyVersion>1.1.0.1</AssemblyVersion>
+    <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
+    <SignAssembly>False</SignAssembly>
+    <Copyright>Xrustaller</Copyright>
+    <AnalysisLevel>preview</AnalysisLevel>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>embedded</DebugType>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DebugType>none</DebugType>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
   </PropertyGroup>
 
   <ItemGroup>
@@ -94,7 +109,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Services\ModBusService\" />
     <Folder Include="Utility\Temp\" />
   </ItemGroup>
 
