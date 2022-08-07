@@ -325,7 +325,8 @@ public class MainWindowViewModel : ViewModelBase
             return;
         }
 
-        UserInfo = new InfoViewModel("Выполнен вход: " + user.Username, "#10FF10");
+        string name = string.IsNullOrEmpty(user.Name) ? user.Username : user.Name;
+        UserInfo = new InfoViewModel($"Выполнен вход: {name}", "#10FF10");
         LoginTextBox = "";
         PasswordTextBox = "";
         LoginBool = true;
@@ -351,7 +352,8 @@ public class MainWindowViewModel : ViewModelBase
             return;
         }
 
-        UserInfo = new InfoViewModel("Выполнен вход: " + user.Username, "#10FF10");
+        string name = string.IsNullOrEmpty(user.Name) ? user.Username : user.Name;
+        UserInfo = new InfoViewModel($"Выполнен вход: {name}", "#10FF10");
         LoginTextBox = "";
         PasswordTextBox = "";
         LoginBool = true;
@@ -421,7 +423,6 @@ public class MainWindowViewModel : ViewModelBase
 
     private void Test(object parameter)
     {
-        throw new Exception("jekghjkehgjwehgoikwrehgoiwhugoihwoikghwoikrghowikgh wkjghwojkgh wig weigh we gihwegih rw ghok wrg kwg hkwrok h khwg hiwg ihg wrhigwrh hk gwkhgp wqpguo  wpgp whpwiph gp iohwp ohijgpoijh j");
         TestText = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
         
     }
