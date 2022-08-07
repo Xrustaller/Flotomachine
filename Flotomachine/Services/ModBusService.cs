@@ -17,17 +17,17 @@ public enum ModBusState
     Experiment
 }
 
-public class ModBusService
+public static class ModBusService
 {
-    private string _serialPort;
-    private int _baudRate;
-    private ModBusState _state = ModBusState.Close;
+    private static string _serialPort;
+    private static int _baudRate;
+    private static ModBusState _state = ModBusState.Close;
 
-    public SerialPort SerialPort { get; private set; }
-    private ModbusSerialMaster _bus;
-    private bool _exit;
+    public static SerialPort SerialPort { get; private set; }
+    private static ModbusSerialMaster _bus;
+    private static bool _exit;
 
-    public ModBusState State
+    public static ModBusState State
     {
         get => _state;
         private set
@@ -40,25 +40,32 @@ public class ModBusService
     public static readonly int[] BaudRateList = { 1200, 4800, 9600, 19200, 38400, 57600, 115200 };
     //public readonly int[] PinRaspberryList = { 4, 5, 6, 12, 13, 17, 18, 22, 23, 24, 25, 26, 27 };
 
-    public event Action<ModBusState> StatusChanged;
-    public event Action<List<ExperimentDataValue>> DataCollected;
+    public static event Action<ModBusState> StatusChanged;
+    public static event Action<List<ExperimentDataValue>> DataCollected;
 
-    public readonly Thread Thread;
+    public static Thread Thread;
 
+    private static List<ModuleField> _fields;
+    private static readonly List<ExperimentDataValue> _datas = new List<ExperimentDataValue>();
 
-    private List<ModuleField> _fields;
-    private readonly List<ExperimentDataValue> _datas = new List<ExperimentDataValue>();
+    private static Experiment _experiment;
+    private static Timer _experimentTimer;
 
-    private Experiment _experiment;
-    private Timer _experimentTimer;
-
-    public ModBusService()
+    public static Exception Initialize()
     {
-        Thread = new Thread(ThisThread) { Name = "ModBusServise" };
-        Thread.Start();
+        try
+        {
+            Thread = new Thread(ThisThread) { Name = "ModBusServise" };
+            Thread.Start();
+            return null;
+        }
+        catch (Exception e)
+        {
+            return e;
+        }
     }
 
-    private void CreatePort()
+    private static void CreatePort()
     {
         _fields = DataBaseService.GetAllModulesFields();
 
@@ -95,7 +102,7 @@ public class ModBusService
         }
     }
 
-    private void ReadAllModules()
+    private static void ReadAllModules()
     {
         lock (_datas)
         {
@@ -112,7 +119,7 @@ public class ModBusService
         }
     }
 
-    private void ThisThread()
+    private static void ThisThread()
     {
         CreatePort();
 
@@ -173,21 +180,24 @@ public class ModBusService
         }
     }
 
-    private void TimerElapsed(object source, ElapsedEventArgs e)
+    private static void TimerElapsed(object source, ElapsedEventArgs e)
     {
         lock (_datas)
         {
-            var data = DataBaseService.AddExperimentData(_experiment);
-            DataBaseService.AddExperimentDataValues(data, _datas);
+            lock (_experiment)
+            {
+                ExperimentData data = DataBaseService.AddExperimentData(_experiment);
+                DataBaseService.AddExperimentDataValues(data, _datas);
+            }
         }
     }
 
-    public void Exit()
+    public static void Exit()
     {
         _exit = true;
     }
 
-    private ushort? ReadInputRegisters(byte slaveId, ushort startAdd)
+    private static ushort? ReadInputRegisters(byte slaveId, ushort startAdd)
     {
         try
         {
@@ -199,7 +209,7 @@ public class ModBusService
         }
     }
 
-    private bool? ReadInputs(byte slaveId, ushort startAdd)
+    private static bool? ReadInputs(byte slaveId, ushort startAdd)
     {
         try
         {
@@ -211,7 +221,7 @@ public class ModBusService
         }
     }
 
-    public void ModbusSerialRtuMasterWriteRegisters()
+    public static void ModbusSerialRtuMasterWriteRegisters()
     {
         using SerialPort port = new SerialPort("COM1");
         // configure serial port
@@ -232,7 +242,7 @@ public class ModBusService
         master.WriteMultipleRegisters(slaveId, startAddress, registers);
     }
 
-    public void ModbusSerialRtuMasterReadRegisters()
+    public static void ModbusSerialRtuMasterReadRegisters()
     {
         using SerialPort port = new SerialPort("COM1");
         // configure serial port
@@ -256,7 +266,7 @@ public class ModBusService
     /// <summary>
     ///     Write a 32 bit value.
     /// </summary>
-    public void ReadWrite32BitValue()
+    public static void ReadWrite32BitValue()
     {
         using SerialPort port = new SerialPort("COM1");
         // configure serial port

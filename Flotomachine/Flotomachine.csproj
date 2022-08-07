@@ -30,6 +30,7 @@
     <None Remove="Assets\camera.png" />
     <None Remove="Assets\Card.png" />
     <None Remove="Assets\Close.png" />
+    <None Remove="Assets\Database.png" />
     <None Remove="Assets\Gear_admin.png" />
     <None Remove="Assets\graph.png" />
     <None Remove="Assets\Home.png" />
@@ -83,6 +84,7 @@
     <AvaloniaResource Include="Assets\Camera.png" />
     <AvaloniaResource Include="Assets\Card.png" />
     <AvaloniaResource Include="Assets\Close.png" />
+    <AvaloniaResource Include="Assets\Database.png" />
     <AvaloniaResource Include="Assets\Gear.png" />
     <AvaloniaResource Include="Assets\Edit.png" />
     <AvaloniaResource Include="Assets\Gear_admin.png" />
@@ -103,7 +105,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Flotomachine.db">
+    <None Update="FlotomachineDefault.db">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

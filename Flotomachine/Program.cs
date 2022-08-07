@@ -1,6 +1,10 @@
 ﻿using Avalonia;
 using Avalonia.ReactiveUI;
 using System;
+using System.IO;
+using System.Threading;
+using Flotomachine.Services;
+using Flotomachine.Utility;
 
 namespace Flotomachine;
 internal class Program
@@ -8,13 +12,31 @@ internal class Program
     [STAThread]
     public static void Main(string[] args)
     {
+        Thread.CurrentThread.Name = "Main";
+
+        if (!Directory.Exists(App.MyDocumentPath))
+        {
+            Directory.CreateDirectory(App.MyDocumentPath);
+        }
+
+        if (!Directory.Exists(App.LogFolderPath))
+        {
+            Directory.CreateDirectory(App.LogFolderPath);
+        }
+
+        AppBuilder app = BuildAvaloniaApp();
+
         try
         {
-            BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+            app.StartWithClassicDesktopLifetime(args);
         }
         catch (Exception e)
         {
-            //TODO: Сделать генерацию логов после краша приложения.
+            LogManager.ErrorLog(e);
+        }
+        finally
+        {
+            ModBusService.Exit();
         }
     }
 

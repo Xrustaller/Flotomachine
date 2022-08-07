@@ -17,12 +17,12 @@ public class CardIdService : IDisposable
     private SpiDevice _spiDevice;
     private MfRc522 _mfrc522;
 
-    public CardIdService()
+    public CardIdService(int busId, int lineId, int clockFrequency, int pinReset = 22)
     {
-        _busId = App.Settings.Configuration.RfId.BusId;
-        _lineId = App.Settings.Configuration.RfId.LineId;
-        _clockFrequency = App.Settings.Configuration.RfId.ClockFrequencySpi;
-        _pinReset = 22;
+        _busId = busId;
+        _lineId = lineId;
+        _clockFrequency = clockFrequency;
+        _pinReset = pinReset;
     }
 
     public string CreateConnection() //было 5000000, надо уменьшить скорость

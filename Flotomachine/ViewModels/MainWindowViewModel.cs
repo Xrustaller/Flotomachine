@@ -5,6 +5,8 @@ using Flotomachine.View;
 using Flotomachine.View.Pages;
 using ReactiveUI;
 using System;
+using System.IO;
+using System.Runtime.InteropServices;
 using System.Windows.Input;
 using LabsPanelControl = Flotomachine.View.LabsPanelControl;
 using SettingsPanelControl = Flotomachine.View.SettingsPanelControl;
@@ -14,6 +16,10 @@ namespace Flotomachine.ViewModels;
 public class MainWindowViewModel : ViewModelBase
 {
     #region LoginForm
+
+    #region Services
+
+    #endregion
 
     #region Private
 
@@ -45,8 +51,6 @@ public class MainWindowViewModel : ViewModelBase
     #region PublicGetSet
 
     public event Action<User> UserChangedEvent;
-
-    public ModBusService ModBusService;
 
     // SingIn
     public bool CameraButtonIsVisible
@@ -185,10 +189,8 @@ public class MainWindowViewModel : ViewModelBase
 #endif
     }
 
-    public MainWindowViewModel(Settings settings)
+    public MainWindowViewModel(bool debug)
     {
-        ModBusService = new ModBusService();
-
         UserChangedEvent += RefreshButtons;
 
         CameraButtonClick = new DelegateCommand(CameraButton);
@@ -202,7 +204,9 @@ public class MainWindowViewModel : ViewModelBase
         CardLoginButtonClick = new DelegateCommand(CardLoginButton);
 
         OnClosed = new DelegateCommand(Closed);
-        
+
+        TestClick = new DelegateCommand(Test);
+
         HomeButtonIsVisible = true;
 
         HomeButton(null);
@@ -331,7 +335,7 @@ public class MainWindowViewModel : ViewModelBase
 
     private async void CardLoginButton(object parameter)
     {
-        ReadCardWindow readCard = new ReadCardWindow();
+        ReadCardWindow readCard = new ReadCardWindow(App.Settings.Configuration.RfId.BusId, App.Settings.Configuration.RfId.LineId, App.Settings.Configuration.RfId.ClockFrequencySpi);
         var result = await readCard.ShowDialog<byte[]>(App.MainWindow);
 
         if (result == null)
@@ -403,5 +407,22 @@ public class MainWindowViewModel : ViewModelBase
     private void Closed(object parameter)
     {
         ModBusService.Exit();
+    }
+
+    private string _testText;
+    public string TestText
+    {
+        get => _testText;
+        set => this.RaiseAndSetIfChanged(ref _testText, value);
+    }
+
+
+    public ICommand TestClick { get; }
+
+    private void Test(object parameter)
+    {
+        throw new Exception("jekghjkehgjwehgoikwrehgoiwhugoihwoikghwoikrghowikgh wkjghwojkgh wig weigh we gihwegih rw ghok wrg kwg hkwrok h khwg hiwg ihg wrhigwrh hk gwkhgp wqpguo  wpgp whpwiph gp iohwp ohijgpoijh j");
+        TestText = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+        
     }
 }

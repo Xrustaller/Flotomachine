@@ -7,19 +7,21 @@ using Flotomachine.View;
 using Flotomachine.ViewModels;
 using System;
 using System.IO;
+using System.Runtime.InteropServices;
 
 namespace Flotomachine;
 
 public partial class App : Application
 {
-#if DEBUG    
-    public static readonly JsonConfigurationProvider<Settings> Settings = new(Path.Join(Directory.GetCurrentDirectory(), "Flotomachine.config"));
-    //public static readonly JsonConfigurationProvider<Settings> Settings = new(Path.Join(@"D:\Programs\GitHub\Flotomachine", "Flotomachine.config"));
-#else
-    public static readonly JsonConfigurationProvider<Settings> Settings = new(Path.Join(Directory.GetCurrentDirectory(), "Flotomachine.config"));
-#endif
+    public static readonly string MyDocumentPath = GetDocumentPath();
+    public static readonly string LogFolderPath = Path.Join(GetDocumentPath(), "Logs");
+
+    public static readonly JsonConfigurationProvider<Settings> Settings = new(Path.Join(MyDocumentPath, "Flotomachine.config"));
+
     public static MainWindow MainWindow { get; private set; }
     public static MainWindowViewModel MainWindowViewModel { get; private set; }
+
+    private static string GetDocumentPath() => RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "Documents", "Flotomachine") : Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "Flotomachine");
 
     public override void Initialize()
     {
@@ -30,13 +32,22 @@ public partial class App : Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            if (DataBaseService.Initialize() != null)
+            Exception exceptionDb = DataBaseService.Initialize(MyDocumentPath);
+            if (exceptionDb != null)
             {
                 Console.WriteLine("Database service initialization error");
-
+                LogManager.ErrorLog(exceptionDb, "ErrorLog_InitDataBase");
             }
 
-            MainWindowViewModel = new MainWindowViewModel(Settings.Configuration);
+            Exception exceptionMb = ModBusService.Initialize();
+
+            if (exceptionMb != null)
+            {
+                Console.WriteLine("ModBus service initialization error");
+                LogManager.ErrorLog(exceptionDb, "ErrorLog_InitModBus");
+            }
+
+            MainWindowViewModel = new MainWindowViewModel(false);
             MainWindow = new MainWindow { DataContext = MainWindowViewModel };
             desktop.MainWindow = MainWindow;
         }

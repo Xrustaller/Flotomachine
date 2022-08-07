@@ -10,12 +10,16 @@ public static class DataBaseService
 {
     public static MainBaseContext DataBase { get; private set; }
 
-    public static Exception Initialize()
+    public static Exception Initialize(string path)
     {
-        string path = Directory.GetCurrentDirectory();
+        if (!File.Exists(Path.Join(path, App.Settings.Configuration.DataBase.FileName)))
+        {
+            File.Copy(Path.Join(Directory.GetCurrentDirectory(), "FlotomachineDefault.db"), Path.Join(path, App.Settings.Configuration.DataBase.FileName), true);
+        }
+
         try
         {
-            DataBase = new MainBaseContext(MainBaseContext.BuildDbContextOptionsSqlite("Data Source=" + Path.Join(path, "Flotomachine.db")));
+            DataBase = new MainBaseContext(MainBaseContext.BuildDbContextOptionsSqlite("Data Source=" + Path.Join(path, App.Settings.Configuration.DataBase.FileName)));
         }
         catch (Exception e)
         {

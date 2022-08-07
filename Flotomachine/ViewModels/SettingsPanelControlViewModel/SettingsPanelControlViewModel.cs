@@ -72,7 +72,7 @@ public class SettingsPanelControlViewModel : ViewModelBase
 
     private async void AddCard(object parameter)
     {
-        ReadCardWindow readCard = new();
+        ReadCardWindow readCard = new(App.Settings.Configuration.RfId.BusId, App.Settings.Configuration.RfId.LineId, App.Settings.Configuration.RfId.ClockFrequencySpi);
         byte[] result = await readCard.ShowDialog<byte[]>(App.MainWindow);
 
         if (result == null)
@@ -108,7 +108,7 @@ public class SettingsPanelControlViewModel : ViewModelBase
 
     private async void DeleteCard(object parameter)
     {
-        ReadCardWindow readCard = new ReadCardWindow();
+        ReadCardWindow readCard = new(App.Settings.Configuration.RfId.BusId, App.Settings.Configuration.RfId.LineId, App.Settings.Configuration.RfId.ClockFrequencySpi);
         var result = await readCard.ShowDialog<byte[]>(App.MainWindow);
 
         if (result == null)

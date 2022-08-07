@@ -23,7 +23,7 @@ namespace Flotomachine.ViewModels
         public HomePanelControlViewModel(MainWindowViewModel mainWindowViewModel)
         {
             _mainWindowViewModel = mainWindowViewModel;
-            _mainWindowViewModel.ModBusService.DataCollected += ModBusServiceOnDataCollected;
+            ModBusService.DataCollected += ModBusServiceOnDataCollected;
         }
 
         private async void ModBusServiceOnDataCollected(List<ExperimentDataValue> data)

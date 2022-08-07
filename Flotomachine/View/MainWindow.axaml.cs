@@ -1,10 +1,7 @@
+using System.Runtime.InteropServices;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Flotomachine.Services;
 
 namespace Flotomachine.View
 {
@@ -20,18 +17,7 @@ namespace Flotomachine.View
             AvaloniaXamlLoader.Load(this);
         }
 
-        protected override void OnClosed(EventArgs e)
-        {
-            base.OnClosed(e);
-        }
-
-        bool _full = false;
-
-        public void Full_OnClick(object sender, RoutedEventArgs e)
-        {
-            WindowState = _full ? WindowState.Maximized : WindowState.FullScreen;
-            _full = !_full;
-        }
+        public void Full_OnClick(object sender, RoutedEventArgs e) => WindowState = WindowState != WindowState.Maximized ? WindowState.Maximized : WindowState.FullScreen;
 
         private void Close_OnClick(object sender, RoutedEventArgs e)
         {

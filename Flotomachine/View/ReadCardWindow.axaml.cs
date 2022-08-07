@@ -14,6 +14,10 @@ namespace Flotomachine.View;
 public partial class ReadCardWindow : Window
 {
     private readonly Thread _thread;
+    
+    private readonly int _busId;
+    private readonly int _lineId;
+    private readonly int _clockFrequency;
 
     public ReadCardWindow()
     {
@@ -21,8 +25,19 @@ public partial class ReadCardWindow : Window
 #if DEBUG
         this.AttachDevTools();
 #endif
+    }
+
+    public ReadCardWindow(int busId, int lineId, int clockFrequency)
+    {
+        InitializeComponent();
+#if DEBUG
+        this.AttachDevTools();
+#endif
         _thread = new Thread(ReadCard);
         _thread.Start();
+        _busId = busId;
+        _lineId = lineId;
+        _clockFrequency = clockFrequency;
     }
 
     private void InitializeComponent()
@@ -56,7 +71,7 @@ public partial class ReadCardWindow : Window
         return;
 #endif
 #pragma warning disable CS0162
-        using CardIdService service = new CardIdService();
+        using CardIdService service = new CardIdService(_busId, _lineId, _clockFrequency);
         string version = service.CreateConnection();
 
         await Dispatcher.UIThread.InvokeAsync(() =>
