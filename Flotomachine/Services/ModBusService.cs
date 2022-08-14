@@ -46,7 +46,7 @@ public static class ModBusService
     public static Thread Thread;
 
     private static List<ModuleField> _fields;
-    private static readonly List<ExperimentDataValue> _datas = new List<ExperimentDataValue>();
+    private static readonly List<ExperimentDataValue> _datas = new();
 
     private static Experiment _experiment;
     private static Timer _experimentTimer;

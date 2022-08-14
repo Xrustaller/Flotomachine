@@ -6,12 +6,17 @@ using System.Windows.Input;
 using DynamicData;
 using Flotomachine.Utility;
 using ReactiveUI;
+using SixLabors.ImageSharp.ColorSpaces;
 
 namespace Flotomachine.ViewModels;
 
 public class LabsPanelControlViewModel : ViewModelBase
 {
     private readonly MainWindowViewModel _mainWindowViewModel;
+
+#if DEBUG
+    public Dictionary<int, List<ExpObj>> DebugTestObj = new();
+#endif
 
     private int _experimentSelected;
     private bool _visibleExperiment;
@@ -49,12 +54,34 @@ public class LabsPanelControlViewModel : ViewModelBase
     public LabsPanelControlViewModel(MainWindowViewModel mainWindowViewModel)
     {
         _mainWindowViewModel = mainWindowViewModel;
+
         ExportExcelExperimentButtonClick = new DelegateCommand(ExportExcelExperiment);
         PrintExperimentButtonClick = new DelegateCommand(PrintExperiment);
         DeleteExperimentButtonClick = new DelegateCommand(DeleteExperiment);
 
+#if DEBUG
+        for (int i = 1; i <= 50; i++)
+        {
+            List<ExpObj> items = new();
+            for (int x = 1; x <= 50; x++)
+            {
+                items.Add(new ExpObj(DateTime.Now.ToLongTimeString(), DateTime.Now.Minute.ToString() + ":" + x, DateTime.Now.Minute.ToString() + ":" + i, "25", "750", (x + i).ToString(), "0"));
+            }
+            DebugTestObj.Add(i, items);
+        }
+
+        ExperimentCollection.Clear();
+        foreach (var item in DebugTestObj)
+        {
+            ExperimentCollection.Add(item.Key);
+        }
+
+#else
         ExperimentCollection.Clear();
         ExperimentCollection.AddRange(DataBaseService.GetExperiments(_mainWindowViewModel.CurrentUser));
+#endif
+
+
     }
 
     public ICommand ExportExcelExperimentButtonClick { get; }
@@ -65,10 +92,18 @@ public class LabsPanelControlViewModel : ViewModelBase
     {
         VisibleExperiment = true;
         Experiment.Clear();
+#if DEBUG
+        foreach (var item in DebugTestObj[experimentId])
+        {
+            Experiment.Add(item);
+        }
+#else
         foreach (var item in DataBaseService.GetExperimentData(experimentId))
         {
             Experiment.Add(new ExpObj(item));
         }
+#endif
+
     }
 
     public void ExportExcelExperiment(object obj)

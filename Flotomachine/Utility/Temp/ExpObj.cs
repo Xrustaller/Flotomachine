@@ -19,6 +19,17 @@ public class ExpObj
 
     }
 
+    public ExpObj(string time, string timer1, string timer2, string temp, string press, string scale, string oboroti)
+    {
+        Time = time;
+        Timer1 = timer1;
+        Timer2 = timer2;
+        Temperature = temp;
+        Pres = press;
+        Scale = scale;
+        Oboroti = oboroti;
+    }
+
     public ExpObj(ExperimentData experimentData)
     {
         ExperimentDataValue temp;
