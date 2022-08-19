@@ -1,6 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Flotomachine.Services;
 using System.Linq;
-using Flotomachine.Services;
 
 namespace Flotomachine.Utility;
 
@@ -41,7 +40,7 @@ public class ExpObj
 
         temp = data.FirstOrDefault(p => p.ModuleFieldId == 2);
         Timer2 = temp == null ? "NULL" : temp.ModuleData.ToString();
-        
+
         temp = data.FirstOrDefault(p => p.ModuleFieldId == 3);
         Temperature = temp == null ? "NULL" : temp.ModuleData.ToString();
 

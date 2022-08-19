@@ -1,12 +1,9 @@
-﻿using Flotomachine.Services;
+﻿using Flotomachine.Utility;
+using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
-using DynamicData;
-using Flotomachine.Utility;
-using ReactiveUI;
-using SixLabors.ImageSharp.ColorSpaces;
 
 namespace Flotomachine.ViewModels;
 
@@ -31,7 +28,7 @@ public class LabsPanelControlViewModel : ViewModelBase
         {
             _experimentSelected = value;
             ExperimentSelectedChanged(value);
-        } 
+        }
     }
 
     public ObservableCollection<ExpObj> Experiment
@@ -80,8 +77,6 @@ public class LabsPanelControlViewModel : ViewModelBase
         ExperimentCollection.Clear();
         ExperimentCollection.AddRange(DataBaseService.GetExperiments(_mainWindowViewModel.CurrentUser));
 #endif
-
-
     }
 
     public ICommand ExportExcelExperimentButtonClick { get; }

@@ -6,6 +6,7 @@ using Flotomachine.View.Pages;
 using ReactiveUI;
 using System;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Input;
 using LabsPanelControl = Flotomachine.View.LabsPanelControl;
@@ -423,7 +424,7 @@ public class MainWindowViewModel : ViewModelBase
 
     private void Test(object parameter)
     {
-        TestText = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-        
+        //TestText = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+
     }
 }

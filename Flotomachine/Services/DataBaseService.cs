@@ -8,7 +8,7 @@ namespace Flotomachine.Services;
 
 public static class DataBaseService
 {
-    public static MainBaseContext DataBase { get; private set; }
+    private static MainBaseContext DataBase { get; set; }
 
     public static Exception Initialize(string path)
     {
@@ -27,6 +27,34 @@ public static class DataBaseService
         }
 
         return null;
+    }
+
+    public static Exception Get(Action<MainBaseContext> action)
+    {
+        try
+        {
+            action.Invoke(DataBase);
+            return null;
+        }
+        catch (Exception e)
+        {
+            return e;
+        }
+    }
+
+    public static Exception GetAndSet(Action<MainBaseContext> action)
+    {
+        try
+        {
+            action.Invoke(DataBase);
+            DataBase.SaveChanges();
+            return null;
+        }
+        catch (Exception e)
+        {
+           // DataBase.
+            return e;
+        }
     }
 
     [CanBeNull]

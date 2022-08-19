@@ -11,7 +11,7 @@ public class CardId
 
     [Column("user")]
     public int UserId { get; set; }
-    public User User { get; set; }
+    public virtual User User { get; set; }
 
     [Column("card_bytes")]
     public byte[] CardBytes { get; set; }
