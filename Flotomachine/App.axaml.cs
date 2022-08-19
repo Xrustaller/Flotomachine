@@ -36,7 +36,7 @@ public partial class App : Application
             if (exceptionDb != null)
             {
                 Console.WriteLine("Database service initialization error");
-                LogManager.ErrorLog(exceptionDb, "ErrorLog_InitDataBase");
+                LogManager.ErrorLog(exceptionDb, "ErrorLog_InitDataBaseService");
             }
 
             Exception exceptionMb = ModBusService.Initialize();
@@ -44,8 +44,10 @@ public partial class App : Application
             if (exceptionMb != null)
             {
                 Console.WriteLine("ModBus service initialization error");
-                LogManager.ErrorLog(exceptionDb, "ErrorLog_InitModBus");
+                LogManager.ErrorLog(exceptionDb, "ErrorLog_InitModBusService");
             }
+
+            UpdateService.Initialize(Settings.Configuration);
 
             MainWindowViewModel = new MainWindowViewModel(false);
             MainWindow = new MainWindow { DataContext = MainWindowViewModel };

@@ -24,6 +24,7 @@ public class Settings : IJsonConfiguration<Settings>
         {
             Main = new MainSettings
             {
+                UpdateJsonUrl = "https://raw.githubusercontent.com/Xrustaller/Flotomachine/master/update.json",
                 MainTimerModuleId = 1,
             },
             RfId = new RfIdSettings
@@ -46,8 +47,20 @@ public class Settings : IJsonConfiguration<Settings>
 }
 
 [Serializable]
+public class UpdateFile
+{
+    public Version Version { get; set; }
+
+    public UpdateFile()
+    {
+
+    }
+}
+
+[Serializable]
 public class MainSettings
 {
+    public string UpdateJsonUrl { get; set; }
     public byte MainTimerModuleId { get; set; }
 
     public MainSettings()

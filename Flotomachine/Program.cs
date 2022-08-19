@@ -7,6 +7,7 @@ using Flotomachine.Services;
 using Flotomachine.Utility;
 
 namespace Flotomachine;
+
 internal class Program
 {
     [STAThread]
