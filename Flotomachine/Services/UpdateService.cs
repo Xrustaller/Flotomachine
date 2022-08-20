@@ -11,7 +11,10 @@ namespace Flotomachine.Services;
 public static class UpdateService
 {
     public static bool NeedUpdate { get; private set; } = false;
-    [CanBeNull] public static Version NewVersion { get; private set; }
+
+    [CanBeNull]
+    public static Version NewVersion { get; private set; }
+
     public static Exception Initialize(Settings settingsConfiguration)
     {
         try
@@ -19,11 +22,14 @@ public static class UpdateService
             using HttpClient client = new();
             Task<string> e = client.GetStringAsync(settingsConfiguration.Main.UpdateJsonUrl);
             e.Wait();
+
             Version gitVersion = JsonConvert.DeserializeObject<UpdateFile>(e.Result)?.Version;
             if (gitVersion == null)
             {
                 return new Exception("Git file empty");
             }
+
+            NewVersion = gitVersion;
 
             if (Assembly.GetEntryAssembly()?.GetName().Version >= gitVersion)
             {
@@ -31,7 +37,6 @@ public static class UpdateService
             }
 
             NeedUpdate = true;
-            NewVersion = gitVersion;
             return null;
 
         }

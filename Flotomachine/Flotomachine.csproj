@@ -12,6 +12,7 @@
     <SignAssembly>False</SignAssembly>
     <Copyright>Xrustaller</Copyright>
     <AnalysisLevel>preview</AnalysisLevel>
+    <Authors>Xrustaller</Authors>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

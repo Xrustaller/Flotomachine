@@ -206,6 +206,10 @@ public class MainWindowViewModel : ViewModelBase
 
         OnClosed = new DelegateCommand(Closed);
 
+        if (debug)
+        {
+
+        }
         TestClick = new DelegateCommand(Test);
 
         HomeButtonIsVisible = true;
@@ -424,6 +428,8 @@ public class MainWindowViewModel : ViewModelBase
 
     private void Test(object parameter)
     {
+        var win = new UpdateWindow(new Window());
+        win.Show();
         //TestText = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
 
     }

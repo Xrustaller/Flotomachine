@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
+using Flotomachine.Services;
 
 namespace Flotomachine.ViewModels;
 
@@ -75,7 +76,10 @@ public class LabsPanelControlViewModel : ViewModelBase
 
 #else
         ExperimentCollection.Clear();
-        ExperimentCollection.AddRange(DataBaseService.GetExperiments(_mainWindowViewModel.CurrentUser));
+        foreach (int item in DataBaseService.GetExperiments(_mainWindowViewModel.CurrentUser))
+        {
+            ExperimentCollection.Add(item);
+        }
 #endif
     }
 
