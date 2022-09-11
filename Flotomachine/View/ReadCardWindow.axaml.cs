@@ -14,7 +14,7 @@ namespace Flotomachine.View;
 public partial class ReadCardWindow : Window
 {
     private readonly Thread _thread;
-    
+
     private readonly int _busId;
     private readonly int _lineId;
     private readonly int _clockFrequency;

@@ -130,7 +130,7 @@ public static class ModBusService
                 CreatePort();
             }
 
-            
+
 
             bool? expInput = ReadInputs(App.Settings.Configuration.Main.MainTimerModuleId, 7);
 
@@ -149,7 +149,7 @@ public static class ModBusService
                         if (expInput == true && App.MainWindowViewModel.CurrentUser != null && App.MainWindowViewModel.CurrentUser.Root != true)
                         {
                             State = ModBusState.Experiment;
-                            
+
                             ushort timer = ReadInputRegisters(App.Settings.Configuration.Main.MainTimerModuleId, 1) ?? 3;
                             _experiment = DataBaseService.CreateExperiment(App.MainWindowViewModel.CurrentUser, timer);
 

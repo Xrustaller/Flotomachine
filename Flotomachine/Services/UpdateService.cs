@@ -1,10 +1,9 @@
 ﻿using Flotomachine.Utility;
-using System;
-using System.Net.Http;
-using System.Reflection;
-using System.Threading.Tasks;
 using JetBrains.Annotations;
-using Newtonsoft.Json;
+using System;
+using System.IO;
+using System.Reflection;
+using System.Runtime.InteropServices;
 
 namespace Flotomachine.Services;
 
@@ -15,35 +14,97 @@ public static class UpdateService
     [CanBeNull]
     public static Version NewVersion { get; private set; }
 
+    private static string _fileUrl = null;
+
     public static Exception Initialize(Settings settingsConfiguration)
     {
-        try
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
         {
-            using HttpClient client = new();
-            Task<string> e = client.GetStringAsync(settingsConfiguration.Main.UpdateJsonUrl);
-            e.Wait();
-
-            Version gitVersion = JsonConvert.DeserializeObject<UpdateFile>(e.Result)?.Version;
-            if (gitVersion == null)
+            try
             {
-                return new Exception("Git file empty");
-            }
+                UpdateFile json = HttpHelper.GetJson<UpdateFile>(settingsConfiguration.Main.UpdateJsonUrl);
+                Version gitVersion = json.Version;
+                if (gitVersion == null)
+                {
+                    return new Exception("Git file empty");
+                }
 
-            NewVersion = gitVersion;
+                NewVersion = gitVersion;
 
-            if (Assembly.GetEntryAssembly()?.GetName().Version >= gitVersion)
-            {
+                if (Assembly.GetEntryAssembly()?.GetName().Version >= gitVersion)
+                {
+#if !RP_DEBUG
+                    return null;
+#endif
+                }
+
+                NeedUpdate = true;
+
+                _fileUrl = GetLatestDebFileUrl(settingsConfiguration.Main.UpdateFileUrl, gitVersion);
                 return null;
+
             }
-
-            NeedUpdate = true;
-            return null;
-
+            catch (Exception e)
+            {
+                return e;
+            }
         }
-        catch (Exception e)
+        
+        if(RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
-            return e;
+            try
+            {
+                UpdateFile json = HttpHelper.GetJson<UpdateFile>(settingsConfiguration.Main.UpdateJsonUrl);
+                Version gitVersion = json.Version;
+                if (gitVersion == null)
+                {
+                    return new Exception("Git file empty");
+                }
+
+                NewVersion = gitVersion;
+
+                if (Assembly.GetEntryAssembly()?.GetName().Version >= gitVersion)
+                {
+#if !DEBUG
+                    return null;
+#endif
+                }
+
+                NeedUpdate = true;
+
+                _fileUrl = GetLatestDebFileUrl(settingsConfiguration.Main.UpdateFileUrl, gitVersion);
+                return null;
+
+            }
+            catch (Exception e)
+            {
+                return e;
+            }
         }
+
+        return null;
     }
 
+    public static string DownloadLatestReleaseFile()
+    {
+        string name = Path.Join(App.DownloadPath, GetLatestDebFileName(NewVersion));
+        HttpHelper.DownloadFile(_fileUrl, name);
+        return name;
+    }
+
+    private static string GetLatestDebFileUrl(string gitUrl, Version ver) => gitUrl + GetLatestDebFileName(ver);
+
+    private static string GetLatestDebFileName(Version ver) => $"Flotomachine.{ver.ToShortString()}.linux-arm.deb";
+}
+
+
+[Serializable]
+public class UpdateFile
+{
+    public Version Version { get; set; }
+
+    public UpdateFile()
+    {
+
+    }
 }

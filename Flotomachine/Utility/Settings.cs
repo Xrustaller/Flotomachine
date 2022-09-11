@@ -5,63 +5,26 @@ namespace Flotomachine.Utility;
 [Serializable]
 public class Settings : IJsonConfiguration<Settings>
 {
-    public MainSettings Main { get; set; }
-    public RfIdSettings RfId { get; set; }
-    public SerialSettings Serial { get; set; }
-    public DatabaseSettings DataBase { get; set; }
+    public MainSettings Main { get; set; } = new();
+    public RfIdSettings RfId { get; set; } = new();
+    public SerialSettings Serial { get; set; } = new();
+    public DatabaseSettings DataBase { get; set; } = new();
 
     public Settings()
     {
-        Main = new MainSettings();
-        RfId = new RfIdSettings();
-        Serial = new SerialSettings();
-        DataBase = new DatabaseSettings();
-    }
-
-    public Settings DefaultConfig()
-    {
-        return new Settings
-        {
-            Main = new MainSettings
-            {
-                UpdateJsonUrl = "https://raw.githubusercontent.com/Xrustaller/Flotomachine/master/update.json",
-                MainTimerModuleId = 1,
-            },
-            RfId = new RfIdSettings
-            {
-                BusId = 0,
-                LineId = 0,
-                ClockFrequencySpi = 1_000_000,
-            },
-            Serial = new SerialSettings
-            {
-                Port = "COM0",
-                BaudRate = 9600,
-            },
-            DataBase = new DatabaseSettings
-            {
-                FileName = "Flotomachine.db"
-            }
-        };
-    }
-}
-
-[Serializable]
-public class UpdateFile
-{
-    public Version Version { get; set; }
-
-    public UpdateFile()
-    {
 
     }
+
+    public Settings DefaultConfig() => new();
 }
 
 [Serializable]
 public class MainSettings
 {
-    public string UpdateJsonUrl { get; set; }
-    public byte MainTimerModuleId { get; set; }
+    public string UpdateJsonUrl { get; set; } = "https://raw.githubusercontent.com/Xrustaller/Flotomachine/master/update.json";
+    public string UpdateFileUrl { get; set; } = "https://github.com/Xrustaller/Flotomachine/releases/latest/download/";
+    public string CamIp { get; set; } = "192.1.1.10";
+    public byte MainTimerModuleId { get; set; } = 1;
 
     public MainSettings()
     {
@@ -72,9 +35,9 @@ public class MainSettings
 [Serializable]
 public class RfIdSettings
 {
-    public int BusId { get; set; }
-    public int LineId { get; set; }
-    public int ClockFrequencySpi { get; set; }
+    public int BusId { get; set; } = 0;
+    public int LineId { get; set; } = 0;
+    public int ClockFrequencySpi { get; set; } = 1_000_000;
 
     public RfIdSettings()
     {
@@ -85,8 +48,8 @@ public class RfIdSettings
 [Serializable]
 public class SerialSettings
 {
-    public string Port { get; set; }
-    public int BaudRate { get; set; }
+    public string Port { get; set; } = "COM0";
+    public int BaudRate { get; set; } = 9600;
 
     public SerialSettings()
     {
@@ -97,7 +60,7 @@ public class SerialSettings
 [Serializable]
 public class DatabaseSettings
 {
-    public string FileName { get; set; }
+    public string FileName { get; set; } = "Flotomachine.db";
 
     public DatabaseSettings()
     {

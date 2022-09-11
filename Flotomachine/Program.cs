@@ -1,10 +1,10 @@
 ﻿using Avalonia;
 using Avalonia.ReactiveUI;
+using Flotomachine.Services;
+using Flotomachine.Utility;
 using System;
 using System.IO;
 using System.Threading;
-using Flotomachine.Services;
-using Flotomachine.Utility;
 
 namespace Flotomachine;
 
@@ -23,6 +23,11 @@ internal class Program
         if (!Directory.Exists(App.LogFolderPath))
         {
             Directory.CreateDirectory(App.LogFolderPath);
+        }
+
+        if (!Directory.Exists(App.DownloadPath))
+        {
+            Directory.CreateDirectory(App.DownloadPath);
         }
 
         AppBuilder app = BuildAvaloniaApp();

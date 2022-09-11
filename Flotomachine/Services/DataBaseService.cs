@@ -52,7 +52,7 @@ public static class DataBaseService
         }
         catch (Exception e)
         {
-           // DataBase.
+            // DataBase.
             return e;
         }
     }

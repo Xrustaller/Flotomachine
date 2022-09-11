@@ -1,9 +1,10 @@
-﻿using System.Reflection;
-using System.Windows.Input;
+﻿using System.Diagnostics;
 using Avalonia.Controls;
 using Flotomachine.Services;
 using Flotomachine.Utility;
 using ReactiveUI;
+using System.Reflection;
+using System.Windows.Input;
 
 namespace Flotomachine.ViewModels;
 
@@ -47,13 +48,17 @@ public class UpdateWindowViewModel : ViewModelBase
 
     private void Download(object obj)
     {
-
-
+        string path = UpdateService.DownloadLatestReleaseFile();
+        Process proc = new Process();
+        proc.StartInfo.FileName = "bash";
+        proc.StartInfo.Arguments = $"-c \"sudo dpkg -i {path}; Flotomachine; sleep 20\"";
+        proc.StartInfo.RedirectStandardOutput = true;
+        proc.Start();
         _mainWindow.Close();
     }
 
     private void HoldOver(object obj)
     {
-        _updateWindow.Close(); 
+        _updateWindow.Close();
     }
 }

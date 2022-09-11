@@ -1,6 +1,4 @@
-﻿using ReactiveUI;
-
-namespace Flotomachine.ViewModels
+﻿namespace Flotomachine.ViewModels
 {
     public class GraphPanelControlViewModel : ViewModelBase
     {
@@ -13,6 +11,6 @@ namespace Flotomachine.ViewModels
         {
             _mainWindowViewModel = mainWindowViewModel;
         }
-        
+
     }
 }

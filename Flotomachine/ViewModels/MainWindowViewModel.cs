@@ -1,13 +1,12 @@
 ﻿using Avalonia.Controls;
+using Avalonia.Threading;
 using Flotomachine.Services;
 using Flotomachine.Utility;
 using Flotomachine.View;
 using Flotomachine.View.Pages;
 using ReactiveUI;
 using System;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices;
+using System.Timers;
 using System.Windows.Input;
 using LabsPanelControl = Flotomachine.View.LabsPanelControl;
 using SettingsPanelControl = Flotomachine.View.SettingsPanelControl;
@@ -23,6 +22,9 @@ public class MainWindowViewModel : ViewModelBase
     #endregion
 
     #region Private
+
+    private readonly Window _mainWindow;
+    private Timer _timer;
 
     private bool _cameraButtonIsVisible;
     private bool _homeButtonIsVisible;
@@ -190,8 +192,9 @@ public class MainWindowViewModel : ViewModelBase
 #endif
     }
 
-    public MainWindowViewModel(bool debug)
+    public MainWindowViewModel(Window mainWindow)
     {
+        _mainWindow = mainWindow;
         UserChangedEvent += RefreshButtons;
 
         CameraButtonClick = new DelegateCommand(CameraButton);
@@ -206,15 +209,31 @@ public class MainWindowViewModel : ViewModelBase
 
         OnClosed = new DelegateCommand(Closed);
 
-        if (debug)
-        {
-
-        }
         TestClick = new DelegateCommand(Test);
+
+        if (UpdateService.NeedUpdate)
+        {
+            _timer = new Timer(15 * 1000);
+            _timer.Elapsed += CheckUpdate;
+            _timer.AutoReset = false;
+            _timer.Start();
+        }
 
         HomeButtonIsVisible = true;
 
         HomeButton(null);
+
+        TestText = $"{UpdateService.NeedUpdate} - {UpdateService.NewVersion.ToShortString()}";
+    }
+
+    private async void CheckUpdate(object sender, ElapsedEventArgs e)
+    {
+        _timer.Stop();
+        await Dispatcher.UIThread.InvokeAsync(() =>
+        {
+            UpdateWindow win = new(_mainWindow);
+            win.ShowDialog(_mainWindow);
+        });
     }
 
     private void CameraButton(object parameter)
@@ -369,7 +388,7 @@ public class MainWindowViewModel : ViewModelBase
     private void RefreshButtons(User user)
     {
         MainContentControl = null;
-        
+
         if (user == null) // Если пользователь не выбран
         {
             //CameraButtonIsVisible = true;
@@ -417,6 +436,7 @@ public class MainWindowViewModel : ViewModelBase
     }
 
     private string _testText;
+
     public string TestText
     {
         get => _testText;

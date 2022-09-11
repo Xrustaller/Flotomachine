@@ -5,17 +5,23 @@
     <TargetFramework>net6.0</TargetFramework>
     <StartupObject>Flotomachine.Program</StartupObject>
     <ApplicationIcon>Assets\Icon.ico</ApplicationIcon>
-	<Version>0.1.1</Version>
+	<Version>0.1.2</Version>
     <FileVersion>0.1.1.1</FileVersion>
-    <AssemblyVersion>0.1.1.1</AssemblyVersion>
+    <AssemblyVersion>0.1.2</AssemblyVersion>
     <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
     <SignAssembly>False</SignAssembly>
     <Copyright>Xrustaller</Copyright>
     <AnalysisLevel>preview</AnalysisLevel>
     <Authors>Xrustaller</Authors>
+    <Configurations>Debug;Release;RP_Debug</Configurations>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>embedded</DebugType>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RP_Debug|AnyCPU'">
     <DebugType>embedded</DebugType>
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
   </PropertyGroup>

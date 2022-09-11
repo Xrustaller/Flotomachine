@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Avalonia.Threading;
+﻿using Avalonia.Threading;
 using Flotomachine.Services;
 using ReactiveUI;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Flotomachine.ViewModels
 {

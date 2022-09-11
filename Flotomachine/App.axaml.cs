@@ -14,6 +14,7 @@ namespace Flotomachine;
 public partial class App : Application
 {
     public static readonly string MyDocumentPath = GetDocumentPath();
+    public static readonly string DownloadPath = Path.Join(GetDocumentPath(), "Download");
     public static readonly string LogFolderPath = Path.Join(GetDocumentPath(), "Logs");
 
     public static readonly JsonConfigurationProvider<Settings> Settings = new(Path.Join(MyDocumentPath, "Flotomachine.config"));
@@ -49,8 +50,10 @@ public partial class App : Application
 
             UpdateService.Initialize(Settings.Configuration);
 
-            MainWindowViewModel = new MainWindowViewModel(false);
-            MainWindow = new MainWindow { DataContext = MainWindowViewModel };
+            MainWindow = new MainWindow();
+            MainWindowViewModel = new MainWindowViewModel(MainWindow);
+            MainWindow.DataContext = MainWindowViewModel;
+
             desktop.MainWindow = MainWindow;
         }
 
