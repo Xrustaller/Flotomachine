@@ -11,6 +11,7 @@ public class AdminPanelControlViewModel : ViewModelBase
 
     #region Private
 
+    private string _workDirectory;
     private LoginPassViewModel _changePasswordViewModel;
     private LoginPassViewModel _registerUserViewModel;
     private RfidAdminSettingsViewModel _rfidAdminSettingsViewModel;
@@ -21,6 +22,12 @@ public class AdminPanelControlViewModel : ViewModelBase
     #endregion
 
     #region PublicGetSet
+
+    public string WorkDirectory
+    {
+        get => _workDirectory;
+        set => this.RaiseAndSetIfChanged(ref _workDirectory, value);
+    }
 
     public LoginPassViewModel ChangePasswordViewModel
     {
@@ -105,6 +112,8 @@ public class AdminPanelControlViewModel : ViewModelBase
         {
             UserList.Add(item);
         }
+
+        WorkDirectory = App.MyDocumentPath;
     }
 
     private void RegisterUser(object parameter)

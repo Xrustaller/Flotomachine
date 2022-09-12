@@ -49,9 +49,9 @@ public class UpdateWindowViewModel : ViewModelBase
     private void Download(object obj)
     {
         string path = UpdateService.DownloadLatestReleaseFile();
-        Process proc = new Process();
+        Process proc = new();
         proc.StartInfo.FileName = "bash";
-        proc.StartInfo.Arguments = $"-c \"sudo dpkg -i {path}; echo Обновление завершено запустите программу; sleep 15\"";
+        proc.StartInfo.Arguments = $"-c \"sudo dpkg -i {path}; sleep 15; Flotomachine\"";
         proc.StartInfo.UseShellExecute = false;
         proc.StartInfo.RedirectStandardOutput = true;
         proc.Start();

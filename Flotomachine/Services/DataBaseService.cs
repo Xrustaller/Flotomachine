@@ -9,20 +9,19 @@ namespace Flotomachine.Services;
 
 public static class DataBaseService
 {
-    private static string GetDefaultDatabaseUrl(string gitUrl) => gitUrl + $"FlotomachineDefault.db";
-
     private static MainBaseContext DataBase { get; set; }
 
     public static Exception Initialize(string path)
     {
-        if (!File.Exists(Path.Join(path, App.Settings.Configuration.DataBase.FileName)))
+        string fullPath = Path.Join(path, App.Settings.Configuration.DataBase.FileName);
+        if (!File.Exists(fullPath))
         {
-            HttpHelper.DownloadFile(GetDefaultDatabaseUrl(App.Settings.Configuration.Main.UpdateFileUrl), Path.Join(App.MyDocumentPath, "FlotomachineDefault.db"));
+            HttpHelper.DownloadFile(App.Settings.Configuration.Main.DefaultDataBaseUrl, fullPath);
         }
 
         try
         {
-            DataBase = new MainBaseContext(MainBaseContext.BuildDbContextOptionsSqlite("Data Source=" + Path.Join(path, App.Settings.Configuration.DataBase.FileName)));
+            DataBase = new MainBaseContext(MainBaseContext.BuildDbContextOptionsSqlite("Data Source=" + fullPath));
         }
         catch (Exception e)
         {

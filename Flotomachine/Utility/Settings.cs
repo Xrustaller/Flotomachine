@@ -22,6 +22,7 @@ public class Settings : IJsonConfiguration<Settings>
 public class MainSettings
 {
     public string UpdateJsonUrl { get; set; } = "https://raw.githubusercontent.com/Xrustaller/Flotomachine/master/update.json";
+    public string DefaultDataBaseUrl { get; set; } = "https://raw.githubusercontent.com/Xrustaller/Flotomachine/master/FlotomachineDefault.db";
     public string UpdateFileUrl { get; set; } = "https://github.com/Xrustaller/Flotomachine/releases/latest/download/";
     public string CamIp { get; set; } = "192.1.1.10";
     public byte MainTimerModuleId { get; set; } = 1;

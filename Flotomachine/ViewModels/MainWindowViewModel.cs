@@ -223,7 +223,7 @@ public class MainWindowViewModel : ViewModelBase
 
         HomeButton(null);
 
-        TestText = $"{UpdateService.NeedUpdate} - {UpdateService.NewVersion.ToShortString()}";
+        //TestText = $"{UpdateService.NeedUpdate} - {UpdateService.NewVersion.ToShortString()}";
     }
 
     private async void CheckUpdate(object sender, ElapsedEventArgs e)
