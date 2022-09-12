@@ -32,8 +32,8 @@ public class UpdateWindowViewModel : ViewModelBase
 
     public UpdateWindowViewModel()
     {
-        CurrentVersion = "Текущая: v1.0.0";
-        NewVersion = "Новая версия: v1.0.0";
+        CurrentVersion = "Текущая: ERROR";
+        NewVersion = "Новая версия: ERROR";
     }
 
     public UpdateWindowViewModel(Window window, Window thisWindow)
@@ -51,7 +51,8 @@ public class UpdateWindowViewModel : ViewModelBase
         string path = UpdateService.DownloadLatestReleaseFile();
         Process proc = new Process();
         proc.StartInfo.FileName = "bash";
-        proc.StartInfo.Arguments = $"-c \"sudo dpkg -i {path}; Flotomachine; sleep 20\"";
+        proc.StartInfo.Arguments = $"-c \"sudo dpkg -i {path}; echo Обновление завершено запустите программу; sleep 15\"";
+        proc.StartInfo.UseShellExecute = false;
         proc.StartInfo.RedirectStandardOutput = true;
         proc.Start();
         _mainWindow.Close();

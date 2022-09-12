@@ -6,7 +6,7 @@
     <StartupObject>Flotomachine.Program</StartupObject>
     <ApplicationIcon>Assets\Icon.ico</ApplicationIcon>
 	<Version>0.1.2</Version>
-    <FileVersion>0.1.1.1</FileVersion>
+    <FileVersion>0.1.2</FileVersion>
     <AssemblyVersion>0.1.2</AssemblyVersion>
     <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
     <SignAssembly>False</SignAssembly>
@@ -48,6 +48,7 @@
     <None Remove="Assets\Out.png" />
     <None Remove="Assets\Transport.png" />
     <None Remove="Assets\Turn.png" />
+    <None Remove="FlotomachineDefault.db" />
   </ItemGroup>
 
   <ItemGroup>
@@ -109,12 +110,6 @@
 
   <ItemGroup>
     <Content Include="Assets\Icon.ico" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="FlotomachineDefault.db">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
   <ItemGroup>

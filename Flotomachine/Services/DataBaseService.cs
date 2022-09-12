@@ -3,18 +3,21 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Flotomachine.Utility;
 
 namespace Flotomachine.Services;
 
 public static class DataBaseService
 {
+    private static string GetDefaultDatabaseUrl(string gitUrl) => gitUrl + $"FlotomachineDefault.db";
+
     private static MainBaseContext DataBase { get; set; }
 
     public static Exception Initialize(string path)
     {
         if (!File.Exists(Path.Join(path, App.Settings.Configuration.DataBase.FileName)))
         {
-            File.Copy(Path.Join(Directory.GetCurrentDirectory(), "FlotomachineDefault.db"), Path.Join(path, App.Settings.Configuration.DataBase.FileName), true);
+            HttpHelper.DownloadFile(GetDefaultDatabaseUrl(App.Settings.Configuration.Main.UpdateFileUrl), Path.Join(App.MyDocumentPath, "FlotomachineDefault.db"));
         }
 
         try
