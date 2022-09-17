@@ -1,4 +1,5 @@
 using Avalonia.Controls;
+using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 
 namespace Flotomachine.View
@@ -14,6 +15,5 @@ namespace Flotomachine.View
         {
             AvaloniaXamlLoader.Load(this);
         }
-
     }
 }

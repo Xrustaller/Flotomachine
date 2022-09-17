@@ -1,9 +1,11 @@
 ﻿using Flotomachine.Utility;
 using JetBrains.Annotations;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 
 namespace Flotomachine.Services;
 
@@ -12,74 +14,52 @@ public static class UpdateService
     public static bool NeedUpdate { get; private set; } = false;
 
     [CanBeNull]
-    public static Version NewVersion { get; private set; }
+    public static Version NewVersion { get; private set; } = new(0, 0);
 
     private static string _fileUrl = null;
 
-    public static Exception Initialize(Settings settingsConfiguration)
+    public static Exception CheckUpdates(bool force = false) => CheckUpdates(App.Settings.Configuration, force);
+    public static Exception CheckUpdates(Settings settingsConfiguration, bool force = false)
     {
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+        try
         {
-            try
+            //if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            //{
+
+            //}
+
+            //if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            //{
+
+            //}
+
+            UpdateFile json = HttpHelper.GetJson<UpdateFile>(settingsConfiguration.Main.UpdateJsonUrl);
+            Version gitVersion = json.Version;
+            if (gitVersion == null)
             {
-                UpdateFile json = HttpHelper.GetJson<UpdateFile>(settingsConfiguration.Main.UpdateJsonUrl);
-                Version gitVersion = json.Version;
-                if (gitVersion == null)
-                {
-                    return new Exception("Git file empty");
-                }
-
-                NewVersion = gitVersion;
-
-                if (Assembly.GetEntryAssembly()?.GetName().Version >= gitVersion)
-                {
-#if !RP_DEBUG
-                    return null;
-#endif
-                }
-
-                NeedUpdate = true;
-
-                _fileUrl = GetLatestDebFileUrl(settingsConfiguration.Main.UpdateFileUrl, gitVersion);
-                return null;
-
+                return new Exception("Git file empty");
             }
-            catch (Exception e)
+
+            NewVersion = gitVersion;
+
+            if (Assembly.GetEntryAssembly()?.GetName().Version >= gitVersion)
             {
-                return e;
+//#if !RP_DEBUG
+//                return null;
+//#endif
+
+//#if !DEBUG
+//                return null;
+//#endif
             }
+
+            NeedUpdate = true;
+
+            _fileUrl = GetLatestDebFileUrl(settingsConfiguration.Main.UpdateFileUrl, gitVersion);
         }
-        
-        if(RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        catch (Exception e)
         {
-            try
-            {
-                UpdateFile json = HttpHelper.GetJson<UpdateFile>(settingsConfiguration.Main.UpdateJsonUrl);
-                Version gitVersion = json.Version;
-                if (gitVersion == null)
-                {
-                    return new Exception("Git file empty");
-                }
-
-                NewVersion = gitVersion;
-
-                if (Assembly.GetEntryAssembly()?.GetName().Version >= gitVersion)
-                {
-#if !DEBUG
-                    return null;
-#endif
-                }
-
-                NeedUpdate = true;
-
-                _fileUrl = GetLatestDebFileUrl(settingsConfiguration.Main.UpdateFileUrl, gitVersion);
-                return null;
-
-            }
-            catch (Exception e)
-            {
-                return e;
-            }
+            return e;
         }
 
         return null;
@@ -88,8 +68,18 @@ public static class UpdateService
     public static string DownloadLatestReleaseFile()
     {
         string name = Path.Join(App.DownloadPath, GetLatestDebFileName(NewVersion));
-        HttpHelper.DownloadFile(_fileUrl, name);
+        HttpHelper.DownloadFileAsync(_fileUrl, name);
         return name;
+    }
+
+    public static void InstallDebFile(string path)
+    {
+        Process proc = new();
+        proc.StartInfo.FileName = "bash";
+        proc.StartInfo.Arguments = $"-c \"sudo dpkg -i {path}; Flotomachine\"";
+        proc.StartInfo.UseShellExecute = false;
+        proc.StartInfo.RedirectStandardOutput = true;
+        proc.Start();
     }
 
     private static string GetLatestDebFileUrl(string gitUrl, Version ver) => gitUrl + GetLatestDebFileName(ver);

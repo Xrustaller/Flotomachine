@@ -26,6 +26,7 @@ public class MainSettings
     public string UpdateFileUrl { get; set; } = "https://github.com/Xrustaller/Flotomachine/releases/latest/download/";
     public string CamIp { get; set; } = "192.1.1.10";
     public byte MainTimerModuleId { get; set; } = 1;
+    public bool CheckUpdatesAtStartUp { get; set; } = true;
 
     public MainSettings()
     {

@@ -13,6 +13,7 @@ namespace Flotomachine.View
 #if DEBUG
             this.AttachDevTools();
 #endif
+            DataContext = new UpdateWindowViewModel(null, this);
         }
 
         public UpdateWindow(Window mainWindow)

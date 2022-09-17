@@ -211,7 +211,7 @@ public class MainWindowViewModel : ViewModelBase
 
         TestClick = new DelegateCommand(Test);
 
-        if (UpdateService.NeedUpdate)
+        if (UpdateService.NeedUpdate && App.Settings.Configuration.Main.CheckUpdatesAtStartUp)
         {
             _timer = new Timer(15 * 1000);
             _timer.Elapsed += CheckUpdate;
@@ -228,12 +228,14 @@ public class MainWindowViewModel : ViewModelBase
 
     private async void CheckUpdate(object sender, ElapsedEventArgs e)
     {
-        _timer.Stop();
-        await Dispatcher.UIThread.InvokeAsync(() =>
-        {
-            UpdateWindow win = new(_mainWindow);
-            win.ShowDialog(_mainWindow);
-        });
+        _timer?.Stop();
+        await Dispatcher.UIThread.InvokeAsync(CheckUpdate);
+    }
+
+    public void CheckUpdate()
+    {
+        UpdateWindow win = new(_mainWindow);
+        win.ShowDialog(_mainWindow);
     }
 
     private void CameraButton(object parameter)
@@ -448,9 +450,6 @@ public class MainWindowViewModel : ViewModelBase
 
     private void Test(object parameter)
     {
-        var win = new UpdateWindow(new Window());
-        win.Show();
-        //TestText = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
 
     }
 }

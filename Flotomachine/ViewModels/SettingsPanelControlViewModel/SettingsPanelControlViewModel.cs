@@ -1,4 +1,5 @@
-﻿using Flotomachine.Services;
+﻿using System.Windows.Input;
+using Flotomachine.Services;
 using Flotomachine.View;
 using ReactiveUI;
 
@@ -6,10 +7,25 @@ namespace Flotomachine.ViewModels;
 
 public class SettingsPanelControlViewModel : ViewModelBase
 {
+    private readonly MainWindowViewModel _mainWindowViewModel;
+
+    private InfoViewModel _updateInfo;
+    private string _updateButtonText;
+
     private LoginPassViewModel _changePasswordViewModel;
     private AddDelUserCardViewModel _addDelUserCardViewModel;
 
-    private readonly MainWindowViewModel _mainWindowViewModel;
+    public InfoViewModel UpdateInfo
+    {
+        get => _updateInfo;
+        set => this.RaiseAndSetIfChanged(ref _updateInfo, value);
+    }
+
+    public string UpdateButtonText
+    {
+        get => _updateButtonText;
+        set => this.RaiseAndSetIfChanged(ref _updateButtonText, value);
+    }
 
     public LoginPassViewModel ChangePasswordViewModel
     {
@@ -23,9 +39,20 @@ public class SettingsPanelControlViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _addDelUserCardViewModel, value);
     }
 
+    public ICommand UpdateClick { get; }
+
     public SettingsPanelControlViewModel()
     {
-
+        if (UpdateService.NeedUpdate)
+        {
+            UpdateButtonText = "Загрузить и обновить";
+            UpdateInfo = new InfoViewModel($"Вышла новая версия: v{UpdateService.NewVersion}", "#FFFF10");
+        }
+        else
+        {
+            UpdateButtonText = "Проверить обновления";
+            UpdateInfo = new InfoViewModel("Обновление не требуется", "#10FF10");
+        }
     }
 
     public SettingsPanelControlViewModel(MainWindowViewModel mainWindowViewModel)
@@ -41,9 +68,36 @@ public class SettingsPanelControlViewModel : ViewModelBase
             DelUserCard = new DelegateCommand(DeleteCard)
         };
 
+        UpdateClick = new DelegateCommand(Update);
+
         foreach (CardId item in DataBaseService.GetCardIds(_mainWindowViewModel.CurrentUser))
         {
             AddDelUserCardViewModel.CardsList.Add(new CardIdListBox(item));
+        }
+
+        if (UpdateService.NeedUpdate)
+        {
+            UpdateButtonText = "Загрузить и обновить";
+            UpdateInfo = new InfoViewModel($"Вышла новая версия: v{UpdateService.NewVersion}", "#FFFF10");
+        }
+        else
+        {
+            UpdateButtonText = "Проверить обновления";
+            UpdateInfo = new InfoViewModel("Обновление не требуется", "#10FF10");
+        }
+    }
+
+    private void Update(object obj)
+    {
+        if (UpdateService.NeedUpdate)
+        {
+            _mainWindowViewModel.CheckUpdate();
+        }
+        else
+        {
+            UpdateButtonText = "Проверить обновления";
+            UpdateInfo = new InfoViewModel("Обновление не требуется", "#10FF10");
+            UpdateService.CheckUpdates();
         }
     }
 

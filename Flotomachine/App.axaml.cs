@@ -22,7 +22,13 @@ public partial class App : Application
     public static MainWindow MainWindow { get; private set; }
     public static MainWindowViewModel MainWindowViewModel { get; private set; }
 
-    private static string GetDocumentPath() => RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "Documents", "Flotomachine") : Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Flotomachine");
+    private static string GetDocumentPath()
+    {
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            return Path.Join("Documents", "Flotomachine");
+        else
+            return Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments), "Flotomachine");
+    }
 
     public override void Initialize()
     {
@@ -48,7 +54,7 @@ public partial class App : Application
                 LogManager.ErrorLog(exceptionDb, "ErrorLog_InitModBusService");
             }
 
-            UpdateService.Initialize(Settings.Configuration);
+            UpdateService.CheckUpdates(Settings.Configuration);
 
             MainWindow = new MainWindow();
             MainWindowViewModel = new MainWindowViewModel(MainWindow);

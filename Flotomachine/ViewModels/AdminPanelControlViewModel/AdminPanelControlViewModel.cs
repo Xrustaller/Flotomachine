@@ -1,7 +1,10 @@
-﻿using Flotomachine.Services;
+﻿using System;
+using Flotomachine.Services;
 using ReactiveUI;
 using System.Collections.ObjectModel;
+using System.Reflection;
 using System.Windows.Input;
+using Flotomachine.Utility;
 
 namespace Flotomachine.ViewModels;
 
@@ -11,22 +14,68 @@ public class AdminPanelControlViewModel : ViewModelBase
 
     #region Private
 
+    private string _programInfo = $"Флотомашина v{Assembly.GetEntryAssembly()?.GetName().Version.ToShortString()}";
     private string _workDirectory;
+    private string _myDocumentDirectory = App.MyDocumentPath;
+    private InfoViewModel _updateInfo;
+    private string _updateButtonText;
+
     private LoginPassViewModel _changePasswordViewModel;
     private LoginPassViewModel _registerUserViewModel;
     private RfidAdminSettingsViewModel _rfidAdminSettingsViewModel;
     private SerialAdminSettingsViewModel _serialAdminSettingsViewModel;
     private User _selectUser;
     private InfoViewModel _userListInfo;
+    private bool _isVisibleSystemSetting;
 
     #endregion
 
     #region PublicGetSet
 
+    public string ProgramInfo
+    {
+        get => _programInfo;
+        set => this.RaiseAndSetIfChanged(ref _programInfo, value);
+    }
+    public string MyDocumentDirectory
+    {
+        get => _myDocumentDirectory;
+        set => this.RaiseAndSetIfChanged(ref _myDocumentDirectory, value);
+    }
+
     public string WorkDirectory
     {
         get => _workDirectory;
         set => this.RaiseAndSetIfChanged(ref _workDirectory, value);
+    }
+
+    public InfoViewModel UpdateInfo
+    {
+        get => _updateInfo;
+        set => this.RaiseAndSetIfChanged(ref _updateInfo, value);
+    }
+
+    public bool AutoUpdate
+    {
+        get => App.Settings.Configuration.Main.CheckUpdatesAtStartUp;
+        set
+        {
+            App.Settings.Configuration.Main.CheckUpdatesAtStartUp = value;
+            App.Settings.SaveConfig();
+            this.RaisePropertyChanged();
+        }
+    }
+
+    public string UpdateButtonText
+    {
+        get => _updateButtonText;
+        set => this.RaiseAndSetIfChanged(ref _updateButtonText, value);
+    }
+
+    public bool IsVisibleSystemSetting
+    {
+        get => _isVisibleSystemSetting;
+        set => this.RaiseAndSetIfChanged(ref _isVisibleSystemSetting, value);
     }
 
     public LoginPassViewModel ChangePasswordViewModel
@@ -80,13 +129,28 @@ public class AdminPanelControlViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _userListInfo, value);
     }
 
+
+    public ICommand UpdateClick { get; }
+
     public ICommand DeleteUserClick { get; }
+
+    public ICommand SystemSettings { get; }
+    
 
     #endregion
 
     public AdminPanelControlViewModel()
     {
-
+        if (UpdateService.NeedUpdate)
+        {
+            UpdateButtonText = "Загрузить и обновить";
+            UpdateInfo = new InfoViewModel($"Вышла новая версия: v{UpdateService.NewVersion}", "#FFFF10");
+        }
+        else
+        {
+            UpdateButtonText = "Проверить обновления";
+            UpdateInfo = new InfoViewModel("Обновление не требуется", "#10FF10");
+        }
     }
 
     public AdminPanelControlViewModel(MainWindowViewModel mainWindowViewModel)
@@ -105,6 +169,10 @@ public class AdminPanelControlViewModel : ViewModelBase
 
         DeleteUserClick = new DelegateCommand(DeleteUser);
 
+        UpdateClick = new DelegateCommand(Update);
+
+        SystemSettings = new DelegateCommand(_ => IsVisibleSystemSetting = !IsVisibleSystemSetting);
+
         RfidAdminSettingsViewModel = new RfidAdminSettingsViewModel(_mainWindowViewModel);
         SerialAdminSettingsViewModel = new SerialAdminSettingsViewModel(_mainWindowViewModel);
 
@@ -113,7 +181,30 @@ public class AdminPanelControlViewModel : ViewModelBase
             UserList.Add(item);
         }
 
-        WorkDirectory = App.MyDocumentPath;
+        if (UpdateService.NeedUpdate)
+        {
+            UpdateButtonText = "Загрузить и обновить";
+            UpdateInfo = new InfoViewModel($"Вышла новая версия: v{UpdateService.NewVersion}", "#FFFF10");
+        }
+        else
+        {
+            UpdateButtonText = "Проверить обновления";
+            UpdateInfo = new InfoViewModel("Обновление не требуется", "#10FF10");
+        }
+    }
+
+    private void Update(object obj)
+    {
+        if (UpdateService.NeedUpdate)
+        {
+            _mainWindowViewModel.CheckUpdate();
+        }
+        else
+        {
+            UpdateButtonText = "Проверить обновления";
+            UpdateInfo = new InfoViewModel("Обновление не требуется", "#10FF10");
+            UpdateService.CheckUpdates();
+        }
     }
 
     private void RegisterUser(object parameter)

@@ -1,30 +1,35 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using Avalonia.Controls;
 using Flotomachine.Services;
 using Flotomachine.Utility;
 using ReactiveUI;
 using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Input;
+using Avalonia.Threading;
 
 namespace Flotomachine.ViewModels;
 
 public class UpdateWindowViewModel : ViewModelBase
 {
-    private Window _mainWindow;
-    private Window _updateWindow;
+    private readonly Window _mainWindow;
+    private readonly Window _updateWindow;
 
-    private string _newVersion;
-    private string _currentVersion;
-    public string NewVersion
+    private InfoViewModel _text = new("Текущая: v" + Assembly.GetEntryAssembly()?.GetName().Version.ToShortString() + "\n" + "Новая версия: v" + UpdateService.NewVersion.ToShortString(), "#FFFFFF");
+    private bool _buttonsEnable = true;
+
+    public InfoViewModel Text
     {
-        get => _newVersion;
-        set => this.RaiseAndSetIfChanged(ref _newVersion, value);
+        get => _text;
+        set => this.RaiseAndSetIfChanged(ref _text, value);
     }
 
-    public string CurrentVersion
+    public bool ButtonsEnable
     {
-        get => _currentVersion;
-        set => this.RaiseAndSetIfChanged(ref _currentVersion, value);
+        get => _buttonsEnable;
+        set => this.RaiseAndSetIfChanged(ref _buttonsEnable, value);
     }
 
     public ICommand HoldOverClick { get; }
@@ -32,8 +37,7 @@ public class UpdateWindowViewModel : ViewModelBase
 
     public UpdateWindowViewModel()
     {
-        CurrentVersion = "Текущая: ERROR";
-        NewVersion = "Новая версия: ERROR";
+
     }
 
     public UpdateWindowViewModel(Window window, Window thisWindow)
@@ -42,20 +46,19 @@ public class UpdateWindowViewModel : ViewModelBase
         _updateWindow = thisWindow;
         HoldOverClick = new DelegateCommand(HoldOver);
         DownloadClick = new DelegateCommand(Download);
-        CurrentVersion = "Текущая: v" + Assembly.GetEntryAssembly()?.GetName().Version.ToShortString();
-        NewVersion = "Новая версия: v" + UpdateService.NewVersion.ToShortString();
     }
 
     private void Download(object obj)
     {
+        ButtonsEnable = false;
         string path = UpdateService.DownloadLatestReleaseFile();
-        Process proc = new();
-        proc.StartInfo.FileName = "bash";
-        proc.StartInfo.Arguments = $"-c \"sudo dpkg -i {path}; sleep 15; Flotomachine\"";
-        proc.StartInfo.UseShellExecute = false;
-        proc.StartInfo.RedirectStandardOutput = true;
-        proc.Start();
-        _mainWindow.Close();
+        Text.Text = "Запуск обновления\nОбновление длится 1-5 мин.\nПрограмма будет закрыта и перезапущена\nНе выключайте компьютер и не запускайте программу заново";
+        Task.Run(() =>
+        {
+            Thread.Sleep(10000);
+            UpdateService.InstallDebFile(path);
+            Dispatcher.UIThread.InvokeAsync(() => _mainWindow.Close());
+        });
     }
 
     private void HoldOver(object obj)
