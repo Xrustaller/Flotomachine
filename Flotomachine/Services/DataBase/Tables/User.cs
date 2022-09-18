@@ -47,6 +47,12 @@ public class User
         return hash == PassHash;
     }
 
+    public bool CheckPass(string password)
+    {
+        string hash = GenerateHash(Username, password);
+        return hash == PassHash;
+    }
+
     public static string GenerateHash(string username, string password)
     {
         using SHA256 sha256 = SHA256.Create();

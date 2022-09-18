@@ -93,7 +93,7 @@
                     </ia:EventTriggerBehavior>
                 </i:Interaction.Behaviors>
             </Button>
-            <Button Grid.Row="0" Grid.Column="9" Width="40" Height="40" Margin="5, 0" Background="#00000000" IsVisible="{Binding !LoginBool}">
+            <Button Grid.Row="0" Grid.Column="9" Width="40" Height="40" Margin="5, 0" Background="#00000000" IsEnabled="{Binding !LoginBool}" IsVisible="{Binding !LoginBool}">
                 <Panel>
                     <Image Source="/Assets/Card.png" Width="32" Height="32"/>
                 </Panel>
@@ -103,9 +103,17 @@
                     </ia:EventTriggerBehavior>
                 </i:Interaction.Behaviors>
             </Button>
-            <TextBox Grid.Row="0" Grid.Column="10" Height="32" Width="160" Margin="5" Watermark="Логин" Text="{Binding LoginTextBox, Mode=TwoWay}" IsVisible="{Binding !LoginBool}"></TextBox>
-            <TextBox Grid.Row="0" Grid.Column="11" Height="32" Width="160" Margin="5" Watermark="Пароль" Text="{Binding PasswordTextBox, Mode=TwoWay}" IsVisible="{Binding !LoginBool}" PasswordChar="*"></TextBox>
-            <Button Grid.Row="0" Grid.Column="12" Width="40" Height="40" Margin="5, 0" Background="#00000000" IsVisible="{Binding !LoginBool}">
+            <TextBox Grid.Row="0" Grid.Column="10" Height="32" Width="160" Margin="5" Watermark="Логин" Text="{Binding LoginTextBox, Mode=TwoWay}" IsEnabled="{Binding !LoginBool}" IsVisible="{Binding !LoginBool}">
+				<TextBox.KeyBindings>
+					<KeyBinding Command="{Binding LoginButtonClick}" Gesture="Enter"/>
+				</TextBox.KeyBindings>
+            </TextBox>
+            <TextBox Grid.Row="0" Grid.Column="11" Height="32" Width="160" Margin="5" Watermark="Пароль" Text="{Binding PasswordTextBox, Mode=TwoWay}" IsEnabled="{Binding !LoginBool}" IsVisible="{Binding !LoginBool}" PasswordChar="*">
+                <TextBox.KeyBindings>
+                    <KeyBinding Command="{Binding LoginButtonClick}" Gesture="Enter"/>
+                </TextBox.KeyBindings>
+            </TextBox>
+            <Button Grid.Row="0" Grid.Column="12" Width="40" Height="40" Margin="5, 0" Background="#00000000" IsEnabled="{Binding !LoginBool}" IsVisible="{Binding !LoginBool}">
                 <Panel>
 					<Image Source="/Assets/Key.png" Width="32" Height="32"/>
                 </Panel>
@@ -115,13 +123,13 @@
                     </ia:EventTriggerBehavior>
                 </i:Interaction.Behaviors>
             </Button>
-            <Button Grid.Row="0" Grid.Column="15" Width="40" Height="40" Margin="5, 0" Background="#00000000" IsVisible="{Binding LoginBool}">
+            <Button Grid.Row="0" Grid.Column="15" Width="40" Height="40" Margin="5, 0" Background="#00000000" IsEnabled="{Binding LoginBool}" IsVisible="{Binding LoginBool}">
                 <Panel>
                     <Image Source="/Assets/Out.png" Width="32" Height="32"/>
                 </Panel>
                 <i:Interaction.Behaviors>
                     <ia:EventTriggerBehavior EventName="Click">
-                        <ia:InvokeCommandAction Command="{Binding LoginButtonClick}"/>
+                        <ia:InvokeCommandAction Command="{Binding OutButtonClick}"/>
                     </ia:EventTriggerBehavior>
                 </i:Interaction.Behaviors>
             </Button>

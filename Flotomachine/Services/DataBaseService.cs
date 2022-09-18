@@ -69,25 +69,7 @@ public static class DataBaseService
         DataBase.SaveChanges();
         return GetUser(user.Username);
     }
-
-    public static User ChangePassword(string username, string newPasshash)
-    {
-        User user = GetUser(username);
-        if (user == null)
-        {
-            return null;
-        }
-        user.PassHash = newPasshash;
-        ChangePassword(user);
-        return user;
-    }
-
-    public static void ChangePassword(User user)
-    {
-        DataBase.Users.Update(user);
-        DataBase.SaveChanges();
-    }
-
+    
     public static List<User> GetUsers() => DataBase.Users.ToList(); //.Where(p => !p.IsDelete())
 
     [CanBeNull]

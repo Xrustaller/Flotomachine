@@ -1,5 +1,7 @@
-﻿using System.Windows.Input;
+﻿using System.Reflection;
+using System.Windows.Input;
 using Flotomachine.Services;
+using Flotomachine.Utility;
 using Flotomachine.View;
 using ReactiveUI;
 
@@ -9,11 +11,22 @@ public class SettingsPanelControlViewModel : ViewModelBase
 {
     private readonly MainWindowViewModel _mainWindowViewModel;
 
+    private string _programInfo = $"Флотомашина v{Assembly.GetEntryAssembly()?.GetName().Version.ToShortString()}";
     private InfoViewModel _updateInfo;
     private string _updateButtonText;
+    private InfoViewModel _userInfo;
+    private string _userName;
+    private string _userLogin;
+    private string _userPass;
 
     private LoginPassViewModel _changePasswordViewModel;
     private AddDelUserCardViewModel _addDelUserCardViewModel;
+
+    public string ProgramInfo
+    {
+        get => _programInfo;
+        set => this.RaiseAndSetIfChanged(ref _programInfo, value);
+    }
 
     public InfoViewModel UpdateInfo
     {
@@ -25,6 +38,30 @@ public class SettingsPanelControlViewModel : ViewModelBase
     {
         get => _updateButtonText;
         set => this.RaiseAndSetIfChanged(ref _updateButtonText, value);
+    }
+
+    public InfoViewModel UserInfo
+    {
+        get => _userInfo;
+        set => this.RaiseAndSetIfChanged(ref _userInfo, value);
+    }
+
+    public string UserName
+    {
+        get => _userName;
+        set => this.RaiseAndSetIfChanged(ref _userName, value);
+    }
+
+    public string UserLogin
+    {
+        get => _userLogin;
+        set => this.RaiseAndSetIfChanged(ref _userLogin, value);
+    }
+
+    public string UserPass
+    {
+        get => _userPass;
+        set => this.RaiseAndSetIfChanged(ref _userPass, value);
     }
 
     public LoginPassViewModel ChangePasswordViewModel
@@ -39,6 +76,7 @@ public class SettingsPanelControlViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _addDelUserCardViewModel, value);
     }
 
+    public ICommand SaveUserClick { get; }
     public ICommand UpdateClick { get; }
 
     public SettingsPanelControlViewModel()
@@ -68,6 +106,7 @@ public class SettingsPanelControlViewModel : ViewModelBase
             DelUserCard = new DelegateCommand(DeleteCard)
         };
 
+        SaveUserClick = new DelegateCommand(SaveUser);
         UpdateClick = new DelegateCommand(Update);
 
         foreach (CardId item in DataBaseService.GetCardIds(_mainWindowViewModel.CurrentUser))
@@ -85,6 +124,41 @@ public class SettingsPanelControlViewModel : ViewModelBase
             UpdateButtonText = "Проверить обновления";
             UpdateInfo = new InfoViewModel("Обновление не требуется", "#10FF10");
         }
+
+        UserName = _mainWindowViewModel.CurrentUser.Name ?? "";
+        UserLogin = _mainWindowViewModel.CurrentUser.Username ?? "";
+    }
+
+    private void SaveUser(object obj)
+    {
+        if (_mainWindowViewModel.CurrentUser.Username == UserLogin && _mainWindowViewModel.CurrentUser.Name == UserName)
+        {
+            UserInfo = new InfoViewModel("Нечего изменять", "#10FF10");
+            return;
+        }
+
+        if (_mainWindowViewModel.CurrentUser.Username != UserLogin)
+        {
+            if (!_mainWindowViewModel.CurrentUser.CheckPass(UserPass))
+            {
+                ChangePasswordViewModel.Info = new InfoViewModel("Неверный пароль", "#FF1010");
+                return;
+            }
+
+            _mainWindowViewModel.CurrentUser.Username = UserLogin;
+            _mainWindowViewModel.CurrentUser.PassHash = User.GenerateHash(UserLogin, UserPass);
+
+            UserPass = "";
+        }
+
+        _mainWindowViewModel.CurrentUser.Name = UserName;
+
+        DataBaseService.GetAndSet(p =>
+        {
+            p.Users.Update(_mainWindowViewModel.CurrentUser);
+        });
+
+        UserInfo = new InfoViewModel("Успешно", "#10FF10");
     }
 
     private void Update(object obj)
@@ -109,6 +183,12 @@ public class SettingsPanelControlViewModel : ViewModelBase
             return;
         }
 
+        if (ChangePasswordViewModel.PassOne.Length < 4)
+        {
+            ChangePasswordViewModel.Info = new InfoViewModel("Пароль < 4 символов", "#FF1010");
+            return;
+        }
+
         if (ChangePasswordViewModel.PassOne != ChangePasswordViewModel.PassTwo)
         {
             ChangePasswordViewModel.Info = new InfoViewModel("Разные пароли", "#FF1010");
@@ -116,7 +196,10 @@ public class SettingsPanelControlViewModel : ViewModelBase
         }
 
         _mainWindowViewModel.CurrentUser.PassHash = User.GenerateHash(_mainWindowViewModel.CurrentUser.Username, ChangePasswordViewModel.PassOne);
-        DataBaseService.ChangePassword(_mainWindowViewModel.CurrentUser);
+        DataBaseService.GetAndSet(p =>
+        {
+            p.Users.Update(_mainWindowViewModel.CurrentUser);
+        });
 
         ChangePasswordViewModel.Login = "";
         ChangePasswordViewModel.PassOne = "";

@@ -22,18 +22,9 @@ public partial class App : Application
     public static MainWindow MainWindow { get; private set; }
     public static MainWindowViewModel MainWindowViewModel { get; private set; }
 
-    private static string GetDocumentPath()
-    {
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-            return Path.Join("Documents", "Flotomachine");
-        else
-            return Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments), "Flotomachine");
-    }
+    private static string GetDocumentPath() => Path.Join(RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "Documents" : Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments), "Flotomachine");
 
-    public override void Initialize()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
+    public override void Initialize() => AvaloniaXamlLoader.Load(this);
 
     public override void OnFrameworkInitializationCompleted()
     {

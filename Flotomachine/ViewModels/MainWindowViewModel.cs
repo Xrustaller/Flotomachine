@@ -156,6 +156,7 @@ public class MainWindowViewModel : ViewModelBase
 
     public ICommand LoginButtonClick { get; }
     public ICommand CardLoginButtonClick { get; }
+    public ICommand OutButtonClick { get; }
 
     public ICommand OnClosed { get; }
 
@@ -206,6 +207,7 @@ public class MainWindowViewModel : ViewModelBase
 
         LoginButtonClick = new DelegateCommand(LoginButton);
         CardLoginButtonClick = new DelegateCommand(CardLoginButton);
+        OutButtonClick = new DelegateCommand(OutButton);
 
         OnClosed = new DelegateCommand(Closed);
 
@@ -328,13 +330,22 @@ public class MainWindowViewModel : ViewModelBase
         AdminButtonEnable = false;
     }
 
+    private void OutButton(object obj)
+    {
+        if (!LoginBool)
+        {
+            return;
+        }
+
+        UserInfo = new InfoViewModel();
+        LoginBool = false;
+        CurrentUser = null;
+    }
+
     private void LoginButton(object parameter)
     {
-        if (CurrentUser != null)
+        if (LoginBool)
         {
-            UserInfo = new InfoViewModel();
-            LoginBool = false;
-            CurrentUser = null;
             return;
         }
 

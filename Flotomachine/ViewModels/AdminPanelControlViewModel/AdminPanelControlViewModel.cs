@@ -37,6 +37,7 @@ public class AdminPanelControlViewModel : ViewModelBase
         get => _programInfo;
         set => this.RaiseAndSetIfChanged(ref _programInfo, value);
     }
+
     public string MyDocumentDirectory
     {
         get => _myDocumentDirectory;
@@ -277,7 +278,11 @@ public class AdminPanelControlViewModel : ViewModelBase
         }
 
         user.PassHash = User.GenerateHash(user.Username, ChangePasswordViewModel.PassOne);
-        DataBaseService.ChangePassword(user);
+
+        DataBaseService.GetAndSet(p =>
+        {
+            p.Users.Update(user);
+        });
 
         ChangePasswordViewModel.Login = "";
         ChangePasswordViewModel.PassOne = "";
