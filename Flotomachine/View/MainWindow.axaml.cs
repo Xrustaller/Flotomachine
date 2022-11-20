@@ -21,9 +21,6 @@ namespace Flotomachine.View
 
         public void Full_OnClick(object sender, RoutedEventArgs e) => WindowState = WindowState != WindowState.Maximized ? WindowState.Maximized : WindowState.FullScreen;
 
-        private void Close_OnClick(object sender, RoutedEventArgs e)
-        {
-            Close();
-        }
+        private void Close_OnClick(object sender, RoutedEventArgs e) => Close();
     }
 }

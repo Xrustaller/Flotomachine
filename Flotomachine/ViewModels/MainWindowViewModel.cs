@@ -1,13 +1,12 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Threading;
 using Flotomachine.Services;
-using Flotomachine.Utility;
 using Flotomachine.View;
-using Flotomachine.View.Pages;
 using ReactiveUI;
 using System;
 using System.Timers;
 using System.Windows.Input;
+using HomePanelControl = Flotomachine.View.HomePanelControl;
 using LabsPanelControl = Flotomachine.View.LabsPanelControl;
 using SettingsPanelControl = Flotomachine.View.SettingsPanelControl;
 
@@ -46,7 +45,7 @@ public class MainWindowViewModel : ViewModelBase
     private InfoViewModel _userUserInfo;
 
     private User _currentUser = null;
-    private UserControl _mainContentControl;
+    private UserControlBase _mainContentControl;
     private bool _loginBool;
 
     #endregion
@@ -141,7 +140,7 @@ public class MainWindowViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _userUserInfo, value);
     }
 
-    public UserControl MainContentControl
+    public UserControlBase MainContentControl
     {
         get => _mainContentControl;
         set => this.RaiseAndSetIfChanged(ref _mainContentControl, value);
@@ -177,7 +176,7 @@ public class MainWindowViewModel : ViewModelBase
     public MainWindowViewModel()
     {
 #if DEBUG
-        //CameraButtonIsVisible = true;
+        CameraButtonIsVisible = true;
         HomeButtonIsVisible = true;
         LabsButtonIsVisible = true;
         //GraphButtonIsVisible = true;
@@ -221,6 +220,7 @@ public class MainWindowViewModel : ViewModelBase
             _timer.Start();
         }
 
+        CameraButtonIsVisible = true;
         HomeButtonIsVisible = true;
 
         HomeButton(null);
@@ -234,14 +234,25 @@ public class MainWindowViewModel : ViewModelBase
         await Dispatcher.UIThread.InvokeAsync(CheckUpdate);
     }
 
+    private UpdateWindow _updateWindow;
     public void CheckUpdate()
     {
-        UpdateWindow win = new(_mainWindow);
-        win.ShowDialog(_mainWindow);
+        if (_updateWindow != null)
+        {
+            return;
+        }
+        _updateWindow = new UpdateWindow(_mainWindow);
+        _updateWindow.Closed += (sender, args) =>
+        {
+            _updateWindow = null;
+        };
+        _updateWindow.ShowDialog(_mainWindow);
     }
 
     private void CameraButton(object parameter)
     {
+        ((ViewModelBase)MainContentControl?.DataContext)?.OnDestroy();
+        MainContentControl?.OnDestroy();
         MainContentControl = new CameraPanelControl()
         {
             DataContext = new CameraPanelControlViewModel(this)
@@ -257,6 +268,8 @@ public class MainWindowViewModel : ViewModelBase
 
     private void HomeButton(object parameter)
     {
+        ((ViewModelBase)MainContentControl?.DataContext)?.OnDestroy();
+        MainContentControl?.OnDestroy();
         MainContentControl = new HomePanelControl()
         {
             DataContext = new HomePanelControlViewModel(this)
@@ -272,6 +285,8 @@ public class MainWindowViewModel : ViewModelBase
 
     private void LabsButton(object parameter)
     {
+        ((ViewModelBase)MainContentControl?.DataContext)?.OnDestroy();
+        MainContentControl?.OnDestroy();
         MainContentControl = new LabsPanelControl()
         {
             DataContext = new LabsPanelControlViewModel(this)
@@ -287,6 +302,8 @@ public class MainWindowViewModel : ViewModelBase
 
     private void GraphButton(object parameter)
     {
+        ((ViewModelBase)MainContentControl?.DataContext)?.OnDestroy();
+        MainContentControl?.OnDestroy();
         MainContentControl = new GraphPanelControl()
         {
             DataContext = new GraphPanelControlViewModel(this)
@@ -302,6 +319,8 @@ public class MainWindowViewModel : ViewModelBase
 
     private void SettingsButton(object parameter)
     {
+        ((ViewModelBase)MainContentControl?.DataContext)?.OnDestroy();
+        MainContentControl?.OnDestroy();
         MainContentControl = new SettingsPanelControl()
         {
             DataContext = new SettingsPanelControlViewModel(this)
@@ -317,6 +336,8 @@ public class MainWindowViewModel : ViewModelBase
 
     private void AdminButton(object parameter)
     {
+        ((ViewModelBase)MainContentControl?.DataContext)?.OnDestroy();
+        MainContentControl?.OnDestroy();
         MainContentControl = new AdminPanelControl()
         {
             DataContext = new AdminPanelControlViewModel(this)
@@ -400,11 +421,13 @@ public class MainWindowViewModel : ViewModelBase
 
     private void RefreshButtons(User user)
     {
+        ((ViewModelBase)MainContentControl?.DataContext)?.OnDestroy();
+        MainContentControl?.OnDestroy();
         MainContentControl = null;
 
         if (user == null) // Если пользователь не выбран
         {
-            //CameraButtonIsVisible = true;
+            CameraButtonIsVisible = true;
             HomeButtonIsVisible = true;
             LabsButtonIsVisible = false;
             //GraphButtonIsVisible = false;
@@ -416,14 +439,14 @@ public class MainWindowViewModel : ViewModelBase
 
         if (user.Root == true) // Если админ
         {
-            //CameraButtonIsVisible = false;
+            CameraButtonIsVisible = true;
             HomeButtonIsVisible = true;
             LabsButtonIsVisible = false;
             //GraphButtonIsVisible = false;
             SettingsButtonIsVisible = true;
             AdminButtonIsVisible = true;
 #if DEBUG
-            //CameraButtonIsVisible = true;
+            CameraButtonIsVisible = true;
             HomeButtonIsVisible = true;
             LabsButtonIsVisible = true;
             //GraphButtonIsVisible = true;
@@ -434,7 +457,7 @@ public class MainWindowViewModel : ViewModelBase
             return;
         }
 
-        //CameraButtonIsVisible = true;
+        CameraButtonIsVisible = true;
         HomeButtonIsVisible = true;
         LabsButtonIsVisible = true;
         //GraphButtonIsVisible = true;

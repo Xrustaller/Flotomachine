@@ -42,7 +42,7 @@ public static class HttpHelper
         if (File.Exists(outputPath))
         {
             return;
-            //throw new FileNotFoundException("File already exists.", nameof(outputPath));
+            throw new FileNotFoundException("File already exists.", nameof(outputPath));
         }
 
         Task<byte[]> fileBytes = HttpClient.GetByteArrayAsync(uriResult);
@@ -57,8 +57,9 @@ public static class HttpHelper
             throw new InvalidOperationException("URI is invalid.");
         }
 
-        if (!File.Exists(outputPath))
+        if (File.Exists(outputPath))
         {
+            return;
             throw new FileNotFoundException("File not found.", nameof(outputPath));
         }
 

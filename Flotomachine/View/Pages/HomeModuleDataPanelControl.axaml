@@ -1,0 +1,30 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewModels="clr-namespace:Flotomachine.ViewModels"
+             mc:Ignorable="d" MinWidth="240" MinHeight="130"
+             x:Class="Flotomachine.View.HomeModuleDataPanelControl">
+    <UserControl.DataContext>
+        <viewModels:HomeModuleDataViewModel/>
+    </UserControl.DataContext>
+    <UserControl.Styles>
+        <Style Selector="TextBlock.LcdText">
+            <Setter Property="FontSize" Value="40"/>
+            <Setter Property="FontFamily" Value="/Assets/a_lcdnova.ttf#a_LCDNova"/>
+        </Style>
+        <Style Selector="Border.ModuleBlock">
+            <Setter Property="BorderBrush" Value="#808080"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="3"/>
+            <Setter Property="Padding" Value="10"/>
+        </Style>
+    </UserControl.Styles>
+    <Border Classes="Block" Margin="5" MinWidth="240" MinHeight="130">
+        <Grid>
+            <TextBlock Text="{Binding Name}" HorizontalAlignment="Center"/>
+            <TextBlock Classes="LcdText" Text="{Binding Value}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <TextBlock Text="{Binding ValueName}" HorizontalAlignment="Center" VerticalAlignment="Bottom"/>
+        </Grid>
+    </Border>
+</UserControl>

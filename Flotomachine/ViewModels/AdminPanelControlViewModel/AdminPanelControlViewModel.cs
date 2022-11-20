@@ -279,9 +279,9 @@ public class AdminPanelControlViewModel : ViewModelBase
 
         user.PassHash = User.GenerateHash(user.Username, ChangePasswordViewModel.PassOne);
 
-        DataBaseService.GetAndSet(p =>
+        DataBaseService.GetAndSet(context =>
         {
-            p.Users.Update(user);
+            context.Users.Update(user);
         });
 
         ChangePasswordViewModel.Login = "";

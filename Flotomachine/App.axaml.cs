@@ -38,11 +38,17 @@ public partial class App : Application
             }
 
             Exception exceptionMb = ModBusService.Initialize();
-
             if (exceptionMb != null)
             {
                 Console.WriteLine("ModBus service initialization error");
                 LogManager.ErrorLog(exceptionDb, "ErrorLog_InitModBusService");
+            }
+
+            Exception exceptionC = CameraService.Initialize();
+            if (exceptionC != null)
+            {
+                Console.WriteLine("Camera service initialization error");
+                LogManager.ErrorLog(exceptionDb, "ErrorLog_InitCameraService");
             }
 
             UpdateService.CheckUpdates(Settings.Configuration);

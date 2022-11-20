@@ -109,15 +109,15 @@ public static class DataBaseService
         DataBase.SaveChanges();
     }
 
-    public static List<Module> GetModules() => DataBase.Modules.Where(p => p.Active).ToList();
-    public static List<ModuleField> GetModulesFields() => DataBase.ModuleFields.Where(p => p.Active).ToList();
-    public static List<ModuleField> GetModulesFields(int moduleId) => DataBase.ModuleFields.Where(p => p.ModuleId == moduleId && p.Active).ToList();
-    public static List<ModuleField> GetModulesFields(Module module) => DataBase.ModuleFields.Where(p => p.ModuleId == module.Id && p.Active).ToList();
+    public static List<Module> GetActiveModules() => DataBase.Modules.Where(p => p.Active).ToList();
+    public static List<ModuleField> GetActiveModulesFields() => DataBase.ModuleFields.Where(p => p.Active).ToList();
+    public static List<ModuleField> GetActiveModulesFields(int moduleId) => DataBase.ModuleFields.Where(p => p.ModuleId == moduleId && p.Active).ToList();
+    public static List<ModuleField> GetActiveModulesFields(Module module) => DataBase.ModuleFields.Where(p => p.ModuleId == module.Id && p.Active).ToList();
 
-    public static List<ModuleField> GetAllModulesFields()
+    public static List<ModuleField> GetModulesFields()
     {
-        List<ModuleField> result = new(20);
-        foreach (List<ModuleField> item in DataBaseService.DataBase.Modules.Select(p => p.Fields))
+        List<ModuleField> result = new();
+        foreach (List<ModuleField> item in DataBase.Modules.Select(p => p.Fields))
         {
             result.AddRange(item);
         }

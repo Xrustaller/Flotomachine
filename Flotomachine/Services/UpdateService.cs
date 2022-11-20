@@ -1,6 +1,7 @@
 ﻿using Flotomachine.Utility;
 using JetBrains.Annotations;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
@@ -44,13 +45,9 @@ public static class UpdateService
 
             if (Assembly.GetEntryAssembly()?.GetName().Version >= gitVersion)
             {
-//#if !RP_DEBUG
-//                return null;
-//#endif
-
-//#if !DEBUG
-//                return null;
-//#endif
+#if !DEBUG && !RP_DEBUG
+                return null;
+#endif
             }
 
             NeedUpdate = true;
@@ -68,18 +65,31 @@ public static class UpdateService
     public static string DownloadLatestReleaseFile()
     {
         string name = Path.Join(App.DownloadPath, GetLatestDebFileName(NewVersion));
+        if (_fileUrl == null)
+        {
+            return null;
+        }
         HttpHelper.DownloadFileAsync(_fileUrl, name);
         return name;
     }
 
     public static void InstallDebFile(string path)
     {
+#if DEBUG && !RP_DEBUG
+        Process proc = new();
+        proc.StartInfo.FileName = "explorer";
+        proc.StartInfo.UseShellExecute = false;
+        proc.StartInfo.RedirectStandardOutput = true;
+        proc.Start();
+#elif !DEBUG
         Process proc = new();
         proc.StartInfo.FileName = "bash";
         proc.StartInfo.Arguments = $"-c \"sudo dpkg -i {path}; Flotomachine\"";
         proc.StartInfo.UseShellExecute = false;
         proc.StartInfo.RedirectStandardOutput = true;
         proc.Start();
+#endif
+
     }
 
     private static string GetLatestDebFileUrl(string gitUrl, Version ver) => gitUrl + GetLatestDebFileName(ver);

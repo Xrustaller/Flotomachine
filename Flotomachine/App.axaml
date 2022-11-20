@@ -4,5 +4,11 @@
 	<Application.Styles>
         <FluentTheme Mode="Dark"/>
         <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Default.xaml"/>
+        <Style Selector="Border.Block">
+			<Setter Property="BorderBrush" Value="#808080"/>
+			<Setter Property="BorderThickness" Value="1"/>
+			<Setter Property="CornerRadius" Value="3"/>
+			<Setter Property="Padding" Value="10"/>
+		</Style>
     </Application.Styles>
 </Application>

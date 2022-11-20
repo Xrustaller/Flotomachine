@@ -4,82 +4,18 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:viewModels="clr-namespace:Flotomachine.ViewModels"
              mc:Ignorable="d" d:DesignWidth="764"
-             x:Class="Flotomachine.View.Pages.HomePanelControl"
+             x:Class="Flotomachine.View.HomePanelControl"
              Background="#DD000000">
 	<UserControl.DataContext>
 		<viewModels:HomePanelControlViewModel/>
     </UserControl.DataContext>
     <Grid>
-        <StackPanel>
-            <Grid ColumnDefinitions="1*, 1*, 1*">
-                <Border Grid.Column="0" BorderBrush="#808080" BorderThickness="1" CornerRadius="3" Padding="10" Margin="5" Height="130">
-					<Grid>
-						<TextBlock Text="ТАЙМЕР 1" HorizontalAlignment="Center" FontFamily="/Assets/a_lcdnova.ttf#a_LCDNova"/>
-                        <TextBlock Text="{Binding T1Value}" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="60" FontFamily="/Assets/a_lcdnova.ttf#a_LCDNova"/>
-                        <TextBlock Text="Сек" HorizontalAlignment="Center" VerticalAlignment="Bottom" FontFamily="/Assets/a_lcdnova.ttf#a_LCDNova"/>
-                    </Grid>
-                </Border>
-                <Border Grid.Column="1" BorderBrush="#808080" BorderThickness="1" CornerRadius="3" Padding="10" Margin="5" Height="130">
-                    <Grid>
-                        <TextBlock Text="ТАЙМЕР 2" HorizontalAlignment="Center" FontFamily="/Assets/a_lcdnova.ttf#a_LCDNova"/>
-						<TextBlock Text="{Binding T2Value}" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="60" FontFamily="/Assets/a_lcdnova.ttf#a_LCDNova"/>
-						<TextBlock Text="Сек" HorizontalAlignment="Center" VerticalAlignment="Bottom" FontFamily="/Assets/a_lcdnova.ttf#a_LCDNova"/>
-                    </Grid>
-                </Border>
-                <Border Grid.Column="2" BorderBrush="#808080" BorderThickness="1" CornerRadius="3" Padding="4" Margin="5" Height="130">
-                    <Grid>
-                        <TextBlock Text="Градусы" HorizontalAlignment="Center" FontFamily="/Assets/a_lcdnova.ttf#a_LCDNova"/>
-                        <TextBlock Text="{Binding GradValue}" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="60" FontFamily="/Assets/a_lcdnova.ttf#a_LCDNova"/>
-                        <TextBlock Text="гр/ц" HorizontalAlignment="Center" VerticalAlignment="Bottom" FontFamily="/Assets/a_lcdnova.ttf#a_LCDNova"/>
-                    </Grid>
-                </Border>
-			</Grid>
-			<Grid ColumnDefinitions="1*, 1*, 1*">
-				<Border Grid.Column="0" BorderBrush="#808080" BorderThickness="1" CornerRadius="3" Padding="4" Margin="5" Height="130">
-                    <Grid>
-                        <TextBlock Text="Атмосферное давление" HorizontalAlignment="Center" FontFamily="/Assets/a_lcdnova.ttf#a_LCDNova"/>
-                        <TextBlock Text="{Binding DavValue}" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="60" FontFamily="/Assets/a_lcdnova.ttf#a_LCDNova"/>
-                        <TextBlock Text="рт/ст" HorizontalAlignment="Center" VerticalAlignment="Bottom" FontFamily="/Assets/a_lcdnova.ttf#a_LCDNova"/>
-                    </Grid>
-                </Border>
-				<Border Grid.Column="1" BorderBrush="#808080" BorderThickness="1" CornerRadius="3" Padding="4" Margin="5" Height="130">
-                    <Grid>
-                        <TextBlock Text="Вес пены" HorizontalAlignment="Center" FontFamily="/Assets/a_lcdnova.ttf#a_LCDNova"/>
-                        <TextBlock Text="{Binding VesValue}" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="60" FontFamily="/Assets/a_lcdnova.ttf#a_LCDNova"/>
-                        <TextBlock Text="гр" HorizontalAlignment="Center" VerticalAlignment="Bottom" FontFamily="/Assets/a_lcdnova.ttf#a_LCDNova"/>
-                    </Grid>
-                </Border>
-				<Border Grid.Column="2" BorderBrush="#808080" BorderThickness="1" CornerRadius="3" Padding="4" Margin="5" Height="130">
-                    <Grid>
-                        <TextBlock Text="Обороты" HorizontalAlignment="Center" FontFamily="/Assets/a_lcdnova.ttf#a_LCDNova"/>
-                        <TextBlock Text="{Binding OborValue}" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="60" FontFamily="/Assets/a_lcdnova.ttf#a_LCDNova"/>
-                        <TextBlock Text="об/с" HorizontalAlignment="Center" VerticalAlignment="Bottom" FontFamily="/Assets/a_lcdnova.ttf#a_LCDNova"/>
-                    </Grid>
-                </Border>
-			</Grid>
-			<Grid ColumnDefinitions="1*, 1*, 1*">
-				<Border Grid.Column="0" BorderBrush="#808080" BorderThickness="1" CornerRadius="3" Padding="4" Margin="5" Height="130">
-					<Grid>
-						<TextBlock Text="PH Раствора" HorizontalAlignment="Center" FontFamily="/Assets/a_lcdnova.ttf#a_LCDNova"/>
-						<TextBlock Text="NULL" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="60" FontFamily="/Assets/a_lcdnova.ttf#a_LCDNova"/>
-						<TextBlock Text="ph" HorizontalAlignment="Center" VerticalAlignment="Bottom" FontFamily="/Assets/a_lcdnova.ttf#a_LCDNova"/>
-					</Grid>
-				</Border>
-				<Border Grid.Column="1" BorderBrush="#808080" BorderThickness="1" CornerRadius="3" Padding="4" Margin="5" Height="130">
-					<Grid>
-						<TextBlock Text="ORP Раствора" HorizontalAlignment="Center" FontFamily="/Assets/a_lcdnova.ttf#a_LCDNova"/>
-						<TextBlock Text="NULL" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="60" FontFamily="/Assets/a_lcdnova.ttf#a_LCDNova"/>
-						<TextBlock Text="+-mv" HorizontalAlignment="Center" VerticalAlignment="Bottom" FontFamily="/Assets/a_lcdnova.ttf#a_LCDNova"/>
-					</Grid>
-				</Border>
-				<Border Grid.Column="2" BorderBrush="#808080" BorderThickness="1" CornerRadius="3" Padding="4" Margin="5" Height="130">
-					<Grid>
-						<TextBlock Text="Температура Раствора" HorizontalAlignment="Center" FontFamily="/Assets/a_lcdnova.ttf#a_LCDNova"/>
-						<TextBlock Text="NULL" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="60" FontFamily="/Assets/a_lcdnova.ttf#a_LCDNova"/>
-						<TextBlock Text="гр/ц" HorizontalAlignment="Center" VerticalAlignment="Bottom" FontFamily="/Assets/a_lcdnova.ttf#a_LCDNova"/>
-					</Grid>
-				</Border>
-			</Grid>
-        </StackPanel>
+		<ItemsControl Items="{Binding Modules}" VerticalAlignment="Stretch" HorizontalAlignment="Center">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel HorizontalAlignment="Center"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+        </ItemsControl>
     </Grid>
 </UserControl>

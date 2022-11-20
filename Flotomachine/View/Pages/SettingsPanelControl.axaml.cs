@@ -1,19 +1,10 @@
-using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
+namespace Flotomachine.View;
 
-namespace Flotomachine.View
+public partial class SettingsPanelControl : UserControlBase 
 {
-    public partial class SettingsPanelControl : UserControl
+
+    public SettingsPanelControl()
     {
-
-        public SettingsPanelControl()
-        {
-            InitializeComponent();
-        }
-
-        private void InitializeComponent()
-        {
-            AvaloniaXamlLoader.Load(this);
-        }
+        InitializeComponent();
     }
 }

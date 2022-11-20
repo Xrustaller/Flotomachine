@@ -52,6 +52,11 @@ public class UpdateWindowViewModel : ViewModelBase
     {
         ButtonsEnable = false;
         string path = UpdateService.DownloadLatestReleaseFile();
+        if (string.IsNullOrEmpty(path))
+        {
+            Text.Text = "Ошибка получения файла";
+            return;
+        }
         Text.Text = "Запуск обновления\nОбновление длится 1-5 мин.\nПрограмма будет закрыта и перезапущена\nНе выключайте компьютер и не запускайте программу заново";
         Task.Run(() =>
         {

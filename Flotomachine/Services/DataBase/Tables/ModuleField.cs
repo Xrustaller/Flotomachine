@@ -20,11 +20,12 @@ public class ModuleField
     public string FieldName { get; set; }
 
     [Column("start_address")]
-    public int StartAddress { get; set; }
+    public byte StartAddress { get; set; }
 
     [Column("value_name")]
     public string ValueName { get; set; }
 
     [Column("active")]
     public bool Active { get; set; }
+
 }

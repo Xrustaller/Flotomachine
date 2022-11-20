@@ -1,10 +1,9 @@
 ﻿using Modbus.Device;
-using Modbus.Utility;
 using System;
 using System.Collections.Generic;
 using System.IO.Ports;
 using System.Threading;
-using System.Timers;
+using Flotomachine.ViewModels;
 using Timer = System.Timers.Timer;
 
 namespace Flotomachine.Services;
@@ -19,13 +18,21 @@ public enum ModBusState
 
 public static class ModBusService
 {
-    private static string _serialPort;
-    private static int _baudRate;
+    private static Thread _thread;
+    private static bool _exit;
+
+    private static string _serialPortName;
+    private static int _serialPortBaudRate;
     private static ModBusState _state = ModBusState.Close;
 
-    public static SerialPort SerialPort { get; private set; }
+    private static SerialPort _serialPort;
     private static ModbusSerialMaster _bus;
-    private static bool _exit;
+
+    private static List<ModuleField> _fields;
+    private static readonly List<ExperimentDataValue> Data = new();
+
+    private static Experiment _experiment;
+    private static Timer _experimentTimer;
 
     public static ModBusState State
     {
@@ -41,22 +48,14 @@ public static class ModBusService
     //public readonly int[] PinRaspberryList = { 4, 5, 6, 12, 13, 17, 18, 22, 23, 24, 25, 26, 27 };
 
     public static event Action<ModBusState> StatusChanged;
-    public static event Action<List<ExperimentDataValue>> DataCollected;
-
-    public static Thread Thread;
-
-    private static List<ModuleField> _fields;
-    private static readonly List<ExperimentDataValue> _datas = new();
-
-    private static Experiment _experiment;
-    private static Timer _experimentTimer;
+    public static event Action<List<HomeModuleDataViewModel>> DataCollected;
 
     public static Exception Initialize()
     {
         try
         {
-            Thread = new Thread(ThisThread) { Name = "ModBusServise" };
-            Thread.Start();
+            _thread = new Thread(ThisThread) { Name = "ModBusServise" };
+            _thread.Start();
             return null;
         }
         catch (Exception e)
@@ -65,82 +64,25 @@ public static class ModBusService
         }
     }
 
-    private static void CreatePort()
-    {
-        _fields = DataBaseService.GetAllModulesFields();
-
-        while (State is ModBusState.Error or ModBusState.Close && !_exit)
-        {
-            if (SerialPort is { IsOpen: true })
-            {
-                SerialPort.Close();
-                State = ModBusState.Close;
-            }
-
-            _serialPort = App.Settings.Configuration.Serial.Port;
-            _baudRate = App.Settings.Configuration.Serial.BaudRate;
-
-            SerialPort = new SerialPort(_serialPort);
-            SerialPort.BaudRate = _baudRate;
-            SerialPort.DataBits = 8;
-            SerialPort.StopBits = StopBits.One;
-            SerialPort.Parity = Parity.None;
-            try
-            {
-                SerialPort.Open();
-            }
-            catch (Exception)
-            {
-                State = ModBusState.Error;
-                Thread.Sleep(500);
-                continue;
-            }
-            _bus = ModbusSerialMaster.CreateRtu(SerialPort);
-            _bus.Transport.ReadTimeout = 200;
-            _bus.Transport.WriteTimeout = 200;
-            State = ModBusState.Wait;
-        }
-    }
-
-    private static void ReadAllModules()
-    {
-        lock (_datas)
-        {
-            _datas.Clear();
-            foreach (ModuleField field in _fields)
-            {
-                ushort? data = ReadInputRegisters((byte)field.ModuleId, (byte)field.StartAddress);
-                if (data != null)
-                {
-                    _datas.Add(new ExperimentDataValue(field, data.Value));
-                }
-            }
-            DataCollected?.Invoke(_datas);
-        }
-    }
-
     private static void ThisThread()
     {
-        CreatePort();
+        RefreshPort();
 
         while (!_exit)
         {
-            if (_serialPort != App.Settings.Configuration.Serial.Port || _baudRate != App.Settings.Configuration.Serial.BaudRate)
+            if (_serialPortName != App.Settings.Configuration.Serial.Port || _serialPortBaudRate != App.Settings.Configuration.Serial.BaudRate)
             {
-                CreatePort();
+                RefreshPort();
             }
-
-
 
             bool? expInput = ReadInputs(App.Settings.Configuration.Main.MainTimerModuleId, 7);
 
             if (expInput == null)
             {
                 State = ModBusState.Error;
-                continue;
             }
 
-            ReadAllModules();
+            ReadAndViewAllModules();
 
             switch (State)
             {
@@ -155,7 +97,17 @@ public static class ModBusService
 
                             _experimentTimer = new Timer(timer * 1000);
                             _experimentTimer.AutoReset = true;
-                            _experimentTimer.Elapsed += TimerElapsed;
+                            _experimentTimer.Elapsed += (_, _) =>
+                            {
+                                lock (Data)
+                                {
+                                    lock (_experiment)
+                                    {
+                                        ExperimentData data = DataBaseService.AddExperimentData(_experiment);
+                                        DataBaseService.AddExperimentDataValues(data, Data);
+                                    }
+                                }
+                            };
                             _experimentTimer.Start();
                         }
                         break;
@@ -173,6 +125,11 @@ public static class ModBusService
                         }
                         break;
                     }
+                case ModBusState.Error:
+                {
+                    RefreshPort();
+                    break;
+                }
 
             }
 
@@ -180,15 +137,69 @@ public static class ModBusService
         }
     }
 
-    private static void TimerElapsed(object source, ElapsedEventArgs e)
+    private static void RefreshPort()
     {
-        lock (_datas)
+        _fields = DataBaseService.GetModulesFields();
+
+        while (State is ModBusState.Error or ModBusState.Close && !_exit)
         {
-            lock (_experiment)
+            if (_serialPort is { IsOpen: true })
             {
-                ExperimentData data = DataBaseService.AddExperimentData(_experiment);
-                DataBaseService.AddExperimentDataValues(data, _datas);
+                _serialPort.Close();
+                State = ModBusState.Close;
             }
+
+            _serialPortName = App.Settings.Configuration.Serial.Port;
+            _serialPortBaudRate = App.Settings.Configuration.Serial.BaudRate;
+
+            _serialPort = new SerialPort(_serialPortName)
+            {
+                BaudRate = _serialPortBaudRate,
+                DataBits = 8,
+                StopBits = StopBits.One,
+                Parity = Parity.None
+            };
+
+            try
+            {
+                _serialPort.Open();
+            }
+            catch (Exception)
+            {
+                ReadAndViewAllModules();
+                State = ModBusState.Error;
+                Thread.Sleep(800);
+                continue;
+            }
+            _bus = ModbusSerialMaster.CreateRtu(_serialPort);
+            _bus.Transport.ReadTimeout = 200;
+            _bus.Transport.WriteTimeout = 200;
+            State = ModBusState.Wait;
+        }
+    }
+
+    private static void ReadAndViewAllModules()
+    {
+        lock (Data)
+        {
+            Data.Clear();
+            List<HomeModuleDataViewModel> modules = new();
+            foreach (ModuleField field in _fields)
+            {
+                if (field.Active)
+                {
+                    continue;
+                }
+
+                ushort? data = ReadInputRegisters(field.ModuleId, field.StartAddress);
+                if (data != null)
+                {
+                    Data.Add(new ExperimentDataValue(field, data.Value));
+                }
+                modules.Add(new HomeModuleDataViewModel(field.FieldName, data?.ToString() ?? "NULL", field.ValueName));
+            }
+
+            DataCollected?.Invoke(modules);
         }
     }
 
@@ -199,6 +210,11 @@ public static class ModBusService
 
     private static ushort? ReadInputRegisters(byte slaveId, ushort startAdd)
     {
+        if (_bus == null)
+        {
+            return null;
+        }
+
         try
         {
             return _bus.ReadInputRegisters(slaveId, startAdd, 1)[0];
@@ -211,6 +227,11 @@ public static class ModBusService
 
     private static bool? ReadInputs(byte slaveId, ushort startAdd)
     {
+        if (_bus == null)
+        {
+            return null;
+        }
+
         try
         {
             return _bus.ReadInputs(slaveId, startAdd, 1)[0];
@@ -221,76 +242,76 @@ public static class ModBusService
         }
     }
 
-    public static void ModbusSerialRtuMasterWriteRegisters()
-    {
-        using SerialPort port = new SerialPort("COM1");
-        // configure serial port
-        port.BaudRate = 9600;
-        port.DataBits = 8;
-        port.Parity = Parity.None;
-        port.StopBits = StopBits.One;
-        port.Open();
+    //public static void ModbusSerialRtuMasterWriteRegisters()
+    //{
+    //    using SerialPort port = new SerialPort("COM1");
+    //    // configure serial port
+    //    port.BaudRate = 9600;
+    //    port.DataBits = 8;
+    //    port.Parity = Parity.None;
+    //    port.StopBits = StopBits.One;
+    //    port.Open();
 
-        // create modbus master
-        IModbusSerialMaster master = ModbusSerialMaster.CreateRtu(port);
+    //    // create modbus master
+    //    IModbusSerialMaster master = ModbusSerialMaster.CreateRtu(port);
 
-        byte slaveId = 1;
-        ushort startAddress = 100;
-        ushort[] registers = new ushort[] { 1, 2, 65535 };
+    //    byte slaveId = 1;
+    //    ushort startAddress = 100;
+    //    ushort[] registers = new ushort[] { 1, 2, 65535 };
 
-        // write three registers
-        master.WriteMultipleRegisters(slaveId, startAddress, registers);
-    }
+    //    // write three registers
+    //    master.WriteMultipleRegisters(slaveId, startAddress, registers);
+    //}
 
-    public static void ModbusSerialRtuMasterReadRegisters()
-    {
-        using SerialPort port = new SerialPort("COM1");
-        // configure serial port
-        port.BaudRate = 9600;
-        port.DataBits = 8;
-        port.Parity = Parity.None;
-        port.StopBits = StopBits.One;
-        port.Open();
+    //public static void ModbusSerialRtuMasterReadRegisters()
+    //{
+    //    using SerialPort port = new SerialPort("COM1");
+    //    // configure serial port
+    //    port.BaudRate = 9600;
+    //    port.DataBits = 8;
+    //    port.Parity = Parity.None;
+    //    port.StopBits = StopBits.One;
+    //    port.Open();
 
-        // create modbus master
-        IModbusSerialMaster master = ModbusSerialMaster.CreateRtu(port);
+    //    // create modbus master
+    //    IModbusSerialMaster master = ModbusSerialMaster.CreateRtu(port);
 
-        byte slaveId = 1;
-        ushort startAddress = 1;
+    //    byte slaveId = 1;
+    //    ushort startAddress = 1;
 
-        // read three registers
-        ushort[] registers = master.ReadHoldingRegisters(slaveId, startAddress, 8);
-        //uint value = ModbusUtility.GetUInt32(registers[0], registers[1]);
-    }
+    //    // read three registers
+    //    ushort[] registers = master.ReadHoldingRegisters(slaveId, startAddress, 8);
+    //    //uint value = ModbusUtility.GetUInt32(registers[0], registers[1]);
+    //}
 
-    /// <summary>
-    ///     Write a 32 bit value.
-    /// </summary>
-    public static void ReadWrite32BitValue()
-    {
-        using SerialPort port = new SerialPort("COM1");
-        // configure serial port
-        port.BaudRate = 9600;
-        port.DataBits = 8;
-        port.Parity = Parity.None;
-        port.StopBits = StopBits.One;
-        port.Open();
+    ///// <summary>
+    /////     Write a 32 bit value.
+    ///// </summary>
+    //public static void ReadWrite32BitValue()
+    //{
+    //    using SerialPort port = new SerialPort("COM1");
+    //    // configure serial port
+    //    port.BaudRate = 9600;
+    //    port.DataBits = 8;
+    //    port.Parity = Parity.None;
+    //    port.StopBits = StopBits.One;
+    //    port.Open();
 
-        // create modbus master
-        ModbusSerialMaster master = ModbusSerialMaster.CreateRtu(port);
+    //    // create modbus master
+    //    ModbusSerialMaster master = ModbusSerialMaster.CreateRtu(port);
 
-        byte slaveId = 1;
-        ushort startAddress = 1008;
-        uint largeValue = ushort.MaxValue + 5;
+    //    byte slaveId = 1;
+    //    ushort startAddress = 1008;
+    //    uint largeValue = ushort.MaxValue + 5;
 
-        ushort lowOrderValue = BitConverter.ToUInt16(BitConverter.GetBytes(largeValue), 0);
-        ushort highOrderValue = BitConverter.ToUInt16(BitConverter.GetBytes(largeValue), 2);
+    //    ushort lowOrderValue = BitConverter.ToUInt16(BitConverter.GetBytes(largeValue), 0);
+    //    ushort highOrderValue = BitConverter.ToUInt16(BitConverter.GetBytes(largeValue), 2);
 
-        // write large value in two 16 bit chunks
-        master.WriteMultipleRegisters(slaveId, startAddress, new ushort[] { lowOrderValue, highOrderValue });
+    //    // write large value in two 16 bit chunks
+    //    master.WriteMultipleRegisters(slaveId, startAddress, new ushort[] { lowOrderValue, highOrderValue });
 
-        // read large value in two 16 bit chunks and perform conversion
-        ushort[] registers = master.ReadHoldingRegisters(slaveId, startAddress, 2);
-        uint value = ModbusUtility.GetUInt32(registers[1], registers[0]);
-    }
+    //    // read large value in two 16 bit chunks and perform conversion
+    //    ushort[] registers = master.ReadHoldingRegisters(slaveId, startAddress, 2);
+    //    uint value = ModbusUtility.GetUInt32(registers[1], registers[0]);
+    //}
 }

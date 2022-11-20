@@ -1,8 +1,15 @@
 ﻿using ReactiveUI;
 
-namespace Flotomachine.ViewModels
+namespace Flotomachine.ViewModels;
+
+public class ViewModelBase : ReactiveObject
 {
-    public class ViewModelBase : ReactiveObject
+    public ViewModelBase()
+    {
+
+    }
+
+    public virtual void OnDestroy()
     {
 
     }

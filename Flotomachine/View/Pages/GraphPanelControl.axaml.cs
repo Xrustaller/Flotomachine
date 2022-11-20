@@ -1,18 +1,8 @@
-using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
-
-namespace Flotomachine.View
+namespace Flotomachine.View;
+public partial class GraphPanelControl : UserControlBase
 {
-    public partial class GraphPanelControl : UserControl
+    public GraphPanelControl()
     {
-        public GraphPanelControl()
-        {
-            InitializeComponent();
-        }
-
-        private void InitializeComponent()
-        {
-            AvaloniaXamlLoader.Load(this);
-        }
+        InitializeComponent();
     }
 }

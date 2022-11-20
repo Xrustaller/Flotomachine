@@ -1,11 +1,10 @@
 using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
 
 namespace Flotomachine.View
 {
-    public partial class HomePanelControl : UserControlBase
+    public partial class HomeModuleDataPanelControl : UserControlBase
     {
-        public HomePanelControl()
+        public HomeModuleDataPanelControl()
         {
             InitializeComponent();
         }

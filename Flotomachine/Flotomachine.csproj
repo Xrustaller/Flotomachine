@@ -82,6 +82,9 @@
     <Compile Update="View\Pages\CameraPanelControl.axaml.cs">
       <DependentUpon>CameraPanelControl.axaml</DependentUpon>
     </Compile>
+    <Compile Update="View\Pages\HomeModuleDataPanelControl.axaml.cs">
+      <DependentUpon>HomeModuleDataPanelControl.axaml</DependentUpon>
+    </Compile>
     <Compile Update="View\ReadCardWindow.axaml.cs">
       <DependentUpon>ReadCardWindow.axaml</DependentUpon>
     </Compile>
