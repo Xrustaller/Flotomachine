@@ -1,9 +1,11 @@
 ﻿using Flotomachine.ViewModels;
 using System.Collections.Generic;
 using System;
+using System.IO;
 using Avalonia.Media.Imaging;
 using System.Timers;
 using System.Threading;
+using Flotomachine.Utility;
 using Timer = System.Timers.Timer;
 
 namespace Flotomachine.Services;
@@ -14,19 +16,9 @@ public class CameraService
     private static bool _exit;
 
     public static event Action<IBitmap> DataCollected;
-    public static Timer ThisTimer;
     
-    static CameraService()
-    {
-        ThisTimer = new Timer(5000);
-        ThisTimer.AutoReset = true;
-        ThisTimer.Elapsed += ThisTimerOnElapsed;
-        ThisTimer.Start();
-    }
-
     public static Exception Initialize()
     {
-        return null;
         try
         {
             _thread = new Thread(ThisThread) { Name = "CameraService" };
@@ -43,14 +35,31 @@ public class CameraService
     {
         while (!_exit)
         {
+            if (DataCollected?.GetInvocationList().Length > 0)
+            {
+                byte[] imageBytes = HttpHelper.DownloadFile(App.Settings.Configuration.Main.CamIp + "/photo");
+                //byte[] imageBytes = HttpHelper.DownloadFile("https://hsto.org/files/fde/a29/431/fdea29431e444674a089b5804fbf2634.jpg");
+                if (imageBytes == null)
+                {
+                    DataCollected?.Invoke(null);
+                }
+                else
+                {
+                    MemoryStream ms = new(imageBytes);
+                    Bitmap bm = new(ms);
+                    DataCollected?.Invoke(bm);
+                }
 
+                Thread.Sleep(200);
+            }
+            Thread.Sleep(800);
         }
     }
 
-    private static void ThisTimerOnElapsed(object sender, ElapsedEventArgs e)
-    {
-        DataCollected?.Invoke(null);
-    }
+    //private static void ThisTimerOnElapsed(object sender, ElapsedEventArgs e)
+    //{
+    //    DataCollected?.Invoke(null);
+    //}
 
     public static void Exit()
     {

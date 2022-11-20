@@ -186,7 +186,7 @@ public static class ModBusService
             List<HomeModuleDataViewModel> modules = new();
             foreach (ModuleField field in _fields)
             {
-                if (field.Active)
+                if (!field.Active)
                 {
                     continue;
                 }
@@ -196,7 +196,9 @@ public static class ModBusService
                 {
                     Data.Add(new ExperimentDataValue(field, data.Value));
                 }
-                modules.Add(new HomeModuleDataViewModel(field.FieldName, data?.ToString() ?? "NULL", field.ValueName));
+
+                var module = DataBaseService.GetModule(field.ModuleId).Name;
+                modules.Add(new HomeModuleDataViewModel($"{module} - {field.FieldName}", data?.ToString() ?? "NULL", field.ValueName));
             }
 
             DataCollected?.Invoke(modules);

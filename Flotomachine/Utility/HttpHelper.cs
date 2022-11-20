@@ -32,7 +32,7 @@ public static class HttpHelper
         return await HttpClient.GetStringAsync(uriResult);
     }
 
-    public static void DownloadFile(string uri, string outputPath)
+    public static void FileDownloadAndSave(string uri, string outputPath)
     {
         if (!Uri.TryCreate(uri, UriKind.Absolute, out Uri uriResult))
         {
@@ -48,6 +48,35 @@ public static class HttpHelper
         Task<byte[]> fileBytes = HttpClient.GetByteArrayAsync(uriResult);
         fileBytes.Wait();
         File.WriteAllBytes(outputPath, fileBytes.Result);
+    }
+
+    public static Task<byte[]> DownloadFileAsync(string uri)
+    {
+        if (!Uri.TryCreate(uri, UriKind.Absolute, out Uri uriResult))
+        {
+            throw new InvalidOperationException("URI is invalid.");
+        }
+
+        return HttpClient.GetByteArrayAsync(uriResult);
+    }
+
+    public static byte[] DownloadFile(string uri)
+    {
+        if (!Uri.TryCreate(uri, UriKind.Absolute, out Uri uriResult))
+        {
+            throw new InvalidOperationException("URI is invalid.");
+        }
+
+        try
+        {
+            Task<byte[]> fileBytes = HttpClient.GetByteArrayAsync(uriResult);
+            fileBytes.Wait();
+            return fileBytes.Result;
+        }
+        catch (Exception)
+        {
+            return null;
+        }
     }
 
     public static async void DownloadFileAsync(string uri, string outputPath)

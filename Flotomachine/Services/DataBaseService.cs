@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Flotomachine.Utility;
+using Iot.Device.SocketCan;
 
 namespace Flotomachine.Services;
 
@@ -16,7 +17,7 @@ public static class DataBaseService
         string fullPath = Path.Join(path, App.Settings.Configuration.DataBase.FileName);
         if (!File.Exists(fullPath))
         {
-            HttpHelper.DownloadFile(App.Settings.Configuration.Main.DefaultDataBaseUrl, fullPath);
+            HttpHelper.FileDownloadAndSave(App.Settings.Configuration.Main.DefaultDataBaseUrl, fullPath);
         }
 
         try
@@ -54,7 +55,6 @@ public static class DataBaseService
         }
         catch (Exception e)
         {
-            // DataBase.
             return e;
         }
     }
@@ -88,28 +88,14 @@ public static class DataBaseService
     public static List<CardId> GetCardIds(int id) => DataBase.CardIds.Where(p => p.UserId == id).ToList();
 
     public static CardId GetCard(int id) => DataBase.CardIds.FirstOrDefault(p => p.Id == id);
-
     public static CardId GetCard(byte[] cardBytes) => DataBase.CardIds.FirstOrDefault(p => p.CardBytes == cardBytes);
 
-    public static void CreateCard(User user, byte[] cardId)
-    {
-        DataBase.CardIds.Add(new CardId(user, cardId));
-        DataBase.SaveChanges();
-    }
-
-    public static void CreateCard(int user, byte[] cardId)
-    {
-        DataBase.CardIds.Add(new CardId(user, cardId));
-        DataBase.SaveChanges();
-    }
-
-    public static void DeleteCard(CardId card)
-    {
-        DataBase.CardIds.Remove(card);
-        DataBase.SaveChanges();
-    }
+    public static void CreateCard(User user, byte[] cardId) => GetAndSet(context => context.CardIds.Add(new CardId(user, cardId)));
+    public static void CreateCard(int user, byte[] cardId) => GetAndSet(context => context.CardIds.Add(new CardId(user, cardId)));
+    public static void DeleteCard(CardId card) => GetAndSet(context => context.CardIds.Remove(card));
 
     public static List<Module> GetActiveModules() => DataBase.Modules.Where(p => p.Active).ToList();
+    public static Module GetModule(int moduleId) => DataBase.Modules.FirstOrDefault(p => p.Id == moduleId);
     public static List<ModuleField> GetActiveModulesFields() => DataBase.ModuleFields.Where(p => p.Active).ToList();
     public static List<ModuleField> GetActiveModulesFields(int moduleId) => DataBase.ModuleFields.Where(p => p.ModuleId == moduleId && p.Active).ToList();
     public static List<ModuleField> GetActiveModulesFields(Module module) => DataBase.ModuleFields.Where(p => p.ModuleId == module.Id && p.Active).ToList();
@@ -132,33 +118,32 @@ public static class DataBaseService
     public static Experiment CreateExperiment(User user, int timerTick)
     {
         Experiment experiment = new Experiment(user, timerTick);
-        DataBase.Experiments.Add(experiment);
-        DataBase.SaveChanges();
+        GetAndSet(context => context.Experiments.Add(experiment));
         return experiment;
     }
 
     public static Experiment UpdateExperiment(Experiment experiment)
     {
-        DataBase.Experiments.Update(experiment);
-        DataBase.SaveChanges();
+        GetAndSet(context => context.Experiments.Update(experiment));
         return experiment;
     }
 
     public static ExperimentData AddExperimentData(Experiment experiment)
     {
         ExperimentData data = new ExperimentData(experiment);
-        DataBase.ExperimentDatas.Add(data);
-        DataBase.SaveChanges();
+        GetAndSet(context => context.ExperimentDatas.Add(data));
         return data;
     }
 
     public static void AddExperimentDataValues(ExperimentData experimentData, List<ExperimentDataValue> datas)
     {
-        foreach (ExperimentDataValue data in datas)
+        GetAndSet(context =>
         {
-            data.ExperimentDataId = experimentData.Id;
-            DataBase.ExperimentDataValues.Add(data);
-        }
-        DataBase.SaveChanges();
+            foreach (ExperimentDataValue data in datas)
+            {
+                data.ExperimentDataId = experimentData.Id;
+                context.ExperimentDataValues.Add(data);
+            }
+        });
     }
 }
