@@ -42,8 +42,7 @@ internal class Program
         }
         finally
         {
-            ModBusService.Exit();
-            CameraService.Exit();
+            App.Exit();
         }
     }
 

@@ -3,17 +3,18 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:viewModels="clr-namespace:Flotomachine.ViewModels"
+             xmlns:elements="clr-namespace:Flotomachine.Elements"
              mc:Ignorable="d" d:DesignWidth="764"
              x:Class="Flotomachine.View.HomePanelControl"
              Background="#DD000000">
 	<UserControl.DataContext>
 		<viewModels:HomePanelControlViewModel/>
     </UserControl.DataContext>
-    <Grid>
-		<ItemsControl Items="{Binding Modules}" VerticalAlignment="Stretch" HorizontalAlignment="Center">
+    <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+		<ItemsControl Items="{Binding Modules}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <WrapPanel HorizontalAlignment="Center"/>
+					<elements:FillingWrapPanel VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
         </ItemsControl>

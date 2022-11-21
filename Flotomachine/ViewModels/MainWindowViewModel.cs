@@ -468,8 +468,7 @@ public class MainWindowViewModel : ViewModelBase
 
     private void Closed(object parameter)
     {
-        ModBusService.Exit();
-        CameraService.Exit();
+        App.Exit();
     }
 
     private string _testText;

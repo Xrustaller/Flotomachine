@@ -62,4 +62,10 @@ public partial class App : Application
 
         base.OnFrameworkInitializationCompleted();
     }
+
+    public static void Exit()
+    {
+        ModBusService.Exit();
+        CameraService.Exit();
+    }
 }
