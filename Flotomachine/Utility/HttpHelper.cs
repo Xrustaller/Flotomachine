@@ -95,5 +95,5 @@ public static class HttpHelper
         byte[] fileBytes = await HttpClient.GetByteArrayAsync(uriResult);
         await File.WriteAllBytesAsync(outputPath, fileBytes);
     }
-    
+
 }

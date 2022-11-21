@@ -1,8 +1,8 @@
 ﻿using Avalonia.Threading;
 using Flotomachine.Services;
+using Flotomachine.View;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using Flotomachine.View;
 
 namespace Flotomachine.ViewModels;
 
@@ -12,7 +12,7 @@ public class HomePanelControlViewModel : ViewModelBase
 
     public HomePanelControlViewModel()
     {
-            
+
     }
 
     public HomePanelControlViewModel(MainWindowViewModel mainWindowViewModel)

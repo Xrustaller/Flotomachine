@@ -1,12 +1,8 @@
-﻿using Flotomachine.ViewModels;
-using System.Collections.Generic;
+﻿using Avalonia.Media.Imaging;
+using Flotomachine.Utility;
 using System;
 using System.IO;
-using Avalonia.Media.Imaging;
-using System.Timers;
 using System.Threading;
-using Flotomachine.Utility;
-using Timer = System.Timers.Timer;
 
 namespace Flotomachine.Services;
 
@@ -16,7 +12,7 @@ public class CameraService
     private static bool _exit;
 
     public static event Action<IBitmap> DataCollected;
-    
+
     public static Exception Initialize()
     {
         try

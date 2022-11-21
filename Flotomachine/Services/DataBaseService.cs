@@ -1,10 +1,9 @@
-﻿using JetBrains.Annotations;
+﻿using Flotomachine.Utility;
+using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Flotomachine.Utility;
-using Iot.Device.SocketCan;
 
 namespace Flotomachine.Services;
 
@@ -69,7 +68,7 @@ public static class DataBaseService
         DataBase.SaveChanges();
         return GetUser(user.Username);
     }
-    
+
     public static List<User> GetUsers() => DataBase.Users.ToList(); //.Where(p => !p.IsDelete())
 
     [CanBeNull]

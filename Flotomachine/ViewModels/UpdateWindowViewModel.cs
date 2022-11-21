@@ -1,6 +1,5 @@
-﻿using System;
-using System.Diagnostics;
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
+using Avalonia.Threading;
 using Flotomachine.Services;
 using Flotomachine.Utility;
 using ReactiveUI;
@@ -8,7 +7,6 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using Avalonia.Threading;
 
 namespace Flotomachine.ViewModels;
 

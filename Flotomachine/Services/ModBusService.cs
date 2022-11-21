@@ -1,9 +1,9 @@
-﻿using Modbus.Device;
+﻿using Flotomachine.ViewModels;
+using Modbus.Device;
 using System;
 using System.Collections.Generic;
 using System.IO.Ports;
 using System.Threading;
-using Flotomachine.ViewModels;
 using Timer = System.Timers.Timer;
 
 namespace Flotomachine.Services;
@@ -126,10 +126,10 @@ public static class ModBusService
                         break;
                     }
                 case ModBusState.Error:
-                {
-                    RefreshPort();
-                    break;
-                }
+                    {
+                        RefreshPort();
+                        break;
+                    }
 
             }
 

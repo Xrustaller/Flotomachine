@@ -12,7 +12,7 @@ public class HomeModuleDataViewModel : ViewModelBase
     {
 
     }
-    
+
     public HomeModuleDataViewModel(string name, string value, string valueName)
     {
         Name = name;

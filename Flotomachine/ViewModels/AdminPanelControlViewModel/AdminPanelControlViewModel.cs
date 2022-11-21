@@ -1,10 +1,9 @@
-﻿using System;
-using Flotomachine.Services;
+﻿using Flotomachine.Services;
+using Flotomachine.Utility;
 using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Reflection;
 using System.Windows.Input;
-using Flotomachine.Utility;
 
 namespace Flotomachine.ViewModels;
 
@@ -136,7 +135,7 @@ public class AdminPanelControlViewModel : ViewModelBase
     public ICommand DeleteUserClick { get; }
 
     public ICommand SystemSettings { get; }
-    
+
 
     #endregion
 

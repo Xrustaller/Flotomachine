@@ -1,6 +1,6 @@
 namespace Flotomachine.View;
 
-public partial class SettingsPanelControl : UserControlBase 
+public partial class SettingsPanelControl : UserControlBase
 {
 
     public SettingsPanelControl()
