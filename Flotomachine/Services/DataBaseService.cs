@@ -16,7 +16,7 @@ public static class DataBaseService
         string fullPath = Path.Join(path, App.Settings.Configuration.DataBase.FileName);
         if (!File.Exists(fullPath))
         {
-            HttpHelper.FileDownloadAndSave(App.Settings.Configuration.Main.DefaultDataBaseUrl, fullPath);
+            HttpHelper.FileDownloadAndSave(App.Settings.Configuration.DataBase.DefaultDataBaseUrl, fullPath);
         }
 
         try
@@ -61,7 +61,7 @@ public static class DataBaseService
     [CanBeNull]
     public static User GetUser(string username) => DataBase.Users.FirstOrDefault(p => p.Username == username); //.Where(p => !p.IsDelete())
 
-    public static User CreateUser(string username, string passhash) => CreateUser(new User(username, passhash));
+    public static User CreateUser(string username, string passHash) => CreateUser(new User(username, passHash));
     public static User CreateUser(User user)
     {
         DataBase.Users.Add(user);

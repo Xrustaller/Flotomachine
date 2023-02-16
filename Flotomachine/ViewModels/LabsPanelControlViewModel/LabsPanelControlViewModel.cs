@@ -1,4 +1,5 @@
-﻿using Flotomachine.Utility;
+﻿using Flotomachine.Services;
+using Flotomachine.Utility;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
@@ -10,9 +11,10 @@ namespace Flotomachine.ViewModels;
 public class LabsPanelControlViewModel : ViewModelBase
 {
     private readonly MainWindowViewModel _mainWindowViewModel;
-
 #if DEBUG
-    public Dictionary<int, List<ExpObj>> DebugTestObj = new();
+    private bool _debug = true;
+#else
+    private bool _debug = false;
 #endif
 
     private int _experimentSelected;
@@ -48,6 +50,8 @@ public class LabsPanelControlViewModel : ViewModelBase
 
     }
 
+    Dictionary<int, List<ExpObj>> DebugTestObj = new();
+
     public LabsPanelControlViewModel(MainWindowViewModel mainWindowViewModel)
     {
         _mainWindowViewModel = mainWindowViewModel;
@@ -56,30 +60,32 @@ public class LabsPanelControlViewModel : ViewModelBase
         PrintExperimentButtonClick = new DelegateCommand(PrintExperiment);
         DeleteExperimentButtonClick = new DelegateCommand(DeleteExperiment);
 
-#if DEBUG
-        for (int i = 1; i <= 50; i++)
+        if (_debug)
         {
-            List<ExpObj> items = new();
-            for (int x = 1; x <= 50; x++)
+
+            for (int i = 1; i <= 50; i++)
             {
-                items.Add(new ExpObj(DateTime.Now.ToLongTimeString(), DateTime.Now.Minute.ToString() + ":" + x, DateTime.Now.Minute.ToString() + ":" + i, "25", "750", (x + i).ToString(), "0"));
+                List<ExpObj> items = new();
+                for (int x = 1; x <= 50; x++)
+                {
+                    items.Add(new ExpObj(DateTime.Now.ToLongTimeString(), DateTime.Now.Minute.ToString() + ":" + x, DateTime.Now.Minute.ToString() + ":" + i, "25", "750", (x + i).ToString(), "0"));
+                }
+                DebugTestObj.Add(i, items);
             }
-            DebugTestObj.Add(i, items);
+
+            ExperimentCollection.Clear();
+            foreach (var item in DebugTestObj)
+            {
+                ExperimentCollection.Add(item.Key);
+            }
+            return;
         }
 
-        ExperimentCollection.Clear();
-        foreach (var item in DebugTestObj)
-        {
-            ExperimentCollection.Add(item.Key);
-        }
-
-#else
         ExperimentCollection.Clear();
         foreach (int item in DataBaseService.GetExperiments(_mainWindowViewModel.CurrentUser))
         {
             ExperimentCollection.Add(item);
         }
-#endif
     }
 
     public ICommand ExportExcelExperimentButtonClick { get; }
@@ -90,18 +96,19 @@ public class LabsPanelControlViewModel : ViewModelBase
     {
         VisibleExperiment = true;
         Experiment.Clear();
-#if DEBUG
-        foreach (var item in DebugTestObj[experimentId])
+        if (_debug)
         {
-            Experiment.Add(item);
+            foreach (var item in DebugTestObj[experimentId])
+            {
+                Experiment.Add(item);
+            }
+            return;
         }
-#else
+
         foreach (var item in DataBaseService.GetExperimentData(experimentId))
         {
             Experiment.Add(new ExpObj(item));
         }
-#endif
-
     }
 
     public void ExportExcelExperiment(object obj)

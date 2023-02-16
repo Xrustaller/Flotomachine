@@ -33,7 +33,7 @@ public class CameraService
         {
             if (DataCollected?.GetInvocationList().Length > 0)
             {
-                byte[] imageBytes = HttpHelper.DownloadFile(App.Settings.Configuration.Main.CamIp + "/photo");
+                byte[] imageBytes = HttpHelper.DownloadFile(App.Settings.Configuration.Camera.Url + "/photo");
                 //byte[] imageBytes = HttpHelper.DownloadFile("https://hsto.org/files/fde/a29/431/fdea29431e444674a089b5804fbf2634.jpg");
                 if (imageBytes == null)
                 {
@@ -41,12 +41,12 @@ public class CameraService
                 }
                 else
                 {
-                    MemoryStream ms = new(imageBytes);
-                    Bitmap bm = new(ms);
-                    DataCollected?.Invoke(bm);
+                    using MemoryStream ms = new(imageBytes);
+                    DataCollected?.Invoke(new Bitmap(ms));
                 }
 
                 Thread.Sleep(200);
+                continue;
             }
             Thread.Sleep(800);
         }

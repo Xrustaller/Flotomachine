@@ -197,7 +197,7 @@ public static class ModBusService
                     Data.Add(new ExperimentDataValue(field, data.Value));
                 }
 
-                var module = DataBaseService.GetModule(field.ModuleId).Name;
+                string module = DataBaseService.GetModule(field.ModuleId).Name;
                 modules.Add(new HomeModuleDataViewModel($"{module} - {field.FieldName}", data?.ToString() ?? "NULL", field.ValueName));
             }
 
