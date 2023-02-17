@@ -44,7 +44,7 @@ public class MainWindowViewModel : ViewModelBase
 
     private InfoViewModel _userUserInfo;
 
-    private User _currentUser = null;
+    private User? _currentUser;
     private UserControlBase _mainContentControl;
     private bool _loginBool;
 
@@ -159,12 +159,22 @@ public class MainWindowViewModel : ViewModelBase
 
     public ICommand OnClosed { get; }
 
-    public User CurrentUser
+    public User? CurrentUser
     {
         get => _currentUser;
         set
         {
-            _currentUser = value;
+            if (_currentUser == null)
+            {
+                _currentUser = value;
+            }
+            else
+            {
+                lock (_currentUser)
+                {
+                    _currentUser = value;
+                }
+            }
             UserChangedEvent?.Invoke(value);
         }
     }
@@ -223,7 +233,7 @@ public class MainWindowViewModel : ViewModelBase
         CameraButtonIsVisible = true;
         HomeButtonIsVisible = true;
 
-        HomeButton(null);
+        HomeButton(null!);
 
         //TestText = $"{UpdateService.NeedUpdate} - {UpdateService.NewVersion.ToShortString()}";
     }
@@ -234,7 +244,7 @@ public class MainWindowViewModel : ViewModelBase
         await Dispatcher.UIThread.InvokeAsync(CheckUpdate);
     }
 
-    private UpdateWindow _updateWindow;
+    private UpdateWindow? _updateWindow;
     public void CheckUpdate()
     {
         if (_updateWindow != null)
@@ -246,7 +256,7 @@ public class MainWindowViewModel : ViewModelBase
         {
             _updateWindow = null;
         };
-        _updateWindow.ShowDialog(_mainWindow);
+        _updateWindow?.ShowDialog(_mainWindow);
     }
 
     private void CameraButton(object parameter)
@@ -336,7 +346,7 @@ public class MainWindowViewModel : ViewModelBase
 
     private void AdminButton(object parameter)
     {
-        ((ViewModelBase)MainContentControl?.DataContext)?.OnDestroy();
+        ((ViewModelBase)MainContentControl?.DataContext!)?.OnDestroy();
         MainContentControl?.OnDestroy();
         MainContentControl = new AdminPanelControl()
         {
@@ -360,7 +370,7 @@ public class MainWindowViewModel : ViewModelBase
 
         UserInfo = new InfoViewModel();
         LoginBool = false;
-        CurrentUser = null;
+        CurrentUser = null!;
     }
 
     private void LoginButton(object parameter)
@@ -370,7 +380,7 @@ public class MainWindowViewModel : ViewModelBase
             return;
         }
 
-        User user = DataBaseService.GetUser(LoginTextBox);
+        User? user = DataBaseService.GetUser(LoginTextBox);
         if (user == null)
         {
             UserInfo = new InfoViewModel("Неверный логин", "#FF1010");
@@ -394,8 +404,8 @@ public class MainWindowViewModel : ViewModelBase
 
     private async void CardLoginButton(object parameter)
     {
-        ReadCardWindow readCard = new ReadCardWindow(App.Settings.Configuration.RfId.BusId, App.Settings.Configuration.RfId.LineId, App.Settings.Configuration.RfId.ClockFrequencySpi);
-        var result = await readCard.ShowDialog<byte[]>(App.MainWindow);
+        ReadCardWindow readCard = new(App.Settings.Configuration.RfId.BusId, App.Settings.Configuration.RfId.LineId, App.Settings.Configuration.RfId.ClockFrequencySpi);
+        byte[]? result = await readCard.ShowDialog<byte[]>(App.MainWindow);
 
         if (result == null)
         {
@@ -403,7 +413,7 @@ public class MainWindowViewModel : ViewModelBase
             return;
         }
 
-        User user = DataBaseService.GetUser(result);
+        User? user = DataBaseService.GetUser(result);
         if (user == null)
         {
             UserInfo = new InfoViewModel("Карта не зарегистрирована", "#FF1010");
@@ -419,11 +429,11 @@ public class MainWindowViewModel : ViewModelBase
         CurrentUser = user;
     }
 
-    private void RefreshButtons(User user)
+    private void RefreshButtons(User? user)
     {
-        ((ViewModelBase)MainContentControl?.DataContext)?.OnDestroy();
+        ((ViewModelBase)MainContentControl?.DataContext!)?.OnDestroy();
         MainContentControl?.OnDestroy();
-        MainContentControl = null;
+        MainContentControl = null!;
 
         if (user == null) // Если пользователь не выбран
         {
@@ -433,7 +443,7 @@ public class MainWindowViewModel : ViewModelBase
             //GraphButtonIsVisible = false;
             SettingsButtonIsVisible = false;
             AdminButtonIsVisible = false;
-            HomeButton(null);
+            HomeButton(null!);
             return;
         }
 
@@ -453,7 +463,7 @@ public class MainWindowViewModel : ViewModelBase
             SettingsButtonIsVisible = true;
             AdminButtonIsVisible = true;
 #endif
-            AdminButton(null);
+            AdminButton(null!);
             return;
         }
 
@@ -463,7 +473,7 @@ public class MainWindowViewModel : ViewModelBase
         //GraphButtonIsVisible = true;
         SettingsButtonIsVisible = true;
         AdminButtonIsVisible = false;
-        HomeButton(null);
+        HomeButton(null!);
     }
 
     private void Closed(object parameter)

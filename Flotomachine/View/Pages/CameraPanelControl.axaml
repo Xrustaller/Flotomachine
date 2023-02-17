@@ -3,12 +3,13 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:viewModels="clr-namespace:Flotomachine.ViewModels"
-             mc:Ignorable="d"
+             mc:Ignorable="d" d:DesignWidth="764" d:DesignHeight="420" 
+             MaxWidth="764" MaxHeight="420"
              x:Class="Flotomachine.View.CameraPanelControl">
-    <UserControl.DataContext>
+<UserControl.DataContext>
         <viewModels:CameraPanelControlViewModel/>
     </UserControl.DataContext>
 	<Grid>
-        <Image Source="{Binding MainImage}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"></Image>
+        <Image Source="{Binding MainImage}" Stretch="Uniform"></Image>
     </Grid>
 </UserControl>

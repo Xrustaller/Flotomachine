@@ -137,14 +137,14 @@ public class SettingsPanelControlViewModel : ViewModelBase
             return;
         }
 
+        if (!_mainWindowViewModel.CurrentUser.CheckPass(UserPass))
+        {
+            UserInfo = new InfoViewModel("Неверный пароль", "#FF1010");
+            return;
+        }
+
         if (_mainWindowViewModel.CurrentUser.Username != UserLogin)
         {
-            if (!_mainWindowViewModel.CurrentUser.CheckPass(UserPass))
-            {
-                ChangePasswordViewModel.Info = new InfoViewModel("Неверный пароль", "#FF1010");
-                return;
-            }
-
             _mainWindowViewModel.CurrentUser.Username = UserLogin;
             _mainWindowViewModel.CurrentUser.PassHash = User.GenerateHash(UserLogin, UserPass);
 
@@ -177,7 +177,7 @@ public class SettingsPanelControlViewModel : ViewModelBase
 
     private void ChangePass(object parameter)
     {
-        if (string.IsNullOrWhiteSpace(ChangePasswordViewModel.PassOne) || string.IsNullOrWhiteSpace(ChangePasswordViewModel.PassTwo))
+        if (string.IsNullOrWhiteSpace(ChangePasswordViewModel.PassOne) || string.IsNullOrWhiteSpace(ChangePasswordViewModel.PassTwo) || string.IsNullOrWhiteSpace(ChangePasswordViewModel.PassCurrent))
         {
             ChangePasswordViewModel.Info = new InfoViewModel("Заполните все поля", "#FF1010");
             return;
@@ -195,6 +195,12 @@ public class SettingsPanelControlViewModel : ViewModelBase
             return;
         }
 
+        if (!_mainWindowViewModel.CurrentUser.CheckPass(ChangePasswordViewModel.PassCurrent))
+        {
+            ChangePasswordViewModel.Info = new InfoViewModel("Неверный пароль", "#FF1010");
+            return;
+        }
+
         _mainWindowViewModel.CurrentUser.PassHash = User.GenerateHash(_mainWindowViewModel.CurrentUser.Username, ChangePasswordViewModel.PassOne);
         DataBaseService.GetAndSet(p =>
         {
@@ -204,6 +210,7 @@ public class SettingsPanelControlViewModel : ViewModelBase
         ChangePasswordViewModel.Login = "";
         ChangePasswordViewModel.PassOne = "";
         ChangePasswordViewModel.PassTwo = "";
+        ChangePasswordViewModel.PassCurrent = "";
         ChangePasswordViewModel.Info = new InfoViewModel("Успешно", "#10FF10");
     }
 

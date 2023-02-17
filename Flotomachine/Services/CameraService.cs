@@ -13,7 +13,7 @@ public class CameraService
 
     public static event Action<IBitmap> DataCollected;
 
-    public static Exception Initialize()
+    public static Exception? Initialize()
     {
         try
         {
@@ -33,8 +33,11 @@ public class CameraService
         {
             if (DataCollected?.GetInvocationList().Length > 0)
             {
+#if DEBUG
+                byte[] imageBytes = HttpHelper.DownloadFile("https://raw.githubusercontent.com/Xrustaller/Flotomachine/master/test.jpg");
+#else
                 byte[] imageBytes = HttpHelper.DownloadFile(App.Settings.Configuration.Camera.Url + "/photo");
-                //byte[] imageBytes = HttpHelper.DownloadFile("https://hsto.org/files/fde/a29/431/fdea29431e444674a089b5804fbf2634.jpg");
+#endif
                 if (imageBytes == null)
                 {
                     DataCollected?.Invoke(null);

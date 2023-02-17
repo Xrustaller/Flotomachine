@@ -30,25 +30,25 @@ public partial class App : Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            Exception exceptionDb = DataBaseService.Initialize(MyDocumentPath);
+            Exception? exceptionDb = DataBaseService.Initialize(MyDocumentPath);
             if (exceptionDb != null)
             {
                 Console.WriteLine("Database service initialization error");
                 LogManager.ErrorLog(exceptionDb, "ErrorLog_InitDataBaseService");
             }
 
-            Exception exceptionMb = ModBusService.Initialize();
+            Exception? exceptionMb = ModBusService.Initialize();
             if (exceptionMb != null)
             {
                 Console.WriteLine("ModBus service initialization error");
-                LogManager.ErrorLog(exceptionDb, "ErrorLog_InitModBusService");
+                LogManager.ErrorLog(exceptionMb, "ErrorLog_InitModBusService");
             }
 
-            Exception exceptionC = CameraService.Initialize();
+            Exception? exceptionC = CameraService.Initialize();
             if (exceptionC != null)
             {
                 Console.WriteLine("Camera service initialization error");
-                LogManager.ErrorLog(exceptionDb, "ErrorLog_InitCameraService");
+                LogManager.ErrorLog(exceptionC, "ErrorLog_InitCameraService");
             }
 
             UpdateService.CheckUpdates(Settings.Configuration);

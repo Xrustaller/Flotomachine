@@ -1,4 +1,5 @@
-﻿using Flotomachine.ViewModels;
+﻿using Flotomachine.Utility;
+using Flotomachine.ViewModels;
 using Modbus.Device;
 using System;
 using System.Collections.Generic;
@@ -25,14 +26,14 @@ public static class ModBusService
     private static int _serialPortBaudRate;
     private static ModBusState _state = ModBusState.Close;
 
-    private static SerialPort _serialPort;
-    private static ModbusSerialMaster _bus;
+    private static SerialPort? _serialPort;
+    private static ModbusSerialMaster? _bus;
 
     private static List<ModuleField> _fields;
     private static readonly List<ExperimentDataValue> Data = new();
 
-    private static Experiment _experiment;
-    private static Timer _experimentTimer;
+    private static Experiment? _experiment;
+    private static Timer? _experimentTimer;
 
     public static ModBusState State
     {
@@ -47,14 +48,31 @@ public static class ModBusService
     public static readonly int[] BaudRateList = { 1200, 4800, 9600, 19200, 38400, 57600, 115200 };
     //public readonly int[] PinRaspberryList = { 4, 5, 6, 12, 13, 17, 18, 22, 23, 24, 25, 26, 27 };
 
-    public static event Action<ModBusState> StatusChanged;
-    public static event Action<List<HomeModuleDataViewModel>> DataCollected;
+    public static event Action<ModBusState>? StatusChanged;
+    public static event Action<List<HomeModuleDataViewModel>>? DataCollected;
 
-    public static Exception Initialize()
+    public static Exception? Initialize()
     {
         try
         {
-            _thread = new Thread(ThisThread) { Name = "ModBusServise" };
+            _thread = new Thread(() =>
+            {
+                while (!_exit)
+                {
+                    try
+                    {
+                        ThisThread();
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("ModBus service global error");
+                        LogManager.ErrorLog(e, "ErrorLog_GlobalErrorModBusService");
+                    }
+                }
+            })
+            {
+                Name = "ModBusServise"
+            };
             _thread.Start();
             return null;
         }
@@ -88,12 +106,17 @@ public static class ModBusService
             {
                 case ModBusState.Wait:
                     {
-                        if (expInput == true && App.MainWindowViewModel.CurrentUser != null && App.MainWindowViewModel.CurrentUser.Root != true)
+                        if (App.MainWindowViewModel.CurrentUser == null)
+                        {
+                            break;
+                        }
+                        User user = App.MainWindowViewModel.CurrentUser;
+                        if (expInput == true && user.Root != true)
                         {
                             State = ModBusState.Experiment;
 
                             ushort timer = ReadInputRegisters(App.Settings.Configuration.Main.MainTimerModuleId, 1) ?? 3;
-                            _experiment = DataBaseService.CreateExperiment(App.MainWindowViewModel.CurrentUser, timer);
+                            _experiment = DataBaseService.CreateExperiment(user, timer);
 
                             _experimentTimer = new Timer(timer * 1000);
                             _experimentTimer.AutoReset = true;
@@ -118,8 +141,8 @@ public static class ModBusService
                         if (expInput == false)
                         {
                             State = ModBusState.Wait;
-                            _experimentTimer.Stop();
-                            _experiment?.End();
+                            _experimentTimer?.Stop();
+                            _experiment.End();
                             DataBaseService.UpdateExperiment(_experiment);
                             _experiment = null;
                         }
@@ -139,8 +162,10 @@ public static class ModBusService
 
     private static void RefreshPort()
     {
-        _fields = DataBaseService.GetModulesFields();
-
+        lock (_fields)
+        {
+            _fields = DataBaseService.GetModulesFields();
+        }
         while (State is ModBusState.Error or ModBusState.Close && !_exit)
         {
             if (_serialPort is { IsOpen: true })
@@ -177,29 +202,36 @@ public static class ModBusService
             State = ModBusState.Wait;
         }
     }
-
+    /*
+     * System.NullReferenceException: Object reference not set to an instance of an object.
+   at Flotomachine.Services.ModBusService.ReadAndViewAllModules()
+   at Flotomachine.Services.ModBusService.ThisThread()
+   at Flotomachine.Services.ModBusService.<>c.<Initialize>b__21_0()
+     */
     private static void ReadAndViewAllModules()
     {
+        //TODO НЕИЗВЕСТНЫЙ БАГ ДОСТУПА К NULL REF EXP
         lock (Data)
         {
             Data.Clear();
             List<HomeModuleDataViewModel> modules = new();
-            foreach (ModuleField field in _fields)
-            {
-                if (!field.Active)
+            lock (_fields)
+                foreach (ModuleField field in _fields)
                 {
-                    continue;
-                }
+                    if (!field.Active)
+                    {
+                        continue;
+                    }
 
-                ushort? data = ReadInputRegisters(field.ModuleId, field.StartAddress);
-                if (data != null)
-                {
-                    Data.Add(new ExperimentDataValue(field, data.Value));
-                }
+                    ushort? data = ReadInputRegisters(field.ModuleId, field.StartAddress);
+                    if (data != null)
+                    {
+                        Data.Add(new ExperimentDataValue(field, data.Value));
+                    }
 
-                string module = DataBaseService.GetModule(field.ModuleId).Name;
-                modules.Add(new HomeModuleDataViewModel($"{module} - {field.FieldName}", data?.ToString() ?? "NULL", field.ValueName));
-            }
+                    string module = DataBaseService.GetModule(field.ModuleId)?.Name ?? "NULL";
+                    modules.Add(new HomeModuleDataViewModel($"{module} - {field.FieldName}", data?.ToString() ?? "NULL", field.ValueName));
+                }
 
             DataCollected?.Invoke(modules);
         }

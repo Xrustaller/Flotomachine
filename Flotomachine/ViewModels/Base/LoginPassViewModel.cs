@@ -8,6 +8,7 @@ public class LoginPassViewModel : ViewModelBase
     private string _login;
     private string _passOne;
     private string _passTwo;
+    private string _passCurrent;
     private InfoViewModel _info;
 
     public string Login
@@ -26,6 +27,12 @@ public class LoginPassViewModel : ViewModelBase
     {
         get => _passTwo;
         set => this.RaiseAndSetIfChanged(ref _passTwo, value);
+    }
+
+    public string PassCurrent
+    {
+        get => _passCurrent;
+        set => this.RaiseAndSetIfChanged(ref _passCurrent, value);
     }
 
     public InfoViewModel Info

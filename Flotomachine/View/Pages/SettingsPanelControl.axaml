@@ -40,6 +40,7 @@
                         <TextBlock Grid.Row="0" Grid.Column="1" Margin="5" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{Binding Info.Color}" Text="{Binding Info.Text}"/>
                         <TextBox Grid.Row="1" Grid.Column="0" Margin="5" Height="32" Width="160" PasswordChar="*" Watermark="Новый Пароль" Text="{Binding PassOne, Mode=TwoWay}"/>
                         <TextBox Grid.Row="2" Grid.Column="0" Margin="5" Height="32" Width="160" PasswordChar="*" Watermark="Повторить пароль" Text="{Binding PassTwo, Mode=TwoWay}"/>
+						<TextBox Grid.Row="1" Grid.Column="1" Margin="5" Height="32" Width="160" PasswordChar="*" Watermark="Текущий пароль" Text="{Binding PassCurrent, Mode=TwoWay}"/>
                         <Button Grid.Row="2" Grid.Column="1" Margin="0, 5" Content="Сменить" VerticalAlignment="Center" HorizontalAlignment="Center" Width="160">
                             <i:Interaction.Behaviors>
                                 <ia:EventTriggerBehavior EventName="Click">
