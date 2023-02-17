@@ -5,9 +5,9 @@
     <TargetFramework>net7.0</TargetFramework>
     <StartupObject>Flotomachine.Program</StartupObject>
     <ApplicationIcon>Assets\Icon.ico</ApplicationIcon>
-	<Version>0.1.5</Version>
-    <FileVersion>0.1.6</FileVersion>
-    <AssemblyVersion>0.1.6</AssemblyVersion>
+	<Version>0.1.7</Version>
+    <FileVersion>0.1.7</FileVersion>
+    <AssemblyVersion>0.1.7</AssemblyVersion>
     <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
     <SignAssembly>False</SignAssembly>
     <Copyright>Xrustaller</Copyright>

@@ -22,14 +22,14 @@ public static class ModBusService
     private static Thread _thread;
     private static bool _exit;
 
-    private static string _serialPortName;
+    private static string _serialPortName = "";
     private static int _serialPortBaudRate;
     private static ModBusState _state = ModBusState.Close;
 
     private static SerialPort? _serialPort;
     private static ModbusSerialMaster? _bus;
 
-    private static List<ModuleField> _fields;
+    private static List<ModuleField> _fields = new();
     private static readonly List<ExperimentDataValue> Data = new();
 
     private static Experiment? _experiment;
@@ -142,9 +142,12 @@ public static class ModBusService
                         {
                             State = ModBusState.Wait;
                             _experimentTimer?.Stop();
-                            _experiment.End();
-                            DataBaseService.UpdateExperiment(_experiment);
-                            _experiment = null;
+                            lock (_experiment!)
+                            {
+                                _experiment.End();
+                                DataBaseService.UpdateExperiment(_experiment);
+                                _experiment = null;
+                            }
                         }
                         break;
                     }
@@ -162,10 +165,8 @@ public static class ModBusService
 
     private static void RefreshPort()
     {
-        lock (_fields)
-        {
-            _fields = DataBaseService.GetModulesFields();
-        }
+        _fields = DataBaseService.GetModulesFields();
+
         while (State is ModBusState.Error or ModBusState.Close && !_exit)
         {
             if (_serialPort is { IsOpen: true })

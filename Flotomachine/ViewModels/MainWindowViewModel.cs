@@ -42,6 +42,8 @@ public class MainWindowViewModel : ViewModelBase
     private string _login;
     private string _password;
 
+
+    private InfoViewModel _experimentStatus;
     private InfoViewModel _userUserInfo;
 
     private User? _currentUser;
@@ -132,6 +134,13 @@ public class MainWindowViewModel : ViewModelBase
     {
         get => _loginBool;
         set => this.RaiseAndSetIfChanged(ref _loginBool, value);
+    }
+
+
+    public InfoViewModel ExperimentStatus
+    {
+        get => _experimentStatus;
+        set => this.RaiseAndSetIfChanged(ref _experimentStatus, value);
     }
 
     public InfoViewModel UserInfo
@@ -230,12 +239,38 @@ public class MainWindowViewModel : ViewModelBase
             _timer.Start();
         }
 
+        ExperimentStatus = new InfoViewModel("Подключение...", "#10FF10");
+        ModBusService.StatusChanged += ModBusServiceOnStatusChanged;
+
         CameraButtonIsVisible = true;
         HomeButtonIsVisible = true;
-
         HomeButton(null!);
 
+        UserInfo = new InfoViewModel($"Выполните вход", "#FFFFFF");
+
         //TestText = $"{UpdateService.NeedUpdate} - {UpdateService.NewVersion.ToShortString()}";
+    }
+
+    private async void ModBusServiceOnStatusChanged(ModBusState obj)
+    {
+        await Dispatcher.UIThread.InvokeAsync(() =>
+        {
+            switch (obj)
+            {
+                case ModBusState.Close:
+                    ExperimentStatus = new InfoViewModel("Подключение...", "#10FF10");
+                    break;
+                case ModBusState.Wait:
+                    ExperimentStatus = new InfoViewModel("Ожидание", "#10FF10");
+                    break;
+                case ModBusState.Experiment:
+                    ExperimentStatus = new InfoViewModel("Идет эксперимент", "#10FF10");
+                    break;
+                default:
+                    ExperimentStatus = new InfoViewModel("Ошибка", "#FF1010");
+                    break;
+            }
+        });
     }
 
     private async void CheckUpdate(object sender, ElapsedEventArgs e)
