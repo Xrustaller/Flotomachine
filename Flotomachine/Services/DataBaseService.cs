@@ -22,7 +22,10 @@ public static class DataBaseService
 		try
 		{
 			DbContextOptions<MainBaseContext> opt = MainBaseContext.BuildDbContextOptionsSqlite("Data Source=" + fullPath);
-			DataBase = new MainBaseContext(opt);
+			lock (DataBase)
+			{
+				DataBase = new MainBaseContext(opt);
+			}
 		}
 		catch (Exception e)
 		{
