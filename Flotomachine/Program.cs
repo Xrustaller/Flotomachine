@@ -1,10 +1,9 @@
-﻿using Avalonia;
-using Avalonia.ReactiveUI;
-using Flotomachine.Services;
-using Flotomachine.Utility;
-using System;
+﻿using System;
 using System.IO;
 using System.Threading;
+using Avalonia;
+using Avalonia.ReactiveUI;
+using Flotomachine.Utility;
 
 namespace Flotomachine;
 

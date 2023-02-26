@@ -1,11 +1,11 @@
-﻿using Avalonia.Controls;
+﻿using System;
+using System.Timers;
+using System.Windows.Input;
+using Avalonia.Controls;
 using Avalonia.Threading;
 using Flotomachine.Services;
 using Flotomachine.View;
 using ReactiveUI;
-using System;
-using System.Timers;
-using System.Windows.Input;
 using HomePanelControl = Flotomachine.View.HomePanelControl;
 using LabsPanelControl = Flotomachine.View.LabsPanelControl;
 using SettingsPanelControl = Flotomachine.View.SettingsPanelControl;

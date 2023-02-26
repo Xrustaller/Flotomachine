@@ -1,3 +1,6 @@
+using System;
+using System.ComponentModel;
+using System.Threading;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
@@ -5,9 +8,6 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 using Flotomachine.Services;
 using Iot.Device.Rfid;
-using System;
-using System.ComponentModel;
-using System.Threading;
 
 namespace Flotomachine.View;
 

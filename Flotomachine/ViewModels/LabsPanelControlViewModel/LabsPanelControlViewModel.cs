@@ -1,10 +1,10 @@
-﻿using Flotomachine.Services;
-using Flotomachine.Utility;
-using ReactiveUI;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
+using Flotomachine.Services;
+using Flotomachine.Utility;
+using ReactiveUI;
 
 namespace Flotomachine.ViewModels;
 

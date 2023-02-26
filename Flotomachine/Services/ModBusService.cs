@@ -1,10 +1,10 @@
-﻿using Flotomachine.Utility;
-using Flotomachine.ViewModels;
-using Modbus.Device;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO.Ports;
 using System.Threading;
+using Flotomachine.Utility;
+using Flotomachine.ViewModels;
+using Modbus.Device;
 using Timer = System.Timers.Timer;
 
 namespace Flotomachine.Services;
@@ -49,6 +49,7 @@ public static class ModBusService
     //public readonly int[] PinRaspberryList = { 4, 5, 6, 12, 13, 17, 18, 22, 23, 24, 25, 26, 27 };
 
     public static event Action<ModBusState>? StatusChanged;
+
     public static event Action<List<HomeModuleDataViewModel>>? DataCollected;
 
     public static Exception? Initialize()
@@ -71,7 +72,7 @@ public static class ModBusService
                 }
             })
             {
-                Name = "ModBusServise"
+                Name = "ModBusServiсe"
             };
             _thread.Start();
             return null;
@@ -105,61 +106,63 @@ public static class ModBusService
             switch (State)
             {
                 case ModBusState.Wait:
+                {
+                    if (App.MainWindowViewModel.CurrentUser == null)
                     {
-                        if (App.MainWindowViewModel.CurrentUser == null)
-                        {
-                            break;
-                        }
-                        User user = App.MainWindowViewModel.CurrentUser;
-                        if (expInput == true && user.Root != true)
-                        {
-                            State = ModBusState.Experiment;
-
-                            ushort timer = ReadInputRegisters(App.Settings.Configuration.Main.MainTimerModuleId, 1) ?? 3;
-                            _experiment = DataBaseService.CreateExperiment(user, timer);
-
-                            _experimentTimer = new Timer(timer * 1000);
-                            _experimentTimer.AutoReset = true;
-                            _experimentTimer.Elapsed += (_, _) =>
-                            {
-                                lock (Data)
-                                {
-                                    lock (_experiment)
-                                    {
-                                        ExperimentData data = DataBaseService.AddExperimentData(_experiment);
-                                        DataBaseService.AddExperimentDataValues(data, Data);
-                                    }
-                                }
-                            };
-                            _experimentTimer.Start();
-                        }
                         break;
                     }
+                    User user = App.MainWindowViewModel.CurrentUser;
+                    if (expInput == true && user.Root != true)
+                    {
+                        State = ModBusState.Experiment;
+
+                        ushort timer = ReadInputRegisters(App.Settings.Configuration.Main.MainTimerModuleId, 1) ?? 3;
+                        _experiment = DataBaseService.CreateExperiment(user, timer);
+
+                        _experimentTimer = new Timer(timer * 1000)
+                        {
+                            AutoReset = true
+                        };
+                        _experimentTimer.Elapsed += (_, _) =>
+                        {
+                            lock (Data)
+                            {
+                                lock (_experiment)
+                                {
+                                    ExperimentData data = DataBaseService.AddExperimentData(_experiment);
+                                    DataBaseService.AddExperimentDataValues(data, Data);
+                                }
+                            }
+                        };
+                        _experimentTimer.Start();
+                    }
+                    break;
+                }
 
                 case ModBusState.Experiment:
+                {
+                    if (expInput == false)
                     {
-                        if (expInput == false)
+                        State = ModBusState.Wait;
+                        _experimentTimer?.Stop();
+                        lock (_experiment!)
                         {
-                            State = ModBusState.Wait;
-                            _experimentTimer?.Stop();
-                            lock (_experiment!)
-                            {
-                                _experiment.End();
-                                DataBaseService.UpdateExperiment(_experiment);
-                                _experiment = null;
-                            }
+                            _experiment.End();
+                            DataBaseService.UpdateExperiment(_experiment);
+                            _experiment = null;
                         }
-                        break;
                     }
+                    break;
+                }
                 case ModBusState.Error:
-                    {
-                        RefreshPort();
-                        break;
-                    }
+                {
+                    RefreshPort();
+                    break;
+                }
 
             }
 
-            Thread.Sleep(200);
+            Thread.Sleep(180);
         }
     }
 

@@ -1,8 +1,8 @@
-﻿using Avalonia.Media.Imaging;
-using Flotomachine.Utility;
-using System;
+﻿using System;
 using System.IO;
 using System.Threading;
+using Avalonia.Media.Imaging;
+using Flotomachine.Utility;
 
 namespace Flotomachine.Services;
 
@@ -23,6 +23,8 @@ public class CameraService
         }
         catch (Exception e)
         {
+            Console.WriteLine("Camera service global error");
+            LogManager.ErrorLog(e, "ErrorLog_GlobalErrorCameraService");
             return e;
         }
     }

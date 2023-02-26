@@ -1,9 +1,9 @@
-﻿using Flotomachine.Utility;
-using JetBrains.Annotations;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using Flotomachine.Utility;
+using JetBrains.Annotations;
 
 namespace Flotomachine.Services;
 

@@ -1,8 +1,9 @@
-﻿using Flotomachine.Utility;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Flotomachine.Utility;
+using Microsoft.EntityFrameworkCore;
 
 namespace Flotomachine.Services;
 
@@ -20,7 +21,8 @@ public static class DataBaseService
 
         try
         {
-            DataBase = new MainBaseContext(MainBaseContext.BuildDbContextOptionsSqlite("Data Source=" + fullPath));
+            DbContextOptions<MainBaseContext> opt = MainBaseContext.BuildDbContextOptionsSqlite("Data Source=" + fullPath);
+            DataBase = new MainBaseContext(opt);
         }
         catch (Exception e)
         {
@@ -34,11 +36,16 @@ public static class DataBaseService
     {
         try
         {
-            action.Invoke(DataBase);
+            lock (DataBase)
+            {
+                action.Invoke(DataBase);
+            }
             return null;
         }
         catch (Exception e)
         {
+            Console.WriteLine("DataBase service get error");
+            LogManager.ErrorLog(e, "ErrorLog_DataBaseGet");
             return e;
         }
     }
@@ -55,6 +62,8 @@ public static class DataBaseService
         }
         catch (Exception e)
         {
+            Console.WriteLine("DataBase service get_and_set error");
+            LogManager.ErrorLog(e, "ErrorLog_DataBaseGetAndSet");
             return e;
         }
     }

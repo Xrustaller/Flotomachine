@@ -1,8 +1,8 @@
-﻿using Iot.Device.Mfrc522;
-using Iot.Device.Rfid;
-using System;
+﻿using System;
 using System.Device.Spi;
 using System.Threading;
+using Iot.Device.Mfrc522;
+using Iot.Device.Rfid;
 
 namespace Flotomachine.Services;
 

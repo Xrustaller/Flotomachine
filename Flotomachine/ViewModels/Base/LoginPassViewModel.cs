@@ -1,5 +1,5 @@
-﻿using ReactiveUI;
-using System.Windows.Input;
+﻿using System.Windows.Input;
+using ReactiveUI;
 
 namespace Flotomachine.ViewModels;
 

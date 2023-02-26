@@ -1,3 +1,6 @@
+using System;
+using System.IO;
+using System.Runtime.InteropServices;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
@@ -5,9 +8,6 @@ using Flotomachine.Services;
 using Flotomachine.Utility;
 using Flotomachine.View;
 using Flotomachine.ViewModels;
-using System;
-using System.IO;
-using System.Runtime.InteropServices;
 
 namespace Flotomachine;
 

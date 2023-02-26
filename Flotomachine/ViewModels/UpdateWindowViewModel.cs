@@ -1,12 +1,12 @@
-﻿using Avalonia.Controls;
+﻿using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows.Input;
+using Avalonia.Controls;
 using Avalonia.Threading;
 using Flotomachine.Services;
 using Flotomachine.Utility;
 using ReactiveUI;
-using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Input;
 
 namespace Flotomachine.ViewModels;
 

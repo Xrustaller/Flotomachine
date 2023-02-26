@@ -1,8 +1,8 @@
+using System.Reflection;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Flotomachine.Utility;
-using System.Reflection;
 
 namespace Flotomachine.View
 {

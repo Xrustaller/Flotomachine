@@ -1,8 +1,8 @@
-﻿using Avalonia.Threading;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using Avalonia.Threading;
 using Flotomachine.Services;
 using Flotomachine.View;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 
 namespace Flotomachine.ViewModels;
 

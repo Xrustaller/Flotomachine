@@ -1,9 +1,9 @@
-﻿using Flotomachine.Services;
+﻿using System.Reflection;
+using System.Windows.Input;
+using Flotomachine.Services;
 using Flotomachine.Utility;
 using Flotomachine.View;
 using ReactiveUI;
-using System.Reflection;
-using System.Windows.Input;
 
 namespace Flotomachine.ViewModels;
 

@@ -42,7 +42,7 @@ public class JsonConfigurationProvider<T> where T : IJsonConfiguration<T>, new()
         {
             Configuration = OpenConfig();
         }
-        catch (Exception e)
+        catch (Exception)
         {
             File.Delete(_name);
             T newConf = new();
