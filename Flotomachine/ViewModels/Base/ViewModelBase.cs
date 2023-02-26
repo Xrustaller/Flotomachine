@@ -4,13 +4,13 @@ namespace Flotomachine.ViewModels;
 
 public class ViewModelBase : ReactiveObject
 {
-    public ViewModelBase()
-    {
+	public ViewModelBase()
+	{
 
-    }
+	}
 
-    public virtual void OnDestroy()
-    {
+	public virtual void OnDestroy()
+	{
 
-    }
+	}
 }

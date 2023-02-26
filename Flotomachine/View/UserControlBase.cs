@@ -4,8 +4,8 @@ namespace Flotomachine.View;
 
 public class UserControlBase : UserControl
 {
-    public virtual void OnDestroy()
-    {
+	public virtual void OnDestroy()
+	{
 
-    }
+	}
 }

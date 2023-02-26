@@ -5,29 +5,29 @@ using Flotomachine.ViewModels;
 
 namespace Flotomachine.View
 {
-    public partial class UpdateWindow : Window
-    {
-        public UpdateWindow()
-        {
-            InitializeComponent();
+	public partial class UpdateWindow : Window
+	{
+		public UpdateWindow()
+		{
+			InitializeComponent();
 #if DEBUG
-            this.AttachDevTools();
+			this.AttachDevTools();
 #endif
-            DataContext = new UpdateWindowViewModel(null, this);
-        }
+			DataContext = new UpdateWindowViewModel(null, this);
+		}
 
-        public UpdateWindow(Window mainWindow)
-        {
-            InitializeComponent();
+		public UpdateWindow(Window mainWindow)
+		{
+			InitializeComponent();
 #if DEBUG
-            this.AttachDevTools();
+			this.AttachDevTools();
 #endif
-            DataContext = new UpdateWindowViewModel(mainWindow, this);
-        }
+			DataContext = new UpdateWindowViewModel(mainWindow, this);
+		}
 
-        private void InitializeComponent()
-        {
-            AvaloniaXamlLoader.Load(this);
-        }
-    }
+		private void InitializeComponent()
+		{
+			AvaloniaXamlLoader.Load(this);
+		}
+	}
 }

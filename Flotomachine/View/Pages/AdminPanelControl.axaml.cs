@@ -1,8 +1,8 @@
 namespace Flotomachine.View;
 public partial class AdminPanelControl : UserControlBase
 {
-    public AdminPanelControl()
-    {
-        InitializeComponent();
-    }
+	public AdminPanelControl()
+	{
+		InitializeComponent();
+	}
 }

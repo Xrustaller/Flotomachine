@@ -1,10 +1,10 @@
 namespace Flotomachine.View
 {
-    public partial class HomePanelControl : UserControlBase
-    {
-        public HomePanelControl()
-        {
-            InitializeComponent();
-        }
-    }
+	public partial class HomePanelControl : UserControlBase
+	{
+		public HomePanelControl()
+		{
+			InitializeComponent();
+		}
+	}
 }

@@ -13,59 +13,59 @@ namespace Flotomachine;
 
 public partial class App : Application
 {
-    public static readonly string MyDocumentPath = GetDocumentPath();
-    public static readonly string DownloadPath = Path.Join(GetDocumentPath(), "Download");
-    public static readonly string LogFolderPath = Path.Join(GetDocumentPath(), "Logs");
+	public static readonly string MyDocumentPath = GetDocumentPath();
+	public static readonly string DownloadPath = Path.Join(GetDocumentPath(), "Download");
+	public static readonly string LogFolderPath = Path.Join(GetDocumentPath(), "Logs");
 
-    public static readonly JsonConfigurationProvider<Settings> Settings = new(Path.Join(MyDocumentPath, "Flotomachine.config"));
+	public static readonly JsonConfigurationProvider<Settings> Settings = new(Path.Join(MyDocumentPath, "Flotomachine.config"));
 
-    public static MainWindow MainWindow { get; private set; }
-    public static MainWindowViewModel MainWindowViewModel { get; private set; }
+	public static MainWindow MainWindow { get; private set; }
+	public static MainWindowViewModel MainWindowViewModel { get; private set; }
 
-    private static string GetDocumentPath() => Path.Join(RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "Documents" : Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments), "Flotomachine");
+	private static string GetDocumentPath() => Path.Join(RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "Documents" : Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments), "Flotomachine");
 
-    public override void Initialize() => AvaloniaXamlLoader.Load(this);
+	public override void Initialize() => AvaloniaXamlLoader.Load(this);
 
-    public override void OnFrameworkInitializationCompleted()
-    {
-        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
-        {
-            Exception? exceptionDb = DataBaseService.Initialize(MyDocumentPath);
-            if (exceptionDb != null)
-            {
-                Console.WriteLine("Database service initialization error");
-                LogManager.ErrorLog(exceptionDb, "ErrorLog_InitDataBaseService");
-            }
+	public override void OnFrameworkInitializationCompleted()
+	{
+		if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+		{
+			Exception? exceptionDb = DataBaseService.Initialize(MyDocumentPath);
+			if (exceptionDb != null)
+			{
+				Console.WriteLine("Database service initialization error");
+				LogManager.ErrorLog(exceptionDb, "ErrorLog_InitDataBaseService");
+			}
 
-            Exception? exceptionMb = ModBusService.Initialize();
-            if (exceptionMb != null)
-            {
-                Console.WriteLine("ModBus service initialization error");
-                LogManager.ErrorLog(exceptionMb, "ErrorLog_InitModBusService");
-            }
+			Exception? exceptionMb = ModBusService.Initialize();
+			if (exceptionMb != null)
+			{
+				Console.WriteLine("ModBus service initialization error");
+				LogManager.ErrorLog(exceptionMb, "ErrorLog_InitModBusService");
+			}
 
-            Exception? exceptionC = CameraService.Initialize();
-            if (exceptionC != null)
-            {
-                Console.WriteLine("Camera service initialization error");
-                LogManager.ErrorLog(exceptionC, "ErrorLog_InitCameraService");
-            }
+			Exception? exceptionC = CameraService.Initialize();
+			if (exceptionC != null)
+			{
+				Console.WriteLine("Camera service initialization error");
+				LogManager.ErrorLog(exceptionC, "ErrorLog_InitCameraService");
+			}
 
-            UpdateService.CheckUpdates(Settings.Configuration);
+			UpdateService.CheckUpdates(Settings.Configuration);
 
-            MainWindow = new MainWindow();
-            MainWindowViewModel = new MainWindowViewModel(MainWindow);
-            MainWindow.DataContext = MainWindowViewModel;
+			MainWindow = new MainWindow();
+			MainWindowViewModel = new MainWindowViewModel(MainWindow);
+			MainWindow.DataContext = MainWindowViewModel;
 
-            desktop.MainWindow = MainWindow;
-        }
+			desktop.MainWindow = MainWindow;
+		}
 
-        base.OnFrameworkInitializationCompleted();
-    }
+		base.OnFrameworkInitializationCompleted();
+	}
 
-    public static void Exit()
-    {
-        ModBusService.Exit();
-        CameraService.Exit();
-    }
+	public static void Exit()
+	{
+		ModBusService.Exit();
+		CameraService.Exit();
+	}
 }
