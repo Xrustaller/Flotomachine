@@ -19,7 +19,7 @@ public class User
 	public string PassHash { get; set; }
 
 	[Column("name")]
-	public string Name { get; set; }
+	public string? Name { get; set; }
 
 	[Column("root")]
 	public bool? Root { get; set; }
@@ -41,15 +41,10 @@ public class User
 		Delete = false;
 	}
 
+	public bool CheckPass(string password) => CheckPass(Username, password);
 	public bool CheckPass(string username, string password)
 	{
 		string hash = GenerateHash(username, password);
-		return hash == PassHash;
-	}
-
-	public bool CheckPass(string password)
-	{
-		string hash = GenerateHash(Username, password);
 		return hash == PassHash;
 	}
 

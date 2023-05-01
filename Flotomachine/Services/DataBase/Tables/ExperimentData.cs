@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -18,7 +19,7 @@ public class ExperimentData
 	[Column("date")]
 	public DateTime Date { get; set; }
 
-	public virtual List<ExperimentDataValue> ExperimentDataValues { get; set; }
+	public virtual ObservableCollection<ExperimentDataValue> ExperimentDataValues { get; set; }
 
 	public ExperimentData()
 	{
@@ -29,4 +30,6 @@ public class ExperimentData
 		ExperimentId = experiment.Id;
 		Date = DateTime.Now;
 	}
+
+	public List<ExperimentDataValue> GetExperimentDataValues() => DataBaseService.GetExperimentDataValues(Id);
 }

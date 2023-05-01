@@ -9,7 +9,8 @@ namespace Flotomachine.Services;
 
 public static class DataBaseService
 {
-	private static MainBaseContext DataBase { get; set; }
+	private static MainBaseContext _dataBase;
+	private static DbContextOptions<MainBaseContext> _dbContextOptions;
 
 	public static Exception? Initialize(string path)
 	{
@@ -21,11 +22,8 @@ public static class DataBaseService
 
 		try
 		{
-			DbContextOptions<MainBaseContext> opt = MainBaseContext.BuildDbContextOptionsSqlite("Data Source=" + fullPath);
-			lock (DataBase)
-			{
-				DataBase = new MainBaseContext(opt);
-			}
+			_dbContextOptions = MainBaseContext.BuildDbContextOptionsSqlite("Data Source=" + fullPath);
+			_dataBase = new MainBaseContext(_dbContextOptions);
 		}
 		catch (Exception e)
 		{
@@ -35,47 +33,43 @@ public static class DataBaseService
 		return null;
 	}
 
-	public static Exception? Get(Action<MainBaseContext> action)
+	public static void Get(Action<MainBaseContext> action)
 	{
 		try
 		{
-			lock (DataBase)
+			lock (_dataBase)
 			{
-				action.Invoke(DataBase);
+				action.Invoke(_dataBase);
 			}
-			return null;
 		}
 		catch (Exception e)
 		{
 			Console.WriteLine("DataBase service get error");
 			LogManager.ErrorLog(e, "ErrorLog_DataBaseGet");
-			return e;
 		}
 	}
-	public static Exception? GetAndSet(Action<MainBaseContext> action)
+	public static void GetAndSet(Action<MainBaseContext> action)
 	{
 		try
 		{
-			lock (DataBase)
+			lock (_dataBase)
 			{
-				action.Invoke(DataBase);
-				DataBase.SaveChanges();
+				action.Invoke(_dataBase);
+				_dataBase.SaveChanges();
 			}
-			return null;
 		}
 		catch (Exception e)
 		{
 			Console.WriteLine("DataBase service get_and_set error");
 			LogManager.ErrorLog(e, "ErrorLog_DataBaseGetAndSet");
-			return e;
 		}
 	}
 
 	public static List<User> GetUsers()
 	{
-		List<User> result = null!;
+		List<User> result = new();
 		Get(context => result = context.Users.ToList());
-		return result ?? new List<User>();
+		return result;
 		//.Where(p => !p.IsDelete())
 	}
 
@@ -136,7 +130,13 @@ public static class DataBaseService
 	public static void CreateCard(int user, byte[] cardId) => GetAndSet(context => context.CardIds.Add(new CardId(user, cardId)));
 	public static void DeleteCard(CardId card) => GetAndSet(context => context.CardIds.Remove(card));
 
-	//public static List<Module> GetActiveModules() => DataBase.Modules.Where(p => p.Active).ToList();
+	public static List<Module> GetModules()
+	{
+		List<Module> result = new();
+		Get(context => result = context.Modules.ToList());
+		return result;
+	}
+
 	public static Module? GetModule(int moduleId)
 	{
 		Module? result = null;
@@ -160,10 +160,23 @@ public static class DataBaseService
 		return result;
 	}
 
-	public static List<int> GetExperiments(User user)
+	public static List<int> GetExperiments(User? user)
 	{
 		List<int> result = new();
-		Get(context => result = context.Experiments.Where(p => p.UserId == user.Id).Select(p => p.Id).ToList());
+		if (user != null)
+		{
+			Get(context => result = context.Experiments.Where(p => p.UserId == user.Id).Select(p => p.Id).ToList());
+		}
+		return result;
+	}
+
+	public static List<Experiment> GetAllExperiments(User? user)
+	{
+		List<Experiment> result = new();
+		if (user != null)
+		{
+			Get(context => result = context.Experiments.Where(p => p.UserId == user.Id).ToList());
+		}
 		return result;
 	}
 
@@ -183,7 +196,7 @@ public static class DataBaseService
 
 	public static Experiment CreateExperiment(User user, int timerTick)
 	{
-		Experiment experiment = new Experiment(user, timerTick);
+		Experiment experiment = new(user, timerTick);
 		GetAndSet(context => context.Experiments.Add(experiment));
 		return experiment;
 	}
@@ -196,7 +209,7 @@ public static class DataBaseService
 
 	public static ExperimentData AddExperimentData(Experiment experiment)
 	{
-		ExperimentData data = new ExperimentData(experiment);
+		ExperimentData data = new(experiment);
 		GetAndSet(context => context.ExperimentDatas.Add(data));
 		return data;
 	}

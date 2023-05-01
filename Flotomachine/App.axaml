@@ -3,8 +3,9 @@
              x:Class="Flotomachine.App">
 	<Application.Styles>
         <FluentTheme Mode="Dark"/>
+        <StyleInclude Source="avares://Avalonia.Controls.TreeDataGrid/Themes/Fluent.axaml"/>
         <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Default.xaml"/>
-        <Style Selector="Border.Block">
+		<Style Selector="Border.Block">
 			<Setter Property="BorderBrush" Value="#808080"/>
 			<Setter Property="BorderThickness" Value="1"/>
 			<Setter Property="CornerRadius" Value="3"/>

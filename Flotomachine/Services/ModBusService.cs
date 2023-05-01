@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO.Ports;
+using System.Linq;
 using System.Threading;
-using Flotomachine.Utility;
 using Flotomachine.ViewModels;
 using Modbus.Device;
 using Timer = System.Timers.Timer;
@@ -29,6 +29,7 @@ public static class ModBusService
 	private static SerialPort? _serialPort;
 	private static ModbusSerialMaster? _bus;
 
+	private static List<Module> _dbModules = new();
 	private static List<ModuleField> _fields = new();
 	private static readonly List<ExperimentDataValue> Data = new();
 
@@ -54,23 +55,26 @@ public static class ModBusService
 
 	public static Exception? Initialize()
 	{
+		static void ThreadStart()
+		{
+			_dbModules = DataBaseService.GetModules();
+			_fields = DataBaseService.GetModulesFields();
+			RefreshPort();
+			while (!_exit)
+				try
+				{
+					ThisThread();
+				}
+				catch (Exception e)
+				{
+					Console.WriteLine(e);
+					throw;
+				}
+		}
+
 		try
 		{
-			_thread = new Thread(() =>
-			{
-				while (!_exit)
-				{
-					try
-					{
-						ThisThread();
-					}
-					catch (Exception e)
-					{
-						Console.WriteLine("ModBus service global error");
-						LogManager.ErrorLog(e, "ErrorLog_GlobalErrorModBusService");
-					}
-				}
-			})
+			_thread = new Thread(ThreadStart)
 			{
 				Name = "ModBusServiсe"
 			};
@@ -85,91 +89,85 @@ public static class ModBusService
 
 	private static void ThisThread()
 	{
-		RefreshPort();
-
-		while (!_exit)
+		if (_serialPortName != App.Settings.Configuration.Serial.Port || _serialPortBaudRate != App.Settings.Configuration.Serial.BaudRate)
 		{
-			if (_serialPortName != App.Settings.Configuration.Serial.Port || _serialPortBaudRate != App.Settings.Configuration.Serial.BaudRate)
+			RefreshPort();
+		}
+
+		bool? expInput = ReadInputs(App.Settings.Configuration.Main.MainTimerModuleId, 7);
+
+		if (expInput == null)
+		{
+			State = ModBusState.Error;
+		}
+
+		ReadModules();
+
+		switch (State)
+		{
+			case ModBusState.Wait:
+			{
+				if (App.MainWindowViewModel.CurrentUser == null)
+				{
+					break;
+				}
+				User user = App.MainWindowViewModel.CurrentUser;
+				if (expInput != true || user.Root == true)
+				{
+					break;
+				}
+
+				State = ModBusState.Experiment;
+
+				ushort timer = ReadInputRegisters(App.Settings.Configuration.Main.MainTimerModuleId, 1) ?? 3;
+
+				_experiment = DataBaseService.CreateExperiment(user, timer);
+
+				_experimentTimer = new Timer(timer * 1000)
+				{
+					AutoReset = true
+				};
+				_experimentTimer.Elapsed += (_, _) =>
+				{
+					ExperimentData data = DataBaseService.AddExperimentData(_experiment);
+					DataBaseService.AddExperimentDataValues(data, Data);
+				};
+				_experimentTimer.Start();
+
+				break;
+			}
+
+			case ModBusState.Experiment:
+			{
+				if (expInput != false)
+				{
+					break;
+				}
+
+				State = ModBusState.Wait;
+				_experimentTimer?.Stop();
+				lock (_experiment!)
+				{
+					_experiment.End();
+					DataBaseService.UpdateExperiment(_experiment);
+					_experiment = null;
+				}
+
+				break;
+			}
+			case ModBusState.Error:
 			{
 				RefreshPort();
+				break;
 			}
 
-			bool? expInput = ReadInputs(App.Settings.Configuration.Main.MainTimerModuleId, 7);
-
-			if (expInput == null)
-			{
-				State = ModBusState.Error;
-			}
-
-			ReadAndViewAllModules();
-
-			switch (State)
-			{
-				case ModBusState.Wait:
-				{
-					if (App.MainWindowViewModel.CurrentUser == null)
-					{
-						break;
-					}
-					User user = App.MainWindowViewModel.CurrentUser;
-					if (expInput == true && user.Root != true)
-					{
-						State = ModBusState.Experiment;
-
-						ushort timer = ReadInputRegisters(App.Settings.Configuration.Main.MainTimerModuleId, 1) ?? 3;
-						_experiment = DataBaseService.CreateExperiment(user, timer);
-
-						_experimentTimer = new Timer(timer * 1000)
-						{
-							AutoReset = true
-						};
-						_experimentTimer.Elapsed += (_, _) =>
-						{
-							lock (Data)
-							{
-								lock (_experiment)
-								{
-									ExperimentData data = DataBaseService.AddExperimentData(_experiment);
-									DataBaseService.AddExperimentDataValues(data, Data);
-								}
-							}
-						};
-						_experimentTimer.Start();
-					}
-					break;
-				}
-
-				case ModBusState.Experiment:
-				{
-					if (expInput == false)
-					{
-						State = ModBusState.Wait;
-						_experimentTimer?.Stop();
-						lock (_experiment!)
-						{
-							_experiment.End();
-							DataBaseService.UpdateExperiment(_experiment);
-							_experiment = null;
-						}
-					}
-					break;
-				}
-				case ModBusState.Error:
-				{
-					RefreshPort();
-					break;
-				}
-
-			}
-
-			Thread.Sleep(180);
 		}
+
+		Thread.Sleep(330);
 	}
 
 	private static void RefreshPort()
 	{
-		_fields = DataBaseService.GetModulesFields();
-
 		while (State is ModBusState.Error or ModBusState.Close && !_exit)
 		{
 			if (_serialPort is { IsOpen: true })
@@ -195,9 +193,9 @@ public static class ModBusService
 			}
 			catch (Exception)
 			{
-				ReadAndViewAllModules();
+				ReadModules();
 				State = ModBusState.Error;
-				Thread.Sleep(800);
+				Thread.Sleep(1800);
 				continue;
 			}
 			_bus = ModbusSerialMaster.CreateRtu(_serialPort);
@@ -206,39 +204,31 @@ public static class ModBusService
 			State = ModBusState.Wait;
 		}
 	}
-	/*
-     * System.NullReferenceException: Object reference not set to an instance of an object.
-   at Flotomachine.Services.ModBusService.ReadAndViewAllModules()
-   at Flotomachine.Services.ModBusService.ThisThread()
-   at Flotomachine.Services.ModBusService.<>c.<Initialize>b__21_0()
-     */
-	private static void ReadAndViewAllModules()
+
+	private static void ReadModules()
 	{
-		//TODO НЕИЗВЕСТНЫЙ БАГ ДОСТУПА К NULL REF EXP
-		lock (Data)
+		List<HomeModuleDataViewModel> modules = new();
+
+		Data.Clear();
+
+		foreach (ModuleField field in _fields)
 		{
-			Data.Clear();
-			List<HomeModuleDataViewModel> modules = new();
-			lock (_fields)
-				foreach (ModuleField field in _fields)
-				{
-					if (!field.Active)
-					{
-						continue;
-					}
+			if (!field.Active)
+			{
+				continue;
+			}
 
-					ushort? data = ReadInputRegisters(field.ModuleId, field.StartAddress);
-					if (data != null)
-					{
-						Data.Add(new ExperimentDataValue(field, data.Value));
-					}
+			ushort? data = ReadInputRegisters(field.ModuleId, field.StartAddress);
+			if (data != null)
+			{
+				Data.Add(new ExperimentDataValue(field, data.Value));
+			}
 
-					string module = DataBaseService.GetModule(field.ModuleId)?.Name ?? "NULL";
-					modules.Add(new HomeModuleDataViewModel($"{module} - {field.FieldName}", data?.ToString() ?? "NULL", field.ValueName));
-				}
-
-			DataCollected?.Invoke(modules);
+			string? module = _dbModules.FirstOrDefault(p => p.Id == field.ModuleId)?.Name;
+			modules.Add(new HomeModuleDataViewModel(module, field, data));
 		}
+
+		DataCollected?.Invoke(modules);
 	}
 
 	public static void Exit()

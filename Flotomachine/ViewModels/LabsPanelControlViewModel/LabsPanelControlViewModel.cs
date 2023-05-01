@@ -1,9 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
+using Avalonia.Controls;
+using Avalonia.Controls.Models.TreeDataGrid;
+using AvaloniaEdit.Utils;
 using Flotomachine.Services;
-using Flotomachine.Utility;
 using ReactiveUI;
 
 namespace Flotomachine.ViewModels;
@@ -17,13 +18,14 @@ public class LabsPanelControlViewModel : ViewModelBase
     private bool _debug = false;
 #endif
 
-	private int _experimentSelected;
+	private Experiment _experimentSelected;
 	private bool _visibleExperiment;
-	private ObservableCollection<ExpObj> _experiment = new ObservableCollection<ExpObj>();
 
-	public ObservableCollection<int> ExperimentCollection { get; set; } = new();
+	private ObservableCollection<Experiment> _experimentSource = new();
+	public ObservableCollection<Experiment> ExperimentCollection { get; set; } = new();
+	//public HierarchicalTreeDataGridSource<Experiment> Source { get; private set; }
 
-	public int ExperimentSelected
+	public Experiment ExperimentSelected
 	{
 		get => _experimentSelected;
 		set
@@ -33,24 +35,20 @@ public class LabsPanelControlViewModel : ViewModelBase
 		}
 	}
 
-	public ObservableCollection<ExpObj> Experiment
-	{
-		get => _experiment;
-		set => this.RaiseAndSetIfChanged(ref _experiment, value);
-	}
-
 	public bool VisibleExperiment
 	{
 		get => _visibleExperiment;
 		set => this.RaiseAndSetIfChanged(ref _visibleExperiment, value);
 	}
 
+	public HierarchicalTreeDataGridSource<ExperimentData> ExperimentDataSource { get; set; }
+
 	public LabsPanelControlViewModel()
 	{
-
+		Reload();
 	}
 
-	Dictionary<int, List<ExpObj>> DebugTestObj = new();
+	List<Experiment> DebugTestObj = new();
 
 	public LabsPanelControlViewModel(MainWindowViewModel mainWindowViewModel)
 	{
@@ -60,31 +58,32 @@ public class LabsPanelControlViewModel : ViewModelBase
 		PrintExperimentButtonClick = new DelegateCommand(PrintExperiment);
 		DeleteExperimentButtonClick = new DelegateCommand(DeleteExperiment);
 
+		Reload();
+	}
+
+	private void Reload()
+	{
 		if (_debug)
 		{
-
-			for (int i = 1; i <= 50; i++)
-			{
-				List<ExpObj> items = new();
-				for (int x = 1; x <= 50; x++)
-				{
-					items.Add(new ExpObj(DateTime.Now.ToLongTimeString(), DateTime.Now.Minute.ToString() + ":" + x, DateTime.Now.Minute.ToString() + ":" + i, "25", "750", (x + i).ToString(), "0"));
-				}
-				DebugTestObj.Add(i, items);
-			}
-
 			ExperimentCollection.Clear();
-			foreach (var item in DebugTestObj)
+			for (int x = 1; x <= 50; x++)
 			{
-				ExperimentCollection.Add(item.Key);
+				ExperimentCollection.Add(new Experiment() { Id = x });
 			}
 			return;
 		}
 
 		ExperimentCollection.Clear();
-		foreach (int item in DataBaseService.GetExperiments(_mainWindowViewModel.CurrentUser))
+		ExperimentCollection.AddRange(DataBaseService.GetAllExperiments(_mainWindowViewModel.CurrentUser));
+		_experimentSource.AddRange(DataBaseService.GetAllExperiments(_mainWindowViewModel.CurrentUser));
+		foreach (Experiment item in _experimentSource)
 		{
-			ExperimentCollection.Add(item);
+			List<ExperimentData>? data = item.GetExperimentData();
+			foreach (ExperimentData? itemData in data)
+			{
+				itemData.ExperimentDataValues.AddRange(itemData.GetExperimentDataValues());
+			}
+			item.ExperimentData.AddRange(data);
 		}
 	}
 
@@ -92,23 +91,30 @@ public class LabsPanelControlViewModel : ViewModelBase
 	public ICommand PrintExperimentButtonClick { get; }
 	public ICommand DeleteExperimentButtonClick { get; }
 
-	public void ExperimentSelectedChanged(int experimentId)
+	public void ExperimentSelectedChanged(Experiment experiment)
 	{
 		VisibleExperiment = true;
-		Experiment.Clear();
+
 		if (_debug)
 		{
-			foreach (var item in DebugTestObj[experimentId])
-			{
-				Experiment.Add(item);
-			}
+
 			return;
 		}
 
-		foreach (var item in DataBaseService.GetExperimentData(experimentId))
+		foreach (ExperimentData? item in DataBaseService.GetExperimentData(experiment.Id))
 		{
-			Experiment.Add(new ExpObj(item));
+
 		}
+
+		ExperimentDataSource = new HierarchicalTreeDataGridSource<ExperimentData>(_people)
+		{
+			Columns =
+			{
+				new TextColumn<Person, string>("First Name", x => x.FirstName),
+				new TextColumn<Person, string>("Last Name", x => x.LastName),
+				new TextColumn<Person, int>("Age", x => x.Age),
+			},
+		};
 	}
 
 	public void ExportExcelExperiment(object obj)
@@ -123,6 +129,18 @@ public class LabsPanelControlViewModel : ViewModelBase
 
 	public void DeleteExperiment(object obj)
 	{
+		VisibleExperiment = false;
 
+
+
+		Reload();
+	}
+
+	public class Person
+	{
+		public string? FirstName { get; set; }
+		public string? LastName { get; set; }
+		public int Age { get; set; }
+		public ObservableCollection<Person> Children { get; } = new();
 	}
 }
