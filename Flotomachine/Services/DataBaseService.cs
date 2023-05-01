@@ -194,14 +194,15 @@ public static class DataBaseService
 		return result;
 	}
 
-	public static List<(ModuleField, ExperimentDataValue)> GetExperimentDataNameAndValues(int experimentDataId)
+	public static List<(string, ExperimentDataValue)> GetExperimentDataNameAndValues(int experimentDataId)
 	{
-		List<(ModuleField, ExperimentDataValue)> result = new();
+		List<(string, ExperimentDataValue)> result = new();
 		Get(context =>
 		{
 			foreach (ExperimentDataValue? item in context.ExperimentDataValues.Where(p => p.ExperimentDataId == experimentDataId))
 			{
-				result.Add((item.ModuleField, item));
+				int module = context.ModuleFields.FirstOrDefault(p => p.Id == item.ModuleFieldId)!.ModuleId;
+				result.Add(($"{context.Modules.FirstOrDefault(p => p.Id == module)?.Name ?? "NULL"}-{item.ModuleField.FieldName}({item.ModuleField.ValueName})", item));
 			}
 		});
 		return result;

@@ -102,10 +102,11 @@ public class LabsPanelControlViewModel : ViewModelBase
 			var values = DataBaseService.GetExperimentDataNameAndValues(item.Id);
 			foreach (var item2 in values)
 			{
-				result.Add(item2.Item1.FieldName, item2.Item2.ModuleData);
-				if (!modules.Contains(item2.Item1.FieldName))
+				var name = item2.Item1;
+				result.Add(name, item2.Item2.ModuleData);
+				if (!modules.Contains(name))
 				{
-					modules.Add(item2.Item1.FieldName);
+					modules.Add(name);
 				}
 			}
 			_experimentSource.Add(result);
