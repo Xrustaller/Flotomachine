@@ -194,6 +194,19 @@ public static class DataBaseService
 		return result;
 	}
 
+	public static List<(ModuleField, ExperimentDataValue)> GetExperimentDataNameAndValues(int experimentDataId)
+	{
+		List<(ModuleField, ExperimentDataValue)> result = new();
+		Get(context =>
+		{
+			foreach (ExperimentDataValue? item in context.ExperimentDataValues.Where(p => p.ExperimentDataId == experimentDataId))
+			{
+				result.Add((item.ModuleField, item));
+			}
+		});
+		return result;
+	}
+
 	public static Experiment CreateExperiment(User user, int timerTick)
 	{
 		Experiment experiment = new(user, timerTick);
