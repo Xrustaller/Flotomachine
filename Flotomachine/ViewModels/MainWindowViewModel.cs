@@ -266,6 +266,9 @@ public class MainWindowViewModel : ViewModelBase
 				case ModBusState.Experiment:
 					ExperimentStatus = new InfoViewModel("Идет эксперимент", "#10FF10");
 					break;
+				case ModBusState.NotFind:
+					ExperimentStatus = new InfoViewModel("Порт не найден", "#FF1010");
+					break;
 				default:
 					ExperimentStatus = new InfoViewModel("Ошибка", "#FF1010");
 					break;

@@ -13,6 +13,7 @@ public enum ModBusState
 {
 	Close,
 	Error,
+	NotFind,
 	Wait,
 	Experiment
 }
@@ -168,7 +169,7 @@ public static class ModBusService
 
 	private static void RefreshPort()
 	{
-		while (State is ModBusState.Error or ModBusState.Close && !_exit)
+		while (State is not (ModBusState.Wait or ModBusState.Experiment) && !_exit)
 		{
 			if (_serialPort is { IsOpen: true })
 			{
@@ -189,6 +190,14 @@ public static class ModBusService
 
 			try
 			{
+				var ports = SerialPort.GetPortNames();
+				if (!ports.Contains(_serialPortName))
+				{
+					ReadModules();
+					State = ModBusState.NotFind;
+					Thread.Sleep(5000);
+					continue;
+				}
 				_serialPort.Open();
 			}
 			catch (Exception)

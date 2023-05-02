@@ -120,7 +120,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Utility\Temp\" />
     <Folder Include="Elements\" />
   </ItemGroup>
 

@@ -211,7 +211,13 @@ public static class DataBaseService
 	public static Experiment CreateExperiment(User user, int timerTick)
 	{
 		Experiment experiment = new(user, timerTick);
-		GetAndSet(context => context.Experiments.Add(experiment));
+		GetAndSet(context =>
+		{
+			context.Experiments.Add(experiment);
+			context.SaveChanges();
+			experiment.Name = $"Ex {experiment.Id}";
+			context.Experiments.Update(experiment);
+		});
 		return experiment;
 	}
 

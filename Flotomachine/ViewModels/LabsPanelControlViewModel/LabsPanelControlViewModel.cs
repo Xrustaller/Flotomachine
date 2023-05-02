@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows.Input;
 using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
 using AvaloniaEdit.Utils;
+using DynamicData;
 using Flotomachine.Services;
 using ReactiveUI;
 
@@ -13,6 +15,7 @@ namespace Flotomachine.ViewModels;
 public class LabsPanelControlViewModel : ViewModelBase
 {
 	private readonly MainWindowViewModel _mainWindowViewModel;
+
 #if DEBUG
 	private bool _debug = true;
 #else
@@ -22,8 +25,10 @@ public class LabsPanelControlViewModel : ViewModelBase
 	private Experiment _experimentSelected;
 	private bool _visibleExperiment;
 
+	private HierarchicalTreeDataGridSource<ExpDataObj> _experimentDataSource;
+	private ObservableCollection<ExpDataObj> _experimentSource = new();
+
 	public ObservableCollection<Experiment> ExperimentCollection { get; set; } = new();
-	//public HierarchicalTreeDataGridSource<Experiment> Source { get; private set; }
 
 	public Experiment ExperimentSelected
 	{
@@ -41,9 +46,22 @@ public class LabsPanelControlViewModel : ViewModelBase
 		set => this.RaiseAndSetIfChanged(ref _visibleExperiment, value);
 	}
 
+	public HierarchicalTreeDataGridSource<ExpDataObj> ExperimentDataSource
+	{
+		get => _experimentDataSource;
+		set => this.RaiseAndSetIfChanged(ref _experimentDataSource, value);
+	}
 
-	private ObservableCollection<Dictionary<string, int>> _experimentSource = new();
-	public HierarchicalTreeDataGridSource<Dictionary<string, int>> ExperimentDataSource { get; set; }
+	public ObservableCollection<ExpDataObj> ExperimentSource
+	{
+		get => _experimentSource;
+		set => this.RaiseAndSetIfChanged(ref _experimentSource, value);
+	}
+
+	public ICommand ExportExcelExperimentButtonClick { get; }
+	public ICommand PrintExperimentButtonClick { get; }
+	public ICommand DeleteExperimentButtonClick { get; }
+	public ICommand AddExperimentButtonClick { get; }
 
 	public LabsPanelControlViewModel()
 	{
@@ -72,51 +90,42 @@ public class LabsPanelControlViewModel : ViewModelBase
 
 	private void Reload()
 	{
-		//if (_debug)
-		//{
-		//	ExperimentCollection.Clear();
-		//	for (int x = 1; x <= 50; x++)
-		//	{
-		//		ExperimentCollection.Add(new Experiment() { Id = x });
-		//	}
-		//	return;
-		//}
-
+		ExperimentDataSource = new HierarchicalTreeDataGridSource<ExpDataObj>(ExperimentSource)
+		{
+			Columns =
+			{
+				new HierarchicalExpanderColumn<ExpDataObj>(new TextColumn<ExpDataObj, TimeSpan?>("Время сбора", x => x.DateTime), x => x.Values),
+				new TextColumn<ExpDataObj, string>("Модуль", x => x.Name),
+				new TextColumn<ExpDataObj, int?>("Значение", x => x.Value)
+			}
+		};
 		ExperimentCollection.Clear();
 		ExperimentCollection.AddRange(DataBaseService.GetAllExperiments(_mainWindowViewModel.CurrentUser));
 	}
 
-	public ICommand ExportExcelExperimentButtonClick { get; }
-	public ICommand PrintExperimentButtonClick { get; }
-	public ICommand DeleteExperimentButtonClick { get; }
-	public ICommand AddExperimentButtonClick { get; }
-
-	public void ExperimentSelectedChanged(Experiment experiment)
+	public void ExperimentSelectedChanged(Experiment? experiment)
 	{
 		VisibleExperiment = true;
 
-		List<string> modules = new List<string>();
-		foreach (ExperimentData? item in DataBaseService.GetExperimentData(experiment.Id))
+		ExperimentSource.Clear();
+
+		if (experiment == null)
 		{
-			Dictionary<string, int> result = new Dictionary<string, int>();
-			var values = DataBaseService.GetExperimentDataNameAndValues(item.Id);
-			foreach (var item2 in values)
-			{
-				var name = item2.Item1;
-				result.Add(name, item2.Item2.ModuleData);
-				if (!modules.Contains(name))
-				{
-					modules.Add(name);
-				}
-			}
-			_experimentSource.Add(result);
+			return;
 		}
 
-		ExperimentDataSource = new HierarchicalTreeDataGridSource<Dictionary<string, int>>(_experimentSource);
-		foreach (var item in modules)
+		foreach (ExperimentData? experimentData in DataBaseService.GetExperimentData(experiment.Id))
 		{
-			ExperimentDataSource.Columns.Add(new TextColumn<Dictionary<string, int>, int>(item, x => x[item]));
+			var ex = new ExpDataObj(experimentData);
+			List<ExperimentDataValue>? values = DataBaseService.GetExperimentDataValues(experimentData.Id);
+			foreach (var item in values)
+			{
+				ex.Values.Add(new ExpDataObj(item));
+			}
+			ExperimentSource.Add(ex);
 		}
+
+
 	}
 
 	public void ExportExcelExperiment(object obj)
@@ -133,8 +142,6 @@ public class LabsPanelControlViewModel : ViewModelBase
 	{
 		VisibleExperiment = false;
 
-
-
 		Reload();
 	}
 
@@ -147,20 +154,10 @@ public class LabsPanelControlViewModel : ViewModelBase
 		Random random = new Random();
 
 		for (int i = 0; i < random.Next(5, 25); i++)
-		{
-			List<ExperimentDataValue> Data = new();
-			foreach (ModuleField field in _fields)
-			{
-				if (!field.Active)
-				{
-					continue;
-				}
-				Data.Add(new ExperimentDataValue(field, random.Next(1, 100000000)));
-			}
-
-			ExperimentData datai = DataBaseService.AddExperimentData(_experiment);
-			DataBaseService.AddExperimentDataValues(datai, Data);
-		}
+			DataBaseService.AddExperimentDataValues(DataBaseService.AddExperimentData(_experiment),
+				(from field in _fields
+				 where field.Active
+				 select new ExperimentDataValue(field, random.Next(1, 100000000))).ToList());
 		_experiment.End();
 		DataBaseService.UpdateExperiment(_experiment);
 	}
