@@ -8,11 +8,17 @@ namespace Flotomachine.Services;
 [Table("experiment")]
 public class Experiment
 {
+	private string? _name;
+
 	[Column("_id")]
 	public int Id { get; set; }
 
 	[Column("name")]
-	public string? Name { get; set; }
+	public string? Name
+	{
+		get => _name ?? Id.ToString();
+		set => _name = value;
+	}
 
 	[Column("user_id")]
 	public int UserId { get; set; }

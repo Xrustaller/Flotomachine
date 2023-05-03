@@ -35,7 +35,7 @@ public class LabsPanelControlViewModel : ViewModelBase
 		get => _experimentSelected;
 		set
 		{
-			_experimentSelected = value;
+			this.RaiseAndSetIfChanged(ref _experimentSelected, value);
 			ExperimentSelectedChanged(value);
 		}
 	}
@@ -61,7 +61,7 @@ public class LabsPanelControlViewModel : ViewModelBase
 	public ICommand ExportExcelExperimentButtonClick { get; }
 	public ICommand PrintExperimentButtonClick { get; }
 	public ICommand DeleteExperimentButtonClick { get; }
-	public ICommand AddExperimentButtonClick { get; }
+	public ICommand EditExperimentButtonClick { get; }
 
 	public LabsPanelControlViewModel()
 	{
@@ -70,7 +70,7 @@ public class LabsPanelControlViewModel : ViewModelBase
 			ExperimentCollection.Clear();
 			for (int x = 1; x <= 50; x++)
 			{
-				ExperimentCollection.Add(new Experiment() { Id = x });
+				ExperimentCollection.Add(new Experiment() { Id = x, Name = $"НОМЕР ЭКСПЕРИМЕНТА {x}" });
 			}
 			return;
 		}
@@ -83,7 +83,7 @@ public class LabsPanelControlViewModel : ViewModelBase
 		ExportExcelExperimentButtonClick = new DelegateCommand(ExportExcelExperiment);
 		PrintExperimentButtonClick = new DelegateCommand(PrintExperiment);
 		DeleteExperimentButtonClick = new DelegateCommand(DeleteExperiment);
-		AddExperimentButtonClick = new DelegateCommand(AddExperiment);
+		EditExperimentButtonClick = new DelegateCommand(EditExperiment);
 
 		Reload();
 	}
@@ -145,7 +145,7 @@ public class LabsPanelControlViewModel : ViewModelBase
 		Reload();
 	}
 
-	public void AddExperiment(object obj)
+	public void EditExperiment(object obj)
 	{
 		var _fields = DataBaseService.GetModulesFields();
 
