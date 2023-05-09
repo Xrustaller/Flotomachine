@@ -2,12 +2,17 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
-using AvaloniaEdit.Utils;
 using DynamicData;
 using Flotomachine.Services;
+using MessageBox.Avalonia;
+using MessageBox.Avalonia.BaseWindows.Base;
+using MessageBox.Avalonia.DTO;
+using MessageBox.Avalonia.Enums;
 using ReactiveUI;
 
 namespace Flotomachine.ViewModels;
@@ -22,7 +27,7 @@ public class LabsPanelControlViewModel : ViewModelBase
     private bool _debug = false;
 #endif
 
-	private Experiment _experimentSelected;
+	private Experiment? _experimentSelected;
 	private bool _visibleExperiment;
 
 	private HierarchicalTreeDataGridSource<ExpDataObj> _experimentDataSource;
@@ -30,7 +35,7 @@ public class LabsPanelControlViewModel : ViewModelBase
 
 	public ObservableCollection<Experiment> ExperimentCollection { get; set; } = new();
 
-	public Experiment ExperimentSelected
+	public Experiment? ExperimentSelected
 	{
 		get => _experimentSelected;
 		set
@@ -65,6 +70,16 @@ public class LabsPanelControlViewModel : ViewModelBase
 
 	public LabsPanelControlViewModel()
 	{
+		ExperimentDataSource = new HierarchicalTreeDataGridSource<ExpDataObj>(ExperimentSource)
+		{
+			Columns =
+			{
+				new HierarchicalExpanderColumn<ExpDataObj>(new TextColumn<ExpDataObj, TimeSpan?>("Время сбора", x => x.DateTime), x => x.Values),
+				new TextColumn<ExpDataObj, string>("Модуль", x => x.Name),
+				new TextColumn<ExpDataObj, int?>("Значение", x => x.Value)
+			}
+		};
+
 		if (_debug)
 		{
 			ExperimentCollection.Clear();
@@ -85,28 +100,27 @@ public class LabsPanelControlViewModel : ViewModelBase
 		DeleteExperimentButtonClick = new DelegateCommand(DeleteExperiment);
 		EditExperimentButtonClick = new DelegateCommand(EditExperiment);
 
-		Reload();
-	}
-
-	private void Reload()
-	{
 		ExperimentDataSource = new HierarchicalTreeDataGridSource<ExpDataObj>(ExperimentSource)
 		{
 			Columns =
 			{
 				new HierarchicalExpanderColumn<ExpDataObj>(new TextColumn<ExpDataObj, TimeSpan?>("Время сбора", x => x.DateTime), x => x.Values),
 				new TextColumn<ExpDataObj, string>("Модуль", x => x.Name),
-				new TextColumn<ExpDataObj, int?>("Значение", x => x.Value)
+				new TextColumn<ExpDataObj, int?>("Значение", x => x.Value),
+
 			}
 		};
+		Reload();
+	}
+
+	private void Reload()
+	{
 		ExperimentCollection.Clear();
 		ExperimentCollection.AddRange(DataBaseService.GetAllExperiments(_mainWindowViewModel.CurrentUser));
 	}
 
 	public void ExperimentSelectedChanged(Experiment? experiment)
 	{
-		VisibleExperiment = true;
-
 		ExperimentSource.Clear();
 
 		if (experiment == null)
@@ -124,8 +138,7 @@ public class LabsPanelControlViewModel : ViewModelBase
 			}
 			ExperimentSource.Add(ex);
 		}
-
-
+		VisibleExperiment = true;
 	}
 
 	public void ExportExcelExperiment(object obj)
@@ -138,11 +151,29 @@ public class LabsPanelControlViewModel : ViewModelBase
 
 	}
 
-	public void DeleteExperiment(object obj)
+	public async void DeleteExperiment(object obj)
 	{
-		VisibleExperiment = false;
+		IMsBoxWindow<ButtonResult> messageBoxStandardWindow = MessageBoxManager.GetMessageBoxStandardWindow(
+			new MessageBoxStandardParams
+			{
+				ShowInCenter = true,
+				ButtonDefinitions = ButtonEnum.YesNo,
+				ContentTitle = "Удаление",
+				ContentHeader = "Удаление эксперимента",
+				ContentMessage = $"Вы действительно хотите удалить эксперимент \"{ExperimentSelected?.Name ?? "NULL"}\"?",
+				Icon = Icon.Question
+			});
+		Task<ButtonResult> res = messageBoxStandardWindow.ShowDialog(_mainWindowViewModel.MainWindow);
+		await res.WaitAsync(new CancellationToken());
 
+		if (res.Result != ButtonResult.Yes)
+		{
+			return;
+		}
+
+		DataBaseService.RemoveExperiment(ExperimentSelected);
 		Reload();
+		VisibleExperiment = false;
 	}
 
 	public void EditExperiment(object obj)

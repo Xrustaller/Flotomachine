@@ -11,7 +11,7 @@
 		<viewModels:HomePanelControlViewModel/>
     </UserControl.DataContext>
     <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-		<ItemsControl Items="{Binding Modules}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+		<ItemsControl ItemsSource="{Binding Modules}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
 					<elements:FillingWrapPanel VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>

@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using Flotomachine.Utility;
-using JetBrains.Annotations;
 
 namespace Flotomachine.Services;
 
@@ -11,7 +10,6 @@ public static class UpdateService
 {
 	public static bool NeedUpdate { get; private set; } = false;
 
-	[CanBeNull]
 	public static Version NewVersion { get; private set; } = new(0, 0);
 
 	private static string _fileUrl = null;

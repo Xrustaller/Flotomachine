@@ -245,4 +245,23 @@ public static class DataBaseService
 			}
 		});
 	}
+
+	public static void RemoveExperiment(Experiment? experiment)
+	{
+		if (experiment == null)
+			return;
+		GetAndSet(context =>
+		{
+			foreach (var data in context.ExperimentDatas.Where(p => p.ExperimentId == experiment.Id))
+			{
+				foreach (var value in data.ExperimentDataValues)
+				{
+					context.ExperimentDataValues.Remove(value);
+				}
+				context.ExperimentDatas.Remove(data);
+			}
+			context.Experiments.Remove(experiment);
+
+		});
+	}
 }

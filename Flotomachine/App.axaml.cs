@@ -22,6 +22,11 @@ public partial class App : Application
 	public static MainWindow MainWindow { get; private set; }
 	public static MainWindowViewModel MainWindowViewModel { get; private set; }
 
+	public App()
+	{
+
+	}
+
 	private static string GetDocumentPath() => Path.Join(RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "Documents" : Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments), "Flotomachine");
 
 	public override void Initialize() => AvaloniaXamlLoader.Load(this);

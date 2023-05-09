@@ -22,7 +22,7 @@ public class MainWindowViewModel : ViewModelBase
 
 	#region Private
 
-	private readonly Window _mainWindow;
+	public readonly Window MainWindow;
 	private Timer _timer;
 
 	private bool _cameraButtonIsVisible;
@@ -213,7 +213,7 @@ public class MainWindowViewModel : ViewModelBase
 
 	public MainWindowViewModel(Window mainWindow)
 	{
-		_mainWindow = mainWindow;
+		MainWindow = mainWindow;
 		UserChangedEvent += RefreshButtons;
 
 		CameraButtonClick = new DelegateCommand(CameraButton);
@@ -289,12 +289,12 @@ public class MainWindowViewModel : ViewModelBase
 		{
 			return;
 		}
-		_updateWindow = new UpdateWindow(_mainWindow);
+		_updateWindow = new UpdateWindow(MainWindow);
 		_updateWindow.Closed += (sender, args) =>
 		{
 			_updateWindow = null;
 		};
-		_updateWindow?.ShowDialog(_mainWindow);
+		_updateWindow?.ShowDialog(MainWindow);
 	}
 
 	private void CameraButton(object parameter)
