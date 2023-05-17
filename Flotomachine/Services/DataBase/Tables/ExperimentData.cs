@@ -19,6 +19,9 @@ public class ExperimentData
 	[Column("date")]
 	public DateTime Date { get; set; }
 
+	[Column("file")]
+	public int? File { get; set; }
+
 	public virtual ObservableCollection<ExperimentDataValue> ExperimentDataValues { get; set; }
 
 	public ExperimentData()

@@ -11,11 +11,11 @@ namespace Flotomachine.Services;
 
 public enum ModBusState
 {
-	Close,
-	Error,
-	NotFind,
-	Wait,
-	Experiment
+	Close = 0,
+	Wait = 1,
+	Error = 10,
+	NotFind = 11,
+	Experiment = 20
 }
 
 public static class ModBusService
@@ -190,7 +190,7 @@ public static class ModBusService
 
 			try
 			{
-				var ports = SerialPort.GetPortNames();
+				string[]? ports = SerialPort.GetPortNames();
 				if (!ports.Contains(_serialPortName))
 				{
 					ReadModules();
