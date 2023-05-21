@@ -231,13 +231,7 @@ public class MainWindowViewModel : ViewModelBase
 
 		TestClick = new DelegateCommand(Test);
 
-		if (UpdateService.NeedUpdate && App.Settings.Configuration.Main.CheckUpdatesAtStartUp)
-		{
-			_timer = new Timer(15 * 1000);
-			_timer.Elapsed += CheckUpdate;
-			_timer.AutoReset = false;
-			_timer.Start();
-		}
+		CheckUpdateAtStartWindow();
 
 		ExperimentStatus = new InfoViewModel("Подключение...", "#10FF10");
 		ModBusService.StatusChanged += ModBusServiceOnStatusChanged;
@@ -274,6 +268,24 @@ public class MainWindowViewModel : ViewModelBase
 					break;
 			}
 		});
+	}
+
+	private async void CheckUpdateAtStartWindow()
+	{
+		if (!App.Settings.Configuration.Main.CheckUpdatesAtStartUp)
+		{
+			return;
+		}
+
+		if (!await GitHubService.Instance.CheckUpdates())
+		{
+			return;
+		}
+
+		_timer = new Timer(15 * 1000);
+		_timer.Elapsed += CheckUpdate;
+		_timer.AutoReset = false;
+		_timer.Start();
 	}
 
 	private async void CheckUpdate(object sender, ElapsedEventArgs e)

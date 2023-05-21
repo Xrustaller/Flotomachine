@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using Avalonia.Styling;
 using Flotomachine.Services;
 using Flotomachine.Utility;
 using Flotomachine.View;
@@ -24,7 +25,7 @@ public partial class App : Application
 
 	public App()
 	{
-
+		this.RequestedThemeVariant = ThemeVariant.Dark;
 	}
 
 	private static string GetDocumentPath() => Path.Join(RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "Documents" : Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments), "Flotomachine");
@@ -55,8 +56,6 @@ public partial class App : Application
 				Console.WriteLine("Camera service initialization error");
 				LogManager.ErrorLog(exceptionC, "ErrorLog_InitCameraService");
 			}
-
-			UpdateService.CheckUpdates(Settings.Configuration);
 
 			MainWindow = new MainWindow();
 			MainWindowViewModel = new MainWindowViewModel(MainWindow);

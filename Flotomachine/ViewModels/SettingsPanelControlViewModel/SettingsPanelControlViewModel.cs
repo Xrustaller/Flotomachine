@@ -81,10 +81,10 @@ public class SettingsPanelControlViewModel : ViewModelBase
 
 	public SettingsPanelControlViewModel()
 	{
-		if (UpdateService.NeedUpdate)
+		if (GitHubService.Instance.NeedUpdate)
 		{
 			UpdateButtonText = "Загрузить и обновить";
-			UpdateInfo = new InfoViewModel($"Вышла новая версия: v{UpdateService.NewVersion}", "#FFFF10");
+			UpdateInfo = new InfoViewModel($"Вышла новая версия: v{GitHubService.Instance.NewVersion}", "#FFFF10");
 		}
 		else
 		{
@@ -114,10 +114,10 @@ public class SettingsPanelControlViewModel : ViewModelBase
 			AddDelUserCardViewModel.CardsList.Add(new CardIdListBox(item));
 		}
 
-		if (UpdateService.NeedUpdate)
+		if (GitHubService.Instance.NeedUpdate)
 		{
 			UpdateButtonText = "Загрузить и обновить";
-			UpdateInfo = new InfoViewModel($"Вышла новая версия: v{UpdateService.NewVersion}", "#FFFF10");
+			UpdateInfo = new InfoViewModel($"Вышла новая версия: v{GitHubService.Instance.NewVersion}", "#FFFF10");
 		}
 		else
 		{
@@ -163,7 +163,7 @@ public class SettingsPanelControlViewModel : ViewModelBase
 
 	private void Update(object obj)
 	{
-		if (UpdateService.NeedUpdate)
+		if (GitHubService.Instance.NeedUpdate)
 		{
 			_mainWindowViewModel.CheckUpdate();
 		}
@@ -171,7 +171,7 @@ public class SettingsPanelControlViewModel : ViewModelBase
 		{
 			UpdateButtonText = "Проверить обновления";
 			UpdateInfo = new InfoViewModel("Обновление не требуется", "#10FF10");
-			UpdateService.CheckUpdates(true);
+			GitHubService.Instance.CheckUpdates(true);
 		}
 	}
 

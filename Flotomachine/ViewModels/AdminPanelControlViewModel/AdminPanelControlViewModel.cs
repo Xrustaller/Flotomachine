@@ -141,10 +141,10 @@ public class AdminPanelControlViewModel : ViewModelBase
 
 	public AdminPanelControlViewModel()
 	{
-		if (UpdateService.NeedUpdate)
+		if (GitHubService.Instance.NeedUpdate)
 		{
 			UpdateButtonText = "Загрузить и обновить";
-			UpdateInfo = new InfoViewModel($"Вышла новая версия: v{UpdateService.NewVersion}", "#FFFF10");
+			UpdateInfo = new InfoViewModel($"Вышла новая версия: v{GitHubService.Instance.NewVersion}", "#FFFF10");
 		}
 		else
 		{
@@ -181,10 +181,10 @@ public class AdminPanelControlViewModel : ViewModelBase
 			UserList.Add(item);
 		}
 
-		if (UpdateService.NeedUpdate)
+		if (GitHubService.Instance.NeedUpdate)
 		{
 			UpdateButtonText = "Загрузить и обновить";
-			UpdateInfo = new InfoViewModel($"Вышла новая версия: v{UpdateService.NewVersion}", "#FFFF10");
+			UpdateInfo = new InfoViewModel($"Вышла новая версия: v{GitHubService.Instance.NewVersion}", "#FFFF10");
 		}
 		else
 		{
@@ -195,7 +195,7 @@ public class AdminPanelControlViewModel : ViewModelBase
 
 	private void Update(object obj)
 	{
-		if (UpdateService.NeedUpdate)
+		if (GitHubService.Instance.NeedUpdate)
 		{
 			_mainWindowViewModel.CheckUpdate();
 		}
@@ -203,7 +203,7 @@ public class AdminPanelControlViewModel : ViewModelBase
 		{
 			UpdateButtonText = "Проверить обновления";
 			UpdateInfo = new InfoViewModel("Обновление не требуется", "#10FF10");
-			UpdateService.CheckUpdates();
+			GitHubService.Instance.CheckUpdates();
 		}
 	}
 

@@ -17,9 +17,10 @@
     <Window.DataContext>
 		<viewModels:UpdateWindowViewModel/>
     </Window.DataContext>
-    <Grid RowDefinitions="20*, 10*" Margin="0, 5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+    <Grid RowDefinitions="20*, Auto, Auto" Margin="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 		<TextBlock Grid.Row="0" Text="{Binding Text.Text}" Foreground="{Binding Text.Color}" TextAlignment="Center" TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-        <Grid Grid.Row="1" ColumnDefinitions="*, *" Margin="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+		<ProgressBar Grid.Row="1" Margin="5, 0" Minimum="0" Maximum="100" Value="{Binding DownloadProgressBarValue}" IsVisible="{Binding DownloadProgressBarVisible}" ShowProgressText="True"/>
+        <Grid Grid.Row="2" ColumnDefinitions="*, *" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
           <Button Grid.Column="0" Margin="5" HorizontalAlignment="Stretch" IsEnabled="{Binding ButtonsEnable}">
               <Button.Content>
                   <TextBlock Text="Закрыть" HorizontalAlignment="Center"/>
@@ -30,7 +31,7 @@
                   </ia:EventTriggerBehavior>
               </i:Interaction.Behaviors>
           </Button>
-          <Button Grid.Column="1" Margin="5" HorizontalAlignment="Stretch" IsEnabled="{Binding ButtonsEnable}">
+            <Button Grid.Column="1" Margin="5" HorizontalAlignment="Stretch" IsEnabled="{Binding ButtonsEnable}">
               <Button.Content>
                   <TextBlock Text="Загрузить" HorizontalAlignment="Center"/>
               </Button.Content>
