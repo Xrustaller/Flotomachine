@@ -178,6 +178,7 @@ public class LabsPanelControlViewModel : ViewModelBase
 
 	public void EditExperiment(object obj)
 	{
+		return;
 		var _fields = DataBaseService.GetModulesFields();
 
 		var _experiment = DataBaseService.CreateExperiment(_mainWindowViewModel.CurrentUser, 3);

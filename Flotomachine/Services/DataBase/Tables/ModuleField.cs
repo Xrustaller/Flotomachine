@@ -28,4 +28,6 @@ public class ModuleField
 	[Column("active")]
 	public bool Active { get; set; }
 
+	[Column("manual")]
+	public bool Manual { get; set; }
 }
