@@ -1,125 +1,122 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+	    <TargetFramework>net7.0</TargetFramework>
+	    <StartupObject>Flotomachine.Program</StartupObject>
+	    <ApplicationIcon>Assets\Icon.ico</ApplicationIcon>
+		<Version>0.1.9</Version>
+	    <FileVersion>0.1.9</FileVersion>
+	    <AssemblyVersion>0.1.9</AssemblyVersion>
+	    <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
+	    <SignAssembly>False</SignAssembly>
+	    <Copyright>Xrustaller</Copyright>
+	    <AnalysisLevel>preview</AnalysisLevel>
+	    <Authors>Xrustaller</Authors>
+	    <Configurations>Debug;Release;RP_Debug</Configurations>
+	    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+	    <Nullable>annotations</Nullable>
+	</PropertyGroup>
 
-  <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net7.0</TargetFramework>
-    <StartupObject>Flotomachine.Program</StartupObject>
-    <ApplicationIcon>Assets\Icon.ico</ApplicationIcon>
-	<Version>0.1.8</Version>
-    <FileVersion>0.1.8</FileVersion>
-    <AssemblyVersion>0.1.8</AssemblyVersion>
-    <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
-    <SignAssembly>False</SignAssembly>
-    <Copyright>Xrustaller</Copyright>
-    <AnalysisLevel>preview</AnalysisLevel>
-    <Authors>Xrustaller</Authors>
-    <Configurations>Debug;Release;RP_Debug</Configurations>
-    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
-    <Nullable>annotations</Nullable>
-  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+	    <DebugType>embedded</DebugType>
+	    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DebugType>embedded</DebugType>
-    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
-  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RP_Debug|AnyCPU'">
+	    <DebugType>embedded</DebugType>
+	    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+	 </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RP_Debug|AnyCPU'">
-    <DebugType>embedded</DebugType>
-    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
-  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+	    <DebugType>none</DebugType>
+	    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DebugType>none</DebugType>
-    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
-  </PropertyGroup>
+	<ItemGroup>
+	    <None Remove="Assets\a_lcdnova.ttf" />
+	    <None Remove="Assets\brand-discord.svg" />
+	    <None Remove="Assets\camera.png" />
+	    <None Remove="Assets\Card.png" />
+	    <None Remove="Assets\Close.png" />
+	    <None Remove="Assets\Database.png" />
+	    <None Remove="Assets\Delete.png" />
+	    <None Remove="Assets\Excel.png" />
+	    <None Remove="Assets\Gear_admin.png" />
+	    <None Remove="Assets\graph.png" />
+	    <None Remove="Assets\Home.png" />
+	    <None Remove="Assets\IconWindow.ico" />
+	    <None Remove="Assets\Info.png" />
+	    <None Remove="Assets\Key.png" />
+	    <None Remove="Assets\Labs.png" />
+	    <None Remove="Assets\Logo.png" />
+	    <None Remove="Assets\Out.png" />
+	    <None Remove="Assets\Print.png" />
+	    <None Remove="Assets\Profile.png" />
+	    <None Remove="Assets\Profiles.png" />
+	    <None Remove="Assets\Transport.png" />
+	    <None Remove="Assets\Turn.png" />
+	    <None Remove="FlotomachineDefault.db" />
+	</ItemGroup>
+	<ItemGroup>
+		<!--This helps with theme dll-s trimming.
+    If you will publish your application in self-contained mode with p:PublishTrimmed=true and it will use Fluent theme Default theme will be trimmed from the output and vice versa.
+    https://github.com/AvaloniaUI/Avalonia/issues/5593 -->
+		<TrimmableAssembly Include="Avalonia.Themes.Fluent" />
+		<TrimmableAssembly Include="Avalonia.Themes.Default" />
+	</ItemGroup>
+	<ItemGroup>
+	    <PackageReference Include="Avalonia" Version="11.0.0-preview7" />
+	    <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.0.0-preview7" />
+	    <PackageReference Include="Avalonia.Controls.TreeDataGrid" Version="11.0.0-preview7" />
+	    <PackageReference Include="Avalonia.Desktop" Version="11.0.0-preview7" />
+	    <PackageReference Include="Avalonia.Diagnostics" Version="11.0.0-preview7" />
+	    <PackageReference Include="Avalonia.Markup.Xaml.Loader" Version="11.0.0-preview7" />
+	    <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.0-preview7" />
+	    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.0-preview7" />
+	    <PackageReference Include="Avalonia.Xaml.Behaviors" Version="11.0.0-preview7" />
+	    <PackageReference Include="Avalonia.Xaml.Interactions" Version="11.0.0-preview7" />
+	    <PackageReference Include="Avalonia.Xaml.Interactivity" Version="11.0.0-preview7" />
+	    <PackageReference Include="LiveChartsCore.SkiaSharpView.Avalonia" Version="2.0.0-beta.710" />
+	    <PackageReference Include="EPPlus" Version="4.5.3.3" />
+	    <PackageReference Include="Iot.Device.Bindings" Version="2.2.0" />
+	    <PackageReference Include="MessageBox.Avalonia" Version="2.2.0" />
+	    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.5" />
+	    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+	    <PackageReference Include="NModbus4.NetCore" Version="3.0.0" />
+	    <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="2.1.4" />
+	    <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3.linux" Version="1.1.14" />
+	    <PackageReference Include="System.Device.Gpio" Version="2.2.0" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <None Remove="Assets\a_lcdnova.ttf" />
-    <None Remove="Assets\brand-discord.svg" />
-    <None Remove="Assets\camera.png" />
-    <None Remove="Assets\Card.png" />
-    <None Remove="Assets\Close.png" />
-    <None Remove="Assets\Database.png" />
-    <None Remove="Assets\Gear_admin.png" />
-    <None Remove="Assets\graph.png" />
-    <None Remove="Assets\Home.png" />
-    <None Remove="Assets\IconWindow.ico" />
-    <None Remove="Assets\Key.png" />
-    <None Remove="Assets\Labs.png" />
-    <None Remove="Assets\Logo.png" />
-    <None Remove="Assets\Out.png" />
-    <None Remove="Assets\Transport.png" />
-    <None Remove="Assets\Turn.png" />
-    <None Remove="FlotomachineDefault.db" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Avalonia" Version="0.10.18" />
-    <PackageReference Include="Avalonia.Controls.DataGrid" Version="0.10.18" />
-    <PackageReference Include="Avalonia.Desktop" Version="0.10.18" />
-    <PackageReference Include="Avalonia.Diagnostics" Version="0.10.18" />
-    <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.18" />
-    <PackageReference Include="Avalonia.Xaml.Behaviors" Version="0.10.18" />
-    <PackageReference Include="Avalonia.Xaml.Interactions" Version="0.10.18" />
-    <PackageReference Include="Avalonia.Xaml.Interactivity" Version="0.10.18" />
-    <PackageReference Include="Iot.Device.Bindings" Version="2.2.0" />
-    <PackageReference Include="LiveChartsCore.SkiaSharpView.Avalonia" Version="2.0.0-beta.300" />
-    <PackageReference Include="MessageBox.Avalonia" Version="2.1.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.3" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
-    <PackageReference Include="NModbus4.NetCore" Version="3.0.0" />
-    <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="2.1.4" />
-    <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3.linux" Version="1.1.14" />
-    <PackageReference Include="System.Device.Gpio" Version="2.2.0" />
-    <PackageReference Include="XamlNameReferenceGenerator" Version="1.5.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Update="View\MainWindow.axaml.cs">
-      <DependentUpon>MainWindow.axaml</DependentUpon>
-    </Compile>
-    <Compile Update="View\Pages\AdminPanelControl.axaml.cs">
-      <DependentUpon>AdminPanelControl.axaml</DependentUpon>
-    </Compile>
-    <Compile Update="View\Pages\CameraPanelControl.axaml.cs">
-      <DependentUpon>CameraPanelControl.axaml</DependentUpon>
-    </Compile>
-    <Compile Update="View\Pages\HomeModuleDataPanelControl.axaml.cs">
-      <DependentUpon>HomeModuleDataPanelControl.axaml</DependentUpon>
-    </Compile>
-    <Compile Update="View\ReadCardWindow.axaml.cs">
-      <DependentUpon>ReadCardWindow.axaml</DependentUpon>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <AvaloniaResource Include="Assets\a_lcdnova.ttf" />
-    <AvaloniaResource Include="Assets\Camera.png" />
-    <AvaloniaResource Include="Assets\Card.png" />
-    <AvaloniaResource Include="Assets\Close.png" />
-    <AvaloniaResource Include="Assets\Database.png" />
-    <AvaloniaResource Include="Assets\Gear.png" />
-    <AvaloniaResource Include="Assets\Edit.png" />
-    <AvaloniaResource Include="Assets\Gear_admin.png" />
-    <AvaloniaResource Include="Assets\Graph.png" />
-    <AvaloniaResource Include="Assets\Home.png" />
-    <AvaloniaResource Include="Assets\IconWindow.ico" />
-    <AvaloniaResource Include="Assets\Key.png" />
-    <AvaloniaResource Include="Assets\Labs.png" />
-    <AvaloniaResource Include="Assets\Logo.png" />
-    <AvaloniaResource Include="Assets\New.png" />
-    <AvaloniaResource Include="Assets\Out.png" />
-    <AvaloniaResource Include="Assets\Transport.png" />
-    <AvaloniaResource Include="Assets\Turn.png" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Assets\Icon.ico" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Utility\Temp\" />
-    <Folder Include="Elements\" />
-  </ItemGroup>
+	<ItemGroup>
+	    <AvaloniaResource Include="Assets\a_lcdnova.ttf" />
+	    <AvaloniaResource Include="Assets\Camera.png" />
+	    <AvaloniaResource Include="Assets\Card.png" />
+	    <AvaloniaResource Include="Assets\Close.png" />
+	    <AvaloniaResource Include="Assets\Database.png" />
+	    <AvaloniaResource Include="Assets\Delete.png" />
+	    <AvaloniaResource Include="Assets\Excel.png" />
+	    <AvaloniaResource Include="Assets\Gear.png" />
+	    <AvaloniaResource Include="Assets\Edit.png" />
+	    <AvaloniaResource Include="Assets\Gear_admin.png" />
+	    <AvaloniaResource Include="Assets\Graph.png" />
+	    <AvaloniaResource Include="Assets\Home.png" />
+	    <AvaloniaResource Include="Assets\IconWindow.ico" />
+	    <AvaloniaResource Include="Assets\Info.png" />
+	    <AvaloniaResource Include="Assets\Key.png" />
+	    <AvaloniaResource Include="Assets\Labs.png" />
+	    <AvaloniaResource Include="Assets\Logo.png" />
+	    <AvaloniaResource Include="Assets\New.png" />
+	    <AvaloniaResource Include="Assets\Out.png" />
+	    <AvaloniaResource Include="Assets\Print.png" />
+	    <AvaloniaResource Include="Assets\Profile.png" />
+	    <AvaloniaResource Include="Assets\Profiles.png" />
+	    <AvaloniaResource Include="Assets\Transport.png" />
+	    <AvaloniaResource Include="Assets\Turn.png" />
+	</ItemGroup>
+	<ItemGroup>
+		<Content Include="Assets\Icon.ico" />
+	</ItemGroup>
 
 </Project>

@@ -11,7 +11,7 @@ public class FillingWrapPanel : WrapPanel
 	protected override Size MeasureOverride(Size availableSize)
 	{
 		double width = 0, maxWidth = 0, y = 0, nextY = 0;
-		foreach (IControl child in Children)
+		foreach (Control? child in Children)
 		{
 			// Запрашиваем измерение желаемого размера
 			child.Measure(availableSize);
@@ -41,8 +41,8 @@ public class FillingWrapPanel : WrapPanel
 	{
 		double y = 0, nextY = 0, width = 0;
 		// Коллекция, содержащая элементы текущей строки
-		var line = new List<IControl>();
-		foreach (IControl child in Children)
+		var line = new List<Control>();
+		foreach (Control child in Children)
 		{
 			// Если элемент уместится в текущей строке
 			if (width + child.DesiredSize.Width <= finalSize.Width)
@@ -61,7 +61,7 @@ public class FillingWrapPanel : WrapPanel
 				// Размещаем строку
 				ArrangeLine(line, finalSize.Width, y, nextY - y);
 				// Элементы следующей строки
-				line = new List<IControl> { child };
+				line = new List<Control> { child };
 				width = child.DesiredSize.Width;
 				y = nextY;
 				nextY = y + child.DesiredSize.Height;
@@ -72,7 +72,7 @@ public class FillingWrapPanel : WrapPanel
 		return finalSize;
 	}
 
-	private void ArrangeLine(List<IControl> line, double lineWidth, double y, double lineHeight)
+	private void ArrangeLine(List<Control> line, double lineWidth, double y, double lineHeight)
 	{
 		// Потребная ширина строки
 		double width = line.Sum(fe => fe.DesiredSize.Width);

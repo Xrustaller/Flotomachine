@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Flotomachine.Services;
@@ -6,8 +8,17 @@ namespace Flotomachine.Services;
 [Table("experiment")]
 public class Experiment
 {
+	private string? _name;
+
 	[Column("_id")]
 	public int Id { get; set; }
+
+	[Column("name")]
+	public string? Name
+	{
+		get => _name ?? Id.ToString();
+		set => _name = value;
+	}
 
 	[Column("user_id")]
 	public int UserId { get; set; }
@@ -20,6 +31,7 @@ public class Experiment
 
 	[Column("date_end")]
 	public DateTime? DateEnd { get; set; }
+	public virtual ObservableCollection<ExperimentData> ExperimentData { get; set; }
 
 	public Experiment()
 	{
@@ -39,6 +51,8 @@ public class Experiment
 		TimerTick = timerTick;
 		DateStart = DateTime.Now;
 	}
+
+	public List<ExperimentData> GetExperimentData() => DataBaseService.GetExperimentData(Id);
 
 	public void End()
 	{

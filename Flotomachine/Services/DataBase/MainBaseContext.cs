@@ -13,6 +13,9 @@ public class MainBaseContext : DbContext
 	public DbSet<ExperimentData> ExperimentDatas { get; set; }
 	public DbSet<ExperimentDataValue> ExperimentDataValues { get; set; }
 
+
+	public DbSet<FileData> FileData { get; set; }
+
 	public MainBaseContext()
 	{
 

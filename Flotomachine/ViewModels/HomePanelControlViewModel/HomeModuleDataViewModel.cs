@@ -1,4 +1,5 @@
-﻿using ReactiveUI;
+﻿using Flotomachine.Services;
+using ReactiveUI;
 
 namespace Flotomachine.ViewModels;
 
@@ -18,6 +19,13 @@ public class HomeModuleDataViewModel : ViewModelBase
 		Name = name;
 		Value = value;
 		ValueName = valueName;
+	}
+
+	public HomeModuleDataViewModel(string? module, ModuleField field, ushort? value)
+	{
+		Name = $"{module ?? "NULL"} - {field.FieldName}";
+		Value = value?.ToString() ?? "NULL";
+		ValueName = field.ValueName;
 	}
 
 	public string Name

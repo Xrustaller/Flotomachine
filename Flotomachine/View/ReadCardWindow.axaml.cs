@@ -1,5 +1,4 @@
 using System;
-using System.ComponentModel;
 using System.Threading;
 using Avalonia;
 using Avalonia.Controls;
@@ -97,7 +96,7 @@ public partial class ReadCardWindow : Window
 #pragma warning restore CS0162
 	}
 
-	protected override void OnClosing(CancelEventArgs e)
+	protected override void OnClosing(WindowClosingEventArgs e)
 	{
 		_thread?.Interrupt();
 		base.OnClosing(e);

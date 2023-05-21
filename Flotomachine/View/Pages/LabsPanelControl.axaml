@@ -12,77 +12,77 @@
     <UserControl.DataContext>
         <viewModels:LabsPanelControlViewModel/>
     </UserControl.DataContext>
-    <Grid ColumnDefinitions="140, 2, *" RowDefinitions="416, *">
-        <Border Grid.Column="0" Grid.Row="0" BorderBrush="#808080" BorderThickness="1" Padding="4" CornerRadius="2" Margin="5">
-			<Grid RowDefinitions="30, *">
-                <TextBlock Grid.Row="0" Margin="5" HorizontalAlignment="Left" VerticalAlignment="Center">Эксперименты</TextBlock>
-                <ListBox Grid.Row="1" Margin="5" Items="{Binding ExperimentCollection}" 
-                         SelectedItem="{Binding Path=ExperimentSelected, Mode=TwoWay}" 
-                         ScrollViewer.HorizontalScrollBarVisibility="Disabled" 
-                         ScrollViewer.VerticalScrollBarVisibility="Disabled">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <Grid ColumnDefinitions="Auto, Auto" VerticalAlignment="Center">
-                                <TextBlock Grid.Column="0" Text="№"/>
-                                <TextBlock Grid.Column="1" Text="{Binding }"/>
-                            </Grid>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
+    <Grid RowDefinitions="62, *">
+		<Border Grid.Column="0" Grid.Row="0" BorderBrush="#808080" BorderThickness="1" Padding="4" CornerRadius="2" Margin="5">
+            <Grid ColumnDefinitions="Auto, *, Auto">
+				<Grid Grid.Column="0" ColumnDefinitions="Auto, 10, Auto" Margin="5">
+                    <TextBlock Grid.Column="0" Text="Эксперимент:" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+					<ComboBox Grid.Column="2"  MaxWidth="200" ItemsSource="{Binding ExperimentCollection}" SelectedItem="{Binding ExperimentSelected}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Name}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+				</Grid>
+				<Grid Grid.Column="1" Margin="5, 0" RowDefinitions="Auto, Auto" VerticalAlignment="Center" HorizontalAlignment="Left" IsVisible="{Binding VisibleExperiment}">
+					<TextBlock Grid.Row="0" Text="Дата:"></TextBlock>
+                    <TextBlock Grid.Row="1" Text="{Binding ExperimentSelected.DateStart}"></TextBlock>
+                </Grid>
+				<Grid Grid.Column="2" ColumnDefinitions="Auto, Auto, Auto, Auto">
+					<!--
+					<Button Grid.Column="0" Margin="5" Width="32" Height="32" Background="#00000000" HorizontalAlignment="Stretch" IsVisible="{Binding VisibleExperiment}">
+						<Panel>
+							<Image Source="/Assets/Edit.png" Width="32" Height="32"/>
+						</Panel>
+						<i:Interaction.Behaviors>
+							<ia:EventTriggerBehavior EventName="Click">
+								<ia:InvokeCommandAction Command="{Binding EditExperimentButtonClick}"/>
+							</ia:EventTriggerBehavior>
+						</i:Interaction.Behaviors>
+					</Button>
+					<Button Grid.Column="1" Margin="5" Width="32" Height="32" Background="#00000000" HorizontalAlignment="Stretch" IsVisible="{Binding VisibleExperiment}">
+						<Panel>
+							<Image Source="/Assets/Excel.png" Width="32" Height="32"/>
+						</Panel>
+						<i:Interaction.Behaviors>
+							<ia:EventTriggerBehavior EventName="Click">
+								<ia:InvokeCommandAction Command="{Binding ExportExcelExperimentButtonClick}"/>
+							</ia:EventTriggerBehavior>
+						</i:Interaction.Behaviors>
+					</Button>
+					<Button Grid.Column="2" Margin="5" Width="32" Height="32" Background="#00000000" HorizontalAlignment="Stretch" IsVisible="{Binding VisibleExperiment}">
+						<Panel>
+							<Image Source="/Assets/Print.png" Width="32" Height="32"/>
+						</Panel>
+						<i:Interaction.Behaviors>
+							<ia:EventTriggerBehavior EventName="Click">
+								<ia:InvokeCommandAction Command="{Binding PrintExperimentButtonClick}"/>
+							</ia:EventTriggerBehavior>
+						</i:Interaction.Behaviors>
+					</Button>
+					-->
+					<Button Grid.Column="3" Margin="5" Width="32" Height="32" Background="#00000000" HorizontalAlignment="Stretch" IsVisible="{Binding VisibleExperiment}">
+						<Panel>
+							<Image Source="/Assets/Delete.png" Width="32" Height="32"/>
+						</Panel>
+						<i:Interaction.Behaviors>
+							<ia:EventTriggerBehavior EventName="Click">
+								<ia:InvokeCommandAction Command="{Binding DeleteExperimentButtonClick}"/>
+							</ia:EventTriggerBehavior>
+						</i:Interaction.Behaviors>
+					</Button>
+                </Grid>
+                
+            </Grid>
+        </Border>
+
+		<Border Grid.Row="1" BorderBrush="#808080" BorderThickness="1" Padding="4" CornerRadius="2" Margin="5" IsVisible="{Binding VisibleExperiment}">
+			<Grid>
+				<TreeDataGrid Margin="5" Source="{Binding ExperimentDataSource}">
+
+				</TreeDataGrid>
 			</Grid>
         </Border>
-        <GridSplitter Grid.Column="1" Grid.Row="0" Background="Black" ResizeDirection="Columns"/>
-        <Grid Grid.Column="2" Grid.Row="0" ColumnDefinitions="*, 160" IsVisible="{Binding VisibleExperiment}">
-            <Border Grid.Column="0" Grid.Row="0" BorderBrush="#808080" BorderThickness="1" Padding="4" CornerRadius="2" Margin="5">
-                <Grid>
-                    <DataGrid Margin="5" Items="{Binding Experiment}" AutoGenerateColumns="False">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="Время"  Binding="{Binding Time}"/>
-							<DataGridTextColumn Header="Т1" Binding="{Binding Timer1}" />
-							<DataGridTextColumn Header="Т2" Binding="{Binding Timer2}" />
-							<DataGridTextColumn Header="Темп" Binding="{Binding Temperature}" />
-							<DataGridTextColumn Header="Давл" Binding="{Binding Pres}" />
-							<DataGridTextColumn Header="Вес пены" Binding="{Binding Scale}" />
-							<DataGridTextColumn Header="Обор" Binding="{Binding Oboroti}" />
-                        </DataGrid.Columns>
-                    </DataGrid>
-                </Grid>
-            </Border>
-            <Border Grid.Column="1" Grid.Row="0" BorderBrush="#808080" BorderThickness="1" Padding="4" CornerRadius="2" Margin="5">
-                <Grid RowDefinitions="38, 38, 38, 38, 38, 38, 38, 38, 38, 38" Margin="5, 0">
-                    <Button Grid.Row="4" HorizontalAlignment="Stretch" IsVisible="False">
-                        <Button.Content>
-                            <TextBlock Text="Экспорт в Excel" HorizontalAlignment="Center"></TextBlock>
-                        </Button.Content>
-                        <i:Interaction.Behaviors>
-                            <ia:EventTriggerBehavior EventName="Click">
-                                <ia:InvokeCommandAction Command="{Binding ExportExcelExperimentButtonClick}"/>
-                            </ia:EventTriggerBehavior>
-                        </i:Interaction.Behaviors>
-                    </Button>
-					<Button Grid.Row="5" HorizontalAlignment="Stretch" IsVisible="False">
-                        <Button.Content>
-                            <TextBlock Text="Печать" HorizontalAlignment="Center"></TextBlock>
-                        </Button.Content>
-                        <i:Interaction.Behaviors>
-                            <ia:EventTriggerBehavior EventName="Click">
-                                <ia:InvokeCommandAction Command="{Binding PrintExperimentButtonClick}"/>
-                            </ia:EventTriggerBehavior>
-                        </i:Interaction.Behaviors>
-                    </Button>
-                    <Button Grid.Row="9" HorizontalAlignment="Stretch" IsVisible="False">
-                        <Button.Content>
-                            <TextBlock Text="Удалить" HorizontalAlignment="Center"></TextBlock>
-                        </Button.Content>
-                        <i:Interaction.Behaviors>
-                            <ia:EventTriggerBehavior EventName="Click">
-                                <ia:InvokeCommandAction Command="{Binding DeleteExperimentButtonClick}"/>
-                            </ia:EventTriggerBehavior>
-                        </i:Interaction.Behaviors>
-                    </Button>
-                </Grid>
-            </Border>
-        </Grid>
-        
     </Grid>
 </UserControl>

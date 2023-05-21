@@ -21,7 +21,7 @@
 		<viewModels:MainWindowViewModel/>
 	</Window.DataContext>
     <Grid RowDefinitions="40, *, 24">
-		<Grid Grid.Row="0" ColumnDefinitions="40, 40, *, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, *, 40, 40" Background="#1A1A1A">
+		<Grid Grid.Row="0" ColumnDefinitions="40, 40, *, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, *, Auto, Auto" Background="#1A1A1A">
             <Button Grid.Row="0" Grid.Column="0" Width="40" Height="40" Background="#00000000" Click="Close_OnClick">
                 <Panel>
                     <Image Source="/Assets/Close.png" Width="32" Height="32"/>
