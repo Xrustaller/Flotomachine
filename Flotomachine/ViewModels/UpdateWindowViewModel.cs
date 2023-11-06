@@ -76,8 +76,6 @@ public class UpdateWindowViewModel : ViewModelBase
 
 		KeyValuePair<string, SemVersion> lastRelease = GitHubService.Instance.Releases.First();
 
-		Text.Text = lastRelease.ToString();
-
 		string temp = System.IO.Path.GetTempFileName();
 		await GitHubService.Instance.DownloadVersionAsync(lastRelease.Key, temp);
 		if (string.IsNullOrEmpty(temp))

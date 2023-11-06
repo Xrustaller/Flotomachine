@@ -147,14 +147,18 @@ public static class DataBaseService
 	//public static List<ModuleField> GetActiveModulesFields(int moduleId) => DataBase.ModuleFields.Where(p => p.ModuleId == moduleId && p.Active).ToList();
 	//public static List<ModuleField> GetActiveModulesFields(Module module) => DataBase.ModuleFields.Where(p => p.ModuleId == module.Id && p.Active).ToList();
 
-	public static List<ModuleField> GetModulesFields()
+	public static List<ModuleField> GetModulesFields(bool? active = true)
 	{
 		List<ModuleField> result = new();
 		Get(context =>
 		{
-			foreach (List<ModuleField> item in context.Modules.Select(p => p.Fields))
+			IQueryable<Module> modules = context.Modules.AsQueryable();
+			if (active is not null)
+				modules = modules.Where(p => p.Active == active);
+
+			foreach (List<ModuleField> item in modules.Select(p => p.Fields))
 			{
-				result.AddRange(item);
+				result.AddRange(active is not null ? item.Where(p => p.Active == active) : item);
 			}
 		});
 		return result;

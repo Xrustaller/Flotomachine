@@ -78,10 +78,9 @@
         </Border>
 
 		<Border Grid.Row="1" BorderBrush="#808080" BorderThickness="1" Padding="4" CornerRadius="2" Margin="5" IsVisible="{Binding VisibleExperiment}">
-			<Grid>
-				<TreeDataGrid Margin="5" Source="{Binding ExperimentDataSource}">
-
-				</TreeDataGrid>
+			<Grid >
+                <TreeDataGrid Margin="5" Source="{Binding ExperimentDataSource}"/>
+                <!--<TreeDataGrid Margin="5" Source="{Binding ExperimentDataSource}"/>  ColumnDefinitions="Auto, *, Auto"--> 
 			</Grid>
         </Border>
     </Grid>

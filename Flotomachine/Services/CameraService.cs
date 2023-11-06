@@ -11,7 +11,7 @@ public class CameraService
 	private static Thread _thread;
 	private static bool _exit;
 
-	public static event Action<IBitmap> DataCollected;
+	public static event Action<Bitmap> DataCollected;
 
 	public static Exception? Initialize()
 	{

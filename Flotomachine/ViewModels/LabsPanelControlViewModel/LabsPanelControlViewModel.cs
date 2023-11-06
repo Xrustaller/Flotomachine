@@ -9,10 +9,10 @@ using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
 using DynamicData;
 using Flotomachine.Services;
-using MessageBox.Avalonia;
-using MessageBox.Avalonia.BaseWindows.Base;
-using MessageBox.Avalonia.DTO;
-using MessageBox.Avalonia.Enums;
+using MsBox.Avalonia;
+using MsBox.Avalonia.Base;
+using MsBox.Avalonia.Dto;
+using MsBox.Avalonia.Enums;
 using ReactiveUI;
 
 namespace Flotomachine.ViewModels;
@@ -153,8 +153,8 @@ public class LabsPanelControlViewModel : ViewModelBase
 
 	public async void DeleteExperiment(object obj)
 	{
-		IMsBoxWindow<ButtonResult> messageBoxStandardWindow = MessageBoxManager.GetMessageBoxStandardWindow(
-			new MessageBoxStandardParams
+		IMsBox<ButtonResult> messageBoxStandardWindow = MessageBoxManager.GetMessageBoxStandard(
+			new MessageBoxStandardParams()
 			{
 				ShowInCenter = true,
 				ButtonDefinitions = ButtonEnum.YesNo,
@@ -163,7 +163,7 @@ public class LabsPanelControlViewModel : ViewModelBase
 				ContentMessage = $"Вы действительно хотите удалить эксперимент \"{ExperimentSelected?.Name ?? "NULL"}\"?",
 				Icon = Icon.Question
 			});
-		Task<ButtonResult> res = messageBoxStandardWindow.ShowDialog(_mainWindowViewModel.MainWindow);
+		Task<ButtonResult>? res = messageBoxStandardWindow.ShowAsPopupAsync(_mainWindowViewModel.MainWindow);
 		await res.WaitAsync(new CancellationToken());
 
 		if (res.Result != ButtonResult.Yes)
