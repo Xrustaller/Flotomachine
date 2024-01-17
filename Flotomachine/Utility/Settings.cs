@@ -62,6 +62,7 @@ public class SerialSettings
 public class CameraSettings
 {
 	public string Url { get; set; } = "http://192.1.1.10:8000";
+	public bool PhotoCameraCount { get; set; } = true;
 
 	public CameraSettings()
 	{

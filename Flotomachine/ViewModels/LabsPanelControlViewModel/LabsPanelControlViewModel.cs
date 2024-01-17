@@ -70,15 +70,14 @@ public class LabsPanelControlViewModel : ViewModelBase
 
 	public LabsPanelControlViewModel()
 	{
-		ExperimentDataSource = new HierarchicalTreeDataGridSource<ExpDataObj>(ExperimentSource)
+		ExperimentDataSource = new HierarchicalTreeDataGridSource<ExpDataObj>(ExperimentSource);
+		ColumnList<ExpDataObj> columns = new()
 		{
-			Columns =
-			{
-				new HierarchicalExpanderColumn<ExpDataObj>(new TextColumn<ExpDataObj, TimeSpan?>("Время сбора", x => x.DateTime), x => x.Values),
-				new TextColumn<ExpDataObj, string>("Модуль", x => x.Name),
-				new TextColumn<ExpDataObj, int?>("Значение", x => x.Value)
-			}
+			new TextColumn<ExpDataObj, TimeSpan?>("Время сбора", x => x.DateTime)
 		};
+		foreach (var column in DataBaseService.GetModulesFields())
+			columns.Add(new TextColumn<ExpDataObj, int>($"{column.Module.Name}-{column.FieldName}({column.ValueName})", x => x.ValuesDictionary[column.Id]));
+		ExperimentDataSource.Columns.Add(columns);
 
 		if (_debug)
 		{
@@ -100,16 +99,19 @@ public class LabsPanelControlViewModel : ViewModelBase
 		DeleteExperimentButtonClick = new DelegateCommand(DeleteExperiment);
 		EditExperimentButtonClick = new DelegateCommand(EditExperiment);
 
-		ExperimentDataSource = new HierarchicalTreeDataGridSource<ExpDataObj>(ExperimentSource)
+		ExperimentDataSource = new HierarchicalTreeDataGridSource<ExpDataObj>(ExperimentSource);
+		ColumnList<ExpDataObj> columns = new()
 		{
-			Columns =
-			{
-				new HierarchicalExpanderColumn<ExpDataObj>(new TextColumn<ExpDataObj, TimeSpan?>("Время сбора", x => x.DateTime), x => x.Values),
-				new TextColumn<ExpDataObj, string>("Модуль", x => x.Name),
-				new TextColumn<ExpDataObj, int?>("Значение", x => x.Value),
-
-			}
+			new TextColumn<ExpDataObj, TimeSpan?>("Время сбора", x => x.DateTime)
 		};
+
+		foreach (var column in DataBaseService.GetModulesFields())
+		{
+			var t = new TextColumn<ExpDataObj, int?>($"{column.Module.Name}-{column.FieldName}({column.ValueName})", x => x.ValuesDictionary[column.Id]);
+			columns.Add(t);
+		}
+		//columns.Add(new Column<ExpDataObj, TimeSpan?>("Время сбора", x => x.DateTime));
+		ExperimentDataSource.Columns.Add(columns);
 		Reload();
 	}
 
@@ -128,16 +130,20 @@ public class LabsPanelControlViewModel : ViewModelBase
 			return;
 		}
 
+		List<ExpDataObj> expDataObjs = new List<ExpDataObj>();
 		foreach (ExperimentData? experimentData in DataBaseService.GetExperimentData(experiment.Id))
 		{
-			var ex = new ExpDataObj(experimentData);
-			List<ExperimentDataValue>? values = DataBaseService.GetExperimentDataValues(experimentData.Id);
-			foreach (var item in values)
+			ExpDataObj ex = new(experimentData);
+			List<ExperimentDataValue> values = DataBaseService.GetExperimentDataValues(experimentData.Id);
+			foreach (ExperimentDataValue item in values)
 			{
-				ex.Values.Add(new ExpDataObj(item));
+				ex.ValuesDictionary.Add(item.ModuleFieldId, item.ModuleData);
 			}
-			ExperimentSource.Add(ex);
+			expDataObjs.Add(ex);
 		}
+
+		ExperimentSource.AddRange(expDataObjs);
+
 		VisibleExperiment = true;
 	}
 
@@ -178,7 +184,6 @@ public class LabsPanelControlViewModel : ViewModelBase
 
 	public void EditExperiment(object obj)
 	{
-		return;
 		var _fields = DataBaseService.GetModulesFields();
 
 		var _experiment = DataBaseService.CreateExperiment(_mainWindowViewModel.CurrentUser, 3);
