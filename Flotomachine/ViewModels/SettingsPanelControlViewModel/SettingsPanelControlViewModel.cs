@@ -171,7 +171,7 @@ public class SettingsPanelControlViewModel : ViewModelBase
 		{
 			UpdateButtonText = "Проверить обновления";
 			UpdateInfo = new InfoViewModel("Обновление не требуется", "#10FF10");
-			GitHubService.Instance.CheckUpdates(true);
+			GitHubService.Instance.CheckUpdates();
 		}
 	}
 
